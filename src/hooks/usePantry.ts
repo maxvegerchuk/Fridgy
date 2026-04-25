@@ -185,7 +185,11 @@ export function usePantry() {
     }
   }, []);
 
-  const addToShoppingList = useCallback(async (item: PantryItem): Promise<string | null> => {
+  const addToShoppingList = useCallback(async (
+    item: PantryItem,
+    overrideQuantity?: number,
+    overrideUnit?: string,
+  ): Promise<string | null> => {
     if (!user) return 'Not logged in';
 
     const { data: lists, error: listErr } = await supabase
@@ -204,8 +208,8 @@ export function usePantry() {
       id: randomUUID(),
       list_id: lists[0].id,
       name: item.name,
-      quantity: item.quantity ?? null,
-      unit: item.unit ?? null,
+      quantity: overrideQuantity ?? item.quantity ?? null,
+      unit: overrideUnit ?? item.unit ?? null,
       category: item.category,
       added_by: user.id,
     });

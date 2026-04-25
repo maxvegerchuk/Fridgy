@@ -3,6 +3,7 @@ import { ShoppingBagOpen, ShareNetwork, Trash, ShoppingCart, Plus } from 'phosph
 import { EmptyState, Button, Skeleton } from '../components/ui';
 import { useToast } from '../components/ui';
 import AddPantrySheet from '../components/pantry/AddPantrySheet';
+import AddToListSheet from '../components/pantry/AddToListSheet';
 import ShareSheet from '../components/list/ShareSheet';
 import { usePantry } from '../hooks/usePantry';
 import { CATEGORIES } from '../types';
@@ -29,18 +30,10 @@ export default function PantryPage() {
   const { pantry, items, loading, addItem, deleteItem, addToShoppingList } = usePantry();
   const [addOpen, setAddOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [addToListItem, setAddToListItem] = useState<PantryItem | null>(null);
   const toast = useToast();
 
   const groups = groupByCategory(items);
-
-  const handleAddToList = async (item: PantryItem) => {
-    const err = await addToShoppingList(item);
-    if (err) {
-      toast(`Could not add to list: ${err}`, 'error');
-    } else {
-      toast(`${item.name} added to list`, 'success');
-    }
-  };
 
   return (
     <div className="flex flex-col h-full pt-safe">
@@ -102,7 +95,7 @@ export default function PantryPage() {
                   <PantryItemRow
                     key={item.id}
                     item={item}
-                    onAddToList={handleAddToList}
+                    onAddToList={() => setAddToListItem(item)}
                     onDelete={deleteItem}
                   />
                 ))}
@@ -125,6 +118,19 @@ export default function PantryPage() {
         }}
       />
 
+      <AddToListSheet
+        item={addToListItem}
+        onClose={() => setAddToListItem(null)}
+        onConfirm={async (item, qty, unit) => {
+          const err = await addToShoppingList(item, qty, unit);
+          if (err) {
+            toast(`Could not add to list: ${err}`, 'error');
+          } else {
+            toast(`${item.name} added to list`, 'success');
+          }
+        }}
+      />
+
       {pantry?.invite_token && (
         <ShareSheet
           isOpen={shareOpen}
@@ -139,19 +145,11 @@ export default function PantryPage() {
 
 type ItemRowProps = {
   item: PantryItem;
-  onAddToList: (item: PantryItem) => Promise<void>;
+  onAddToList: () => void;
   onDelete: (id: string) => Promise<void>;
 };
 
 function PantryItemRow({ item, onAddToList, onDelete }: ItemRowProps) {
-  const [adding, setAdding] = useState(false);
-
-  const handleAddToList = async () => {
-    setAdding(true);
-    await onAddToList(item);
-    setAdding(false);
-  };
-
   return (
     <div className="flex items-center gap-3 px-4 min-h-[56px] py-2 border-b border-neutral-100 last:border-0">
       {/* Category emoji */}
@@ -167,12 +165,11 @@ function PantryItemRow({ item, onAddToList, onDelete }: ItemRowProps) {
         )}
       </div>
 
-      {/* Add to list */}
+      {/* Add to list — opens sheet to confirm qty/unit */}
       <button
         type="button"
-        onClick={handleAddToList}
-        disabled={adding}
-        className="flex items-center gap-1 h-[36px] px-3 rounded-md border border-green-500 text-green-600 text-xs font-semibold font-sans active:scale-95 active:bg-green-50 transition-all flex-shrink-0 disabled:opacity-50"
+        onClick={onAddToList}
+        className="flex items-center gap-1 h-[36px] px-3 rounded-md border border-green-500 text-green-600 text-xs font-semibold font-sans active:scale-95 active:bg-green-50 transition-all flex-shrink-0"
         aria-label={`Add ${item.name} to shopping list`}
       >
         <ShoppingCart size={14} weight="bold" />
