@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
+import { randomUUID } from '../lib/uuid';
 import type { PurchaseHistoryItem } from '../types';
 
 export function usePurchaseHistory(listId: string | null) {
@@ -53,7 +54,7 @@ export function usePurchaseHistory(listId: string | null) {
   const addToList = useCallback(async (item: PurchaseHistoryItem): Promise<void> => {
     if (!listId || !user) return;
     await supabase.from('list_items').insert({
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       list_id: listId,
       name: item.name,
       quantity: item.quantity ?? null,

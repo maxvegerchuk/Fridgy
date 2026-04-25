@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
+import { randomUUID } from '../lib/uuid';
 import type { ShoppingList, ListItem, ItemCategory } from '../types';
 
 export type NewListItem = {
@@ -42,7 +43,7 @@ export function useShoppingList() {
         } else {
           // Generate a client-side ID to avoid the RLS chicken-and-egg problem:
           // INSERT returns nothing until list_members is also populated.
-          const newId = crypto.randomUUID();
+          const newId = randomUUID();
           const { error: listErr } = await supabase
             .from('shopping_lists')
             .insert({ id: newId, owner_id: user.id, name: 'Shopping List' });
@@ -113,7 +114,9 @@ export function useShoppingList() {
           }
         }
       )
-      .subscribe();
+      .subscribe((status, err) => {
+        if (err) console.warn('[realtime] subscription error', status, err);
+      });
 
     return () => { supabase.removeChannel(channel); };
   }, [list?.id]);
@@ -121,7 +124,7 @@ export function useShoppingList() {
   const addItem = useCallback(async (newItem: NewListItem): Promise<void> => {
     if (!list || !user) return;
 
-    const id = crypto.randomUUID();
+    const id = randomUUID();
     const now = new Date().toISOString();
     const optimistic: ListItem = {
       id,
