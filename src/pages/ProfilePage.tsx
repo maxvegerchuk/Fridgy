@@ -1,17 +1,56 @@
-import { User } from 'phosphor-react';
-import { EmptyState } from '../components/ui';
+import { useState } from 'react';
+import { useAuthStore } from '../store/authStore';
+import { Button } from '../components/ui';
 
 export default function ProfilePage() {
+  const { user, email, signOut } = useAuthStore();
+  const [signingOut, setSigningOut] = useState(false);
+
+  const initial = user?.display_name?.charAt(0).toUpperCase() ?? 'U';
+
+  const handleSignOut = async () => {
+    setSigningOut(true);
+    await signOut();
+    // ProtectedRoute will redirect to /login once user becomes null
+  };
+
   return (
     <div className="flex flex-col h-full pt-safe">
-      <div className="px-4 py-3 border-b border-neutral-100">
+      {/* Header */}
+      <div className="px-4 py-3 border-b border-neutral-100 flex-shrink-0">
         <h1 className="text-xl font-semibold text-neutral-900">Profile</h1>
       </div>
-      <EmptyState
-        icon={<User size={56} weight="light" />}
-        title="Sign in to Fridgy"
-        description="Auth coming in Phase 1"
-      />
+
+      <div className="scroll-area">
+        <div className="px-4 py-6 flex flex-col gap-6">
+
+          {/* Avatar + name + email */}
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+              <span className="text-2xl font-bold text-green-600">{initial}</span>
+            </div>
+            <div className="min-w-0">
+              <p className="text-base font-semibold text-neutral-900 truncate">
+                {user?.display_name}
+              </p>
+              <p className="text-sm text-neutral-500 truncate">{email}</p>
+            </div>
+          </div>
+
+          <div className="border-t border-neutral-100" />
+
+          {/* Sign out */}
+          <Button
+            variant="secondary"
+            fullWidth
+            loading={signingOut}
+            onClick={handleSignOut}
+          >
+            Sign Out
+          </Button>
+
+        </div>
+      </div>
     </div>
   );
 }

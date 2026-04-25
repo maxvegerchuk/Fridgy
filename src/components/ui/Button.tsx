@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
-type Size = 'sm' | 'md' | 'lg';
+type Size = 'sm' | 'md' | 'lg' | 'xl';
 
 const variantClasses: Record<Variant, string> = {
   primary:   'bg-green-500 text-white active:bg-green-600 disabled:bg-neutral-200 disabled:text-neutral-400',
@@ -11,9 +11,10 @@ const variantClasses: Record<Variant, string> = {
 };
 
 const sizeClasses: Record<Size, string> = {
-  sm: 'h-[36px] px-3 text-sm rounded-md',
-  md: 'h-[44px] px-4 text-base rounded-lg',
-  lg: 'h-[52px] px-6 text-base rounded-lg',
+  sm:  'h-[36px] px-3 text-sm rounded-md',
+  md:  'h-[44px] px-4 text-base rounded-lg',
+  lg:  'h-[52px] px-6 text-base rounded-lg',
+  xl:  'h-12 px-6 text-base rounded-full',
 };
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {

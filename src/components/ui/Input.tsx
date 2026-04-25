@@ -1,18 +1,27 @@
 import { useId } from 'react';
 import type { InputHTMLAttributes } from 'react';
 
+type InputSize = 'md' | 'lg';
+
+const sizeCls: Record<InputSize, string> = {
+  md: 'h-[44px] rounded-lg',
+  lg: 'h-12 rounded-md',
+};
+
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
   error?: string;
+  inputSize?: InputSize;
 };
 
-export default function Input({ label, error, className, ...props }: Props) {
+export default function Input({ label, error, className, inputSize = 'md', ...props }: Props) {
   const id = useId();
 
   const inputCls = [
-    'h-[44px] w-full px-3 rounded-lg border font-sans text-base bg-neutral-0',
+    'w-full px-4 border font-sans text-base bg-neutral-0',
     'focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent',
     'placeholder:text-neutral-400 text-neutral-900',
+    sizeCls[inputSize],
     error ? 'border-danger-600' : 'border-neutral-200',
     className,
   ].filter(Boolean).join(' ');
