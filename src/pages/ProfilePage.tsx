@@ -1,3 +1,4 @@
+import { User } from 'phosphor-react';
 import { EmptyState } from '../components/ui';
 
 export default function ProfilePage() {
@@ -7,7 +8,7 @@ export default function ProfilePage() {
         <h1 className="text-xl font-semibold text-neutral-900">Profile</h1>
       </div>
       <EmptyState
-        emoji="👤"
+        icon={<User size={56} weight="light" />}
         title="Sign in to Fridgy"
         description="Auth coming in Phase 1"
       />

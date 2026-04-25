@@ -1,11 +1,11 @@
 import { NavLink } from 'react-router-dom';
-import { ShoppingCart, Stack, BookOpen, User } from 'phosphor-react';
+import { ShoppingCart, ShoppingBagOpen, BookOpen, User } from 'phosphor-react';
 
 const tabs = [
-  { to: '/',        icon: ShoppingCart, label: 'List',    end: true  },
-  { to: '/pantry',  icon: Stack,        label: 'Pantry',  end: false },
-  { to: '/recipes', icon: BookOpen,     label: 'Recipes', end: false },
-  { to: '/profile', icon: User,         label: 'Profile', end: false },
+  { to: '/',        icon: ShoppingCart,   label: 'List',    end: true  },
+  { to: '/pantry',  icon: ShoppingBagOpen, label: 'Pantry', end: false },
+  { to: '/recipes', icon: BookOpen,        label: 'Recipes', end: false },
+  { to: '/profile', icon: User,            label: 'Profile', end: false },
 ] as const;
 
 export default function TabBar() {

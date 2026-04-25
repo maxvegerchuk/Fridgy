@@ -1,3 +1,4 @@
+import { ShoppingBagOpen } from 'phosphor-react';
 import { EmptyState, Button } from '../components/ui';
 
 export default function PantryPage() {
@@ -8,7 +9,7 @@ export default function PantryPage() {
         <Button size="sm" variant="primary" onClick={() => {}}>+ Add</Button>
       </div>
       <EmptyState
-        emoji="🥫"
+        icon={<ShoppingBagOpen size={56} weight="light" />}
         title="Pantry is empty"
         description="Items move here automatically when you check them off your list"
       />

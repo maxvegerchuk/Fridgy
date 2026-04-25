@@ -1,3 +1,4 @@
+import { ShoppingCart } from 'phosphor-react';
 import { EmptyState, Button } from '../components/ui';
 
 export default function ListPage() {
@@ -8,7 +9,7 @@ export default function ListPage() {
         <Button size="sm" variant="primary" onClick={() => {}}>+ Add</Button>
       </div>
       <EmptyState
-        emoji="🛒"
+        icon={<ShoppingCart size={56} weight="light" />}
         title="Your list is empty"
         description="Tap + Add to start building your shopping list"
       />
