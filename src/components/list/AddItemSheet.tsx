@@ -1,5 +1,5 @@
-import { useState, useId } from 'react';
-import { BottomSheet, SegmentControl, Input, Button, ProductNameInput } from '../ui';
+import { useState, useId, useRef } from 'react';
+import { BottomSheet, SegmentControl, Button, ProductNameInput } from '../ui';
 import { usePurchaseHistory } from '../../hooks/usePurchaseHistory';
 import { CATEGORIES } from '../../types';
 import type { ItemCategory } from '../../types';
@@ -15,7 +15,10 @@ type Props = {
 };
 
 const UNITS = ['pcs', 'g', 'kg', 'ml', 'l'] as const;
-const CATEGORY_KEYS = Object.keys(CATEGORIES) as ItemCategory[];
+
+// Shared Tailwind classes matching the Input component's md size
+const INPUT_CLS = 'w-full h-[44px] px-4 border border-neutral-200 rounded-lg bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400';
+const LABEL_CLS = 'text-sm font-medium text-neutral-700';
 
 export default function AddItemSheet({ isOpen, onClose, onAddItem, listId }: Props) {
   const [tab, setTab] = useState<'new' | 'recent'>('new');
@@ -25,8 +28,24 @@ export default function AddItemSheet({ isOpen, onClose, onAddItem, listId }: Pro
   const [category, setCategory] = useState<ItemCategory>('other');
   const [submitting, setSubmitting] = useState(false);
   const unitId = useId();
+  const quantityRef = useRef<HTMLInputElement>(null);
 
   const { history, loading: historyLoading, addToList } = usePurchaseHistory(listId);
+
+  const focusQuantity = () => {
+    // rAF ensures the re-render from state changes has painted before we focus
+    requestAnimationFrame(() => {
+      quantityRef.current?.focus();
+      quantityRef.current?.select();
+    });
+  };
+
+  const handleSuggestion = (s: ProductSuggestion) => {
+    setName(s.name);
+    setCategory(s.category);
+    setUnit(s.defaultUnit);
+    focusQuantity();
+  };
 
   const reset = () => {
     setName('');
@@ -35,12 +54,6 @@ export default function AddItemSheet({ isOpen, onClose, onAddItem, listId }: Pro
     setCategory('other');
     setSubmitting(false);
     setTab('new');
-  };
-
-  const handleSuggestion = (s: ProductSuggestion) => {
-    setName(s.name);
-    setCategory(s.category);
-    setUnit(s.defaultUnit);
   };
 
   const handleClose = () => {
@@ -85,24 +98,29 @@ export default function AddItemSheet({ isOpen, onClose, onAddItem, listId }: Pro
             value={name}
             onChange={setName}
             onSelect={handleSuggestion}
+            onCommit={focusQuantity}
             placeholder="e.g. Milk"
             required
           />
 
           <div className="flex gap-3">
-            <div className="flex-1">
-              <Input
-                label="Qty"
+            <div className="flex flex-col gap-1.5 flex-1">
+              <label className={LABEL_CLS}>Qty</label>
+              <input
+                ref={quantityRef}
                 type="number"
+                inputMode="decimal"
                 min="0"
                 step="any"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
-                placeholder="—"
+                placeholder="0"
+                onFocus={(e) => e.target.select()}
+                className={INPUT_CLS}
               />
             </div>
             <div className="flex flex-col gap-1.5 w-24">
-              <label htmlFor={unitId} className="text-sm font-medium text-neutral-700">Unit</label>
+              <label htmlFor={unitId} className={LABEL_CLS}>Unit</label>
               <select
                 id={unitId}
                 value={unit}
@@ -116,39 +134,7 @@ export default function AddItemSheet({ isOpen, onClose, onAddItem, listId }: Pro
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <span className="text-sm font-medium text-neutral-700">Category</span>
-            <div className="grid grid-cols-4 gap-2">
-              {CATEGORY_KEYS.map(key => {
-                const cat = CATEGORIES[key];
-                const active = category === key;
-                return (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => setCategory(key)}
-                    className={[
-                      'flex flex-col items-center justify-center gap-1 h-[64px] rounded-lg border text-xs font-medium active:scale-95 transition-all',
-                      active
-                        ? 'border-green-500 bg-green-50 text-green-600'
-                        : 'border-neutral-200 bg-neutral-0 text-neutral-600',
-                    ].join(' ')}
-                  >
-                    <span className="text-xl leading-none">{cat.emoji}</span>
-                    <span className="leading-tight text-center">{cat.label.split(' ')[0]}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <Button
-            type="submit"
-            size="lg"
-            fullWidth
-            loading={submitting}
-            className="mt-1"
-          >
+          <Button type="submit" size="lg" fullWidth loading={submitting} className="mt-1">
             Add to List
           </Button>
         </form>

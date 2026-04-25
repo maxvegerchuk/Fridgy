@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useId, useState } from 'react';
 import { CATEGORIES } from '../../types';
 import { searchProducts } from '../../lib/productSuggestions';
 import type { ProductSuggestion } from '../../lib/productSuggestions';
@@ -7,6 +7,8 @@ type Props = {
   value: string;
   onChange: (value: string) => void;
   onSelect: (suggestion: ProductSuggestion) => void;
+  /** Called when the user presses Enter/Done — move focus to next field */
+  onCommit?: () => void;
   label?: string;
   placeholder?: string;
   required?: boolean;
@@ -16,13 +18,20 @@ export default function ProductNameInput({
   value,
   onChange,
   onSelect,
+  onCommit,
   label = 'Item name',
   placeholder = 'e.g. Milk',
   required,
 }: Props) {
   const id = useId();
+  const [dismissed, setDismissed] = useState(false);
   const suggestions = searchProducts(value);
-  const showSuggestions = value.trim().length > 0 && suggestions.length > 0;
+  const showSuggestions = !dismissed && value.trim().length > 0 && suggestions.length > 0;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDismissed(false); // re-show suggestions when user keeps typing
+    onChange(e.target.value);
+  };
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -33,10 +42,17 @@ export default function ProductNameInput({
         id={id}
         type="text"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={handleChange}
         placeholder={placeholder}
         autoComplete="off"
         required={required}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault(); // don't submit form yet — move to quantity
+            setDismissed(true);
+            onCommit?.();
+          }
+        }}
         className="w-full h-[44px] px-4 border border-neutral-200 rounded-lg bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
       />
 
@@ -47,8 +63,8 @@ export default function ProductNameInput({
               <button
                 type="button"
                 onMouseDown={(e) => {
-                  // mousedown fires before blur — prevent input losing focus first
-                  e.preventDefault();
+                  e.preventDefault(); // fire before blur so input doesn't lose focus first
+                  setDismissed(true);
                   onSelect(s);
                 }}
                 className="w-full flex items-center gap-3 h-[44px] px-3 text-left active:bg-neutral-100 border-b border-neutral-100 last:border-0 transition-colors"
