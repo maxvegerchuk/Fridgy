@@ -1,8 +1,9 @@
 import { useState, useId } from 'react';
-import { BottomSheet, Input, Button } from '../ui';
+import { BottomSheet, Input, Button, ProductNameInput } from '../ui';
 import { CATEGORIES } from '../../types';
 import type { ItemCategory } from '../../types';
 import type { NewPantryItem } from '../../hooks/usePantry';
+import type { ProductSuggestion } from '../../lib/productSuggestions';
 
 type Props = {
   isOpen: boolean;
@@ -29,6 +30,12 @@ export default function AddPantrySheet({ isOpen, onClose, onAddItem }: Props) {
     setSubmitting(false);
   };
 
+  const handleSuggestion = (s: ProductSuggestion) => {
+    setName(s.name);
+    setCategory(s.category);
+    setUnit(s.defaultUnit);
+  };
+
   const handleClose = () => {
     reset();
     onClose();
@@ -51,12 +58,11 @@ export default function AddPantrySheet({ isOpen, onClose, onAddItem }: Props) {
   return (
     <BottomSheet isOpen={isOpen} onClose={handleClose} title="Add to Pantry">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <Input
-          label="Item name"
+        <ProductNameInput
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={setName}
+          onSelect={handleSuggestion}
           placeholder="e.g. Olive Oil"
-          autoComplete="off"
           required
         />
 

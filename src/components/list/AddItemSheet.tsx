@@ -1,10 +1,11 @@
 import { useState, useId } from 'react';
-import { BottomSheet, SegmentControl, Input, Button } from '../ui';
+import { BottomSheet, SegmentControl, Input, Button, ProductNameInput } from '../ui';
 import { usePurchaseHistory } from '../../hooks/usePurchaseHistory';
 import { CATEGORIES } from '../../types';
 import type { ItemCategory } from '../../types';
 import type { NewListItem } from '../../hooks/useShoppingList';
 import type { PurchaseHistoryItem } from '../../types';
+import type { ProductSuggestion } from '../../lib/productSuggestions';
 
 type Props = {
   isOpen: boolean;
@@ -34,6 +35,12 @@ export default function AddItemSheet({ isOpen, onClose, onAddItem, listId }: Pro
     setCategory('other');
     setSubmitting(false);
     setTab('new');
+  };
+
+  const handleSuggestion = (s: ProductSuggestion) => {
+    setName(s.name);
+    setCategory(s.category);
+    setUnit(s.defaultUnit);
   };
 
   const handleClose = () => {
@@ -74,12 +81,11 @@ export default function AddItemSheet({ isOpen, onClose, onAddItem, listId }: Pro
 
       {tab === 'new' && (
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <Input
-            label="Item name"
+          <ProductNameInput
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={setName}
+            onSelect={handleSuggestion}
             placeholder="e.g. Milk"
-            autoComplete="off"
             required
           />
 
