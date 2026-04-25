@@ -34,8 +34,12 @@ export default function PantryPage() {
   const groups = groupByCategory(items);
 
   const handleAddToList = async (item: PantryItem) => {
-    await addToShoppingList(item);
-    toast(`${item.name} added to list`, 'success');
+    const err = await addToShoppingList(item);
+    if (err) {
+      toast(`Could not add to list: ${err}`, 'error');
+    } else {
+      toast(`${item.name} added to list`, 'success');
+    }
   };
 
   return (
@@ -112,8 +116,12 @@ export default function PantryPage() {
         isOpen={addOpen}
         onClose={() => setAddOpen(false)}
         onAddItem={async (newItem) => {
-          await addItem(newItem);
-          toast(`${newItem.name} added to pantry`, 'success');
+          const err = await addItem(newItem);
+          if (err) {
+            toast(`Could not add item: ${err}`, 'error');
+          } else {
+            toast(`${newItem.name} added to pantry`, 'success');
+          }
         }}
       />
 

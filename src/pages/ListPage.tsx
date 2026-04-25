@@ -4,6 +4,7 @@ import { EmptyState, Button, Skeleton } from '../components/ui';
 import AddItemSheet from '../components/list/AddItemSheet';
 import ShareSheet from '../components/list/ShareSheet';
 import { useShoppingList } from '../hooks/useShoppingList';
+import { usePantry } from '../hooks/usePantry';
 import { CATEGORIES } from '../types';
 import type { ItemCategory, ListItem } from '../types';
 
@@ -26,6 +27,7 @@ function groupByCategory(items: ListItem[]): [ItemCategory, ListItem[]][] {
 
 export default function ListPage() {
   const { list, items, loading, addItem, checkItem, deleteItem } = useShoppingList();
+  const { refetch: refetchPantry } = usePantry();
   const [addOpen, setAddOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
 
@@ -98,6 +100,7 @@ export default function ListPage() {
                     item={item}
                     onCheck={checkItem}
                     onDelete={deleteItem}
+                    onChecked={refetchPantry}
                   />
                 ))}
               </div>
@@ -147,12 +150,13 @@ export default function ListPage() {
 
 type ItemRowProps = {
   item: ListItem;
-  onCheck: (id: string, checked: boolean) => Promise<void>;
+  onCheck: (id: string, checked: boolean, onChecked?: () => void) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
+  onChecked?: () => void;
   dimmed?: boolean;
 };
 
-function ItemRow({ item, onCheck, onDelete, dimmed }: ItemRowProps) {
+function ItemRow({ item, onCheck, onDelete, onChecked, dimmed }: ItemRowProps) {
   return (
     <div
       className={[
@@ -163,7 +167,7 @@ function ItemRow({ item, onCheck, onDelete, dimmed }: ItemRowProps) {
       {/* Checkbox */}
       <button
         type="button"
-        onClick={() => onCheck(item.id, !item.is_checked)}
+        onClick={() => onCheck(item.id, !item.is_checked, item.is_checked ? undefined : onChecked)}
         className={[
           'w-[26px] h-[26px] flex-shrink-0 rounded-full border-2 flex items-center justify-center active:scale-95 transition-all',
           item.is_checked

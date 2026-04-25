@@ -156,7 +156,11 @@ export function useShoppingList() {
     }
   }, [list, user]);
 
-  const checkItem = useCallback(async (id: string, checked: boolean): Promise<void> => {
+  const checkItem = useCallback(async (
+    id: string,
+    checked: boolean,
+    onChecked?: () => void,
+  ): Promise<void> => {
     // Optimistic
     setItems(prev => prev.map(i => i.id === id ? { ...i, is_checked: checked } : i));
 
@@ -166,10 +170,15 @@ export function useShoppingList() {
       .eq('id', id);
 
     if (error) {
+      console.error('[useShoppingList] checkItem failed:', error);
       // Rollback
       setItems(prev => prev.map(i => i.id === id ? { ...i, is_checked: !checked } : i));
+      return;
     }
-    // On success the DB trigger auto-moves item → pantry + purchase_history
+
+    // DB trigger handle_item_checked auto-moves checked item → pantry + purchase_history.
+    // Call onChecked so the caller can pull-refresh pantry state after the trigger fires.
+    if (checked) onChecked?.();
   }, []);
 
   const deleteItem = useCallback(async (id: string): Promise<void> => {
