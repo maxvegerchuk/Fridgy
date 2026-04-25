@@ -9,37 +9,40 @@ export function usePurchaseHistory(listId: string | null) {
   const user = useAuthStore(state => state.user);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     let cancelled = false;
 
     async function init() {
       if (!user) return;
       setLoading(true);
 
-      // my_pantry_id() is SECURITY DEFINER — bypasses RLS to return the pantry UUID
-      const { data: pantryId } = await supabase.rpc('my_pantry_id');
-      if (!pantryId || cancelled) {
-        setLoading(false);
-        return;
-      }
+      try {
+        // my_pantry_id() is SECURITY DEFINER — bypasses RLS to return the pantry UUID
+        const { data: pantryId } = await supabase.rpc('my_pantry_id');
+        if (!pantryId || cancelled) return;
 
-      // Ensure user is in pantry_members for their own pantry.
-      // The INSERT policy "Join pantry (insert self)" allows this.
-      // ignoreDuplicates:true → ON CONFLICT DO NOTHING (idempotent)
-      await supabase.from('pantry_members').upsert(
-        { pantry_id: pantryId as string, user_id: user.id, role: 'owner' },
-        { onConflict: 'pantry_id,user_id', ignoreDuplicates: true }
-      );
+        // Ensure user is in pantry_members for their own pantry.
+        // The INSERT policy "Join pantry (insert self)" allows this.
+        // ignoreDuplicates:true → ON CONFLICT DO NOTHING (idempotent)
+        await supabase.from('pantry_members').upsert(
+          { pantry_id: pantryId as string, user_id: user.id, role: 'owner' },
+          { onConflict: 'pantry_id,user_id', ignoreDuplicates: true }
+        );
 
-      const { data } = await supabase
-        .from('purchase_history')
-        .select('*')
-        .eq('pantry_id', pantryId as string)
-        .order('last_purchased_at', { ascending: false });
+        const { data } = await supabase
+          .from('purchase_history')
+          .select('*')
+          .eq('pantry_id', pantryId as string)
+          .order('last_purchased_at', { ascending: false });
 
-      if (!cancelled) {
-        setHistory((data as PurchaseHistoryItem[]) ?? []);
-        setLoading(false);
+        if (!cancelled) {
+          setHistory((data as PurchaseHistoryItem[]) ?? []);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     }
 

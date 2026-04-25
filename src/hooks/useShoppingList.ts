@@ -18,64 +18,67 @@ export function useShoppingList() {
 
   // Find or auto-create the user's active shopping list
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     let cancelled = false;
 
     async function init() {
       if (!user) return;
       setLoading(true);
 
-      const { data: lists } = await supabase
-        .from('shopping_lists')
-        .select('*')
-        .order('created_at', { ascending: true })
-        .limit(1);
-
-      let targetList: ShoppingList | null = null;
-
-      if (lists && lists.length > 0) {
-        targetList = lists[0] as ShoppingList;
-      } else {
-        // Generate a client-side ID to avoid the RLS chicken-and-egg problem:
-        // INSERT returns nothing until list_members is also populated.
-        const newId = crypto.randomUUID();
-        const { error: listErr } = await supabase
+      try {
+        const { data: lists } = await supabase
           .from('shopping_lists')
-          .insert({ id: newId, owner_id: user.id, name: 'Shopping List' });
+          .select('*')
+          .order('created_at', { ascending: true })
+          .limit(1);
 
-        if (!listErr) {
-          await supabase
-            .from('list_members')
-            .insert({ list_id: newId, user_id: user.id, role: 'owner' });
+        let targetList: ShoppingList | null = null;
 
-          const { data: created } = await supabase
+        if (lists && lists.length > 0) {
+          targetList = lists[0] as ShoppingList;
+        } else {
+          // Generate a client-side ID to avoid the RLS chicken-and-egg problem:
+          // INSERT returns nothing until list_members is also populated.
+          const newId = crypto.randomUUID();
+          const { error: listErr } = await supabase
             .from('shopping_lists')
-            .select('*')
-            .eq('id', newId)
-            .single();
+            .insert({ id: newId, owner_id: user.id, name: 'Shopping List' });
 
-          if (created) targetList = created as ShoppingList;
+          if (!listErr) {
+            await supabase
+              .from('list_members')
+              .insert({ list_id: newId, user_id: user.id, role: 'owner' });
+
+            const { data: created } = await supabase
+              .from('shopping_lists')
+              .select('*')
+              .eq('id', newId)
+              .single();
+
+            if (created) targetList = created as ShoppingList;
+          }
         }
-      }
 
-      if (cancelled) return;
+        if (cancelled) return;
 
-      if (!targetList) {
-        setLoading(false);
-        return;
-      }
+        if (targetList) {
+          setList(targetList);
 
-      setList(targetList);
+          const { data: itemData } = await supabase
+            .from('list_items')
+            .select('*')
+            .eq('list_id', targetList.id)
+            .order('created_at', { ascending: true });
 
-      const { data: itemData } = await supabase
-        .from('list_items')
-        .select('*')
-        .eq('list_id', targetList.id)
-        .order('created_at', { ascending: true });
-
-      if (!cancelled) {
-        setItems((itemData as ListItem[]) ?? []);
-        setLoading(false);
+          if (!cancelled) {
+            setItems((itemData as ListItem[]) ?? []);
+          }
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     }
 

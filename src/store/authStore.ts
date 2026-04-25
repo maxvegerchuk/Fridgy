@@ -48,12 +48,12 @@ export const useAuthStore = create<AuthState>((set) => ({
 // Resolve initial session then stay subscribed for all future auth events
 supabase.auth.getSession().then(async ({ data: { session } }) => {
   if (session?.user) {
-    const profile = await fetchProfile(session.user.id);
-    useAuthStore.setState({
-      user: profile,
-      email: session.user.email ?? null,
-      loading: false,
-    });
+    try {
+      const profile = await fetchProfile(session.user.id);
+      useAuthStore.setState({ user: profile, email: session.user.email ?? null, loading: false });
+    } catch {
+      useAuthStore.setState({ loading: false });
+    }
   } else {
     useAuthStore.setState({ loading: false });
   }
@@ -64,10 +64,10 @@ supabase.auth.onAuthStateChange(async (event, session) => {
     useAuthStore.setState({ user: null, email: null, loading: false });
     return;
   }
-  const profile = await fetchProfile(session.user.id);
-  useAuthStore.setState({
-    user: profile,
-    email: session.user.email ?? null,
-    loading: false,
-  });
+  try {
+    const profile = await fetchProfile(session.user.id);
+    useAuthStore.setState({ user: profile, email: session.user.email ?? null, loading: false });
+  } catch {
+    useAuthStore.setState({ loading: false });
+  }
 });
