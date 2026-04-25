@@ -137,7 +137,8 @@ export default function ListPage() {
         <ShareSheet
           isOpen={shareOpen}
           onClose={() => setShareOpen(false)}
-          inviteToken={list.invite_token}
+          link={`https://fridgy-olive.vercel.app/list/join/${list.invite_token}`}
+          title="Share List"
         />
       )}
     </div>

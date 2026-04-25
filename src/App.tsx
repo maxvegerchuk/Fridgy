@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ListPage from './pages/ListPage';
 import PantryPage from './pages/PantryPage';
+import JoinPantryPage from './pages/JoinPantryPage';
 import RecipesPage from './pages/RecipesPage';
 import ProfilePage from './pages/ProfilePage';
 
@@ -43,6 +44,8 @@ export default function App() {
             <Route path="/recipes" element={<RecipesPage />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Route>
+          {/* Full-screen flows — protected but no tab bar */}
+          <Route path="/pantry/join/:token" element={<JoinPantryPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

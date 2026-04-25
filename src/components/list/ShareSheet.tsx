@@ -5,14 +5,12 @@ import { Globe } from 'phosphor-react';
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  inviteToken: string;
+  link: string;
+  title?: string;
 };
 
-const BASE_URL = 'https://fridgy-olive.vercel.app';
-
-export default function ShareSheet({ isOpen, onClose, inviteToken }: Props) {
+export default function ShareSheet({ isOpen, onClose, link, title = 'Share' }: Props) {
   const toast = useToast();
-  const link = `${BASE_URL}/list/join/${inviteToken}`;
 
   const handleCopy = async () => {
     try {
@@ -24,7 +22,7 @@ export default function ShareSheet({ isOpen, onClose, inviteToken }: Props) {
   };
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} title="Share List">
+    <BottomSheet isOpen={isOpen} onClose={onClose} title={title}>
       <div className="flex flex-col gap-4">
         <div className="flex items-start gap-3 p-4 bg-neutral-50 rounded-lg">
           <Globe size={20} weight="regular" className="text-neutral-400 flex-shrink-0 mt-0.5" />
