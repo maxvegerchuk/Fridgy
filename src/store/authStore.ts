@@ -45,7 +45,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 }));
 
-// Safety valve: if auth never resolves (network offline, content blocker, iOS quirk),
+// Safety valve: if auth never resolves (offline, content blocker, iOS localStorage quirk),
 // unblock the UI after 8 seconds so the user sees the login page instead of a spinner.
 const authTimeout = setTimeout(() => {
   if (useAuthStore.getState().loading) {
@@ -53,12 +53,36 @@ const authTimeout = setTimeout(() => {
   }
 }, 8000);
 
-// onAuthStateChange fires INITIAL_SESSION synchronously on subscription with the stored
-// session, covering both "first load" and all subsequent auth events. No need for
-// getSession() which would fire a redundant concurrent fetchProfile call.
-supabase.auth.onAuthStateChange(async (event, session) => {
-  // Clear the safety timeout on first real auth event
+function clearAuthTimeout() {
   clearTimeout(authTimeout);
+}
+
+// getSession() is a plain async HTTP call — always resolves or rejects, making it the
+// most reliable way to determine the initial auth state across all browsers including iOS.
+supabase.auth.getSession()
+  .then(async ({ data: { session } }) => {
+    clearAuthTimeout();
+    if (session?.user) {
+      try {
+        const profile = await fetchProfile(session.user.id);
+        useAuthStore.setState({ user: profile, email: session.user.email ?? null, loading: false });
+      } catch {
+        useAuthStore.setState({ loading: false });
+      }
+    } else {
+      useAuthStore.setState({ loading: false });
+    }
+  })
+  .catch(() => {
+    // getSession() itself threw (Supabase client init failure, etc.)
+    clearAuthTimeout();
+    useAuthStore.setState({ loading: false });
+  });
+
+// onAuthStateChange handles every subsequent auth event after the initial check.
+// INITIAL_SESSION is skipped — getSession() above already owns that responsibility.
+supabase.auth.onAuthStateChange(async (event, session) => {
+  if (event === 'INITIAL_SESSION') return;
 
   if (event === 'SIGNED_OUT' || !session?.user) {
     useAuthStore.setState({ user: null, email: null, loading: false });
@@ -68,7 +92,6 @@ supabase.auth.onAuthStateChange(async (event, session) => {
     const profile = await fetchProfile(session.user.id);
     useAuthStore.setState({ user: profile, email: session.user.email ?? null, loading: false });
   } catch {
-    // Profile fetch failed (RLS, network) — still unblock the UI
     useAuthStore.setState({ loading: false });
   }
 });
