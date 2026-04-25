@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '../lib/supabase';
+import type { User } from '@supabase/supabase-js';
 import type { Profile } from '../types';
 
 type AuthState = {
@@ -11,6 +12,19 @@ type AuthState = {
   signOut: () => Promise<void>;
 };
 
+// Build a Profile immediately from auth session metadata — no DB roundtrip needed.
+// The real profile is fetched in the background and replaces this.
+function quickProfile(authUser: User): Profile {
+  return {
+    id: authUser.id,
+    display_name:
+      (authUser.user_metadata?.['display_name'] as string | undefined) ??
+      authUser.email ??
+      'User',
+    created_at: authUser.created_at,
+  };
+}
+
 async function fetchProfile(userId: string): Promise<Profile | null> {
   const { data } = await supabase
     .from('profiles')
@@ -20,6 +34,13 @@ async function fetchProfile(userId: string): Promise<Profile | null> {
   return data as unknown as Profile | null;
 }
 
+// Fetch full profile in background and silently update the store if it succeeds.
+function syncProfile(userId: string) {
+  fetchProfile(userId)
+    .then((profile) => { if (profile) useAuthStore.setState({ user: profile }); })
+    .catch(() => { /* quickProfile stays */ });
+}
+
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   email: null,
@@ -27,7 +48,12 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   signIn: async (email, password) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return error?.message ?? null;
+    if (error) return error.message;
+    // Keep loading:true so ProtectedRoute waits for onAuthStateChange to deliver
+    // the session before rendering. Without this, navigating to '/' while user is
+    // still null causes an immediate redirect back to /login.
+    set({ loading: true });
+    return null;
   },
 
   signUp: async (email, password, displayName) => {
@@ -45,53 +71,49 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 }));
 
-// Safety valve: if auth never resolves (offline, content blocker, iOS localStorage quirk),
-// unblock the UI after 8 seconds so the user sees the login page instead of a spinner.
+// Safety valve: 3 s max — if auth never resolves (offline, content blocker, iOS quirk),
+// unblock the UI so the user sees the login page instead of a permanent spinner.
 const authTimeout = setTimeout(() => {
-  if (useAuthStore.getState().loading) {
-    useAuthStore.setState({ loading: false });
-  }
-}, 8000);
+  if (useAuthStore.getState().loading) useAuthStore.setState({ loading: false });
+}, 3000);
 
-function clearAuthTimeout() {
-  clearTimeout(authTimeout);
-}
-
-// getSession() is a plain async HTTP call — always resolves or rejects, making it the
-// most reliable way to determine the initial auth state across all browsers including iOS.
+// getSession() is a plain async call that always resolves or rejects — the most reliable
+// initial auth check across all browsers, including iOS Safari.
 supabase.auth.getSession()
-  .then(async ({ data: { session } }) => {
-    clearAuthTimeout();
+  .then(({ data: { session } }) => {
+    clearTimeout(authTimeout);
     if (session?.user) {
-      try {
-        const profile = await fetchProfile(session.user.id);
-        useAuthStore.setState({ user: profile, email: session.user.email ?? null, loading: false });
-      } catch {
-        useAuthStore.setState({ loading: false });
-      }
+      // Unblock the UI immediately using metadata; real profile arrives in background.
+      useAuthStore.setState({
+        user: quickProfile(session.user),
+        email: session.user.email ?? null,
+        loading: false,
+      });
+      syncProfile(session.user.id);
     } else {
       useAuthStore.setState({ loading: false });
     }
   })
   .catch(() => {
-    // getSession() itself threw (Supabase client init failure, etc.)
-    clearAuthTimeout();
+    clearTimeout(authTimeout);
     useAuthStore.setState({ loading: false });
   });
 
-// onAuthStateChange handles every subsequent auth event after the initial check.
-// INITIAL_SESSION is skipped — getSession() above already owns that responsibility.
-supabase.auth.onAuthStateChange(async (event, session) => {
+// onAuthStateChange handles every auth event after the initial check.
+// INITIAL_SESSION is skipped — getSession() above already handles it.
+supabase.auth.onAuthStateChange((event, session) => {
   if (event === 'INITIAL_SESSION') return;
 
   if (event === 'SIGNED_OUT' || !session?.user) {
     useAuthStore.setState({ user: null, email: null, loading: false });
     return;
   }
-  try {
-    const profile = await fetchProfile(session.user.id);
-    useAuthStore.setState({ user: profile, email: session.user.email ?? null, loading: false });
-  } catch {
-    useAuthStore.setState({ loading: false });
-  }
+
+  // Unblock the UI immediately; full profile syncs in background.
+  useAuthStore.setState({
+    user: quickProfile(session.user),
+    email: session.user.email ?? null,
+    loading: false,
+  });
+  syncProfile(session.user.id);
 });

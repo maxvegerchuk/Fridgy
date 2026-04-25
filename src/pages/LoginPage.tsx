@@ -34,8 +34,11 @@ export default function LoginPage() {
     if (err) {
       setError(err);
       setSubmitting(false);
+    } else {
+      // signIn() set loading:true in the store — navigate now and let
+      // ProtectedRoute show a spinner until onAuthStateChange delivers the session.
+      navigate(redirectTo, { replace: true });
     }
-    // success → onAuthStateChange fires → user updates → useEffect navigates
   };
 
   return (
