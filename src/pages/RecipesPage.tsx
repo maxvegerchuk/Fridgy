@@ -27,7 +27,7 @@ function RecipeCard({
 }) {
   const withAvail = 'status' in recipe ? recipe as RecipeWithAvailability : null;
   const badge = withAvail ? STATUS_BADGE[withAvail.status] : null;
-  const totalTime = (recipe.prep_time_minutes ?? 0) + (recipe.cook_time_minutes ?? 0);
+  const totalTime = recipe.cook_time_minutes ?? 0;
 
   return (
     <button

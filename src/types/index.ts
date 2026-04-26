@@ -109,17 +109,25 @@ export type PurchaseHistoryItem = {
 
 // ─── Recipes ────────────────────────────────────────────
 
+export type RecipeStep = {
+  id: string;
+  recipe_id: string;
+  step_number: number;
+  instruction: string;
+  image_url?: string;
+  created_at: string;
+};
+
 export type Recipe = {
   id: string;
   user_id: string;
   title: string;
-  description?: string;
   image_url?: string;
-  prep_time_minutes?: number;
   cook_time_minutes?: number;
   servings: number;
   is_public: boolean;
   ingredients: RecipeIngredient[];
+  steps: RecipeStep[];
   created_at: string;
   author?: Pick<Profile, 'id' | 'display_name' | 'avatar_url'>;
 };

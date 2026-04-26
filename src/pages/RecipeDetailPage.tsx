@@ -7,20 +7,8 @@ import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import { randomUUID } from '../lib/uuid';
 import { matchRecipeToPantry } from '../lib/recipeEngine';
+import { fetchRecipeById } from '../hooks/useRecipes';
 import type { Recipe, PantryItem, RecipeIngredient } from '../types';
-
-async function loadRecipe(id: string): Promise<Recipe | null> {
-  const { data, error } = await supabase
-    .from('recipes')
-    .select('*, ingredients:recipe_ingredients(*), author:profiles!user_id(id, display_name, avatar_url)')
-    .eq('id', id)
-    .single();
-  if (error) {
-    console.error('[RecipeDetail] load recipe:', error);
-    return null;
-  }
-  return data as Recipe;
-}
 
 async function loadPantryItems(): Promise<PantryItem[]> {
   const { data: pantryId } = await supabase.rpc('my_pantry_id');
@@ -59,7 +47,7 @@ export default function RecipeDetailPage() {
     async function init() {
       setLoading(true);
       try {
-        const [r, pantry] = await Promise.all([loadRecipe(id!), loadPantryItems()]);
+        const [r, pantry] = await Promise.all([fetchRecipeById(id!), loadPantryItems()]);
         if (cancelled) return;
         setRecipe(r);
         setPantryItems(pantry);
@@ -111,8 +99,6 @@ export default function RecipeDetailPage() {
       user_id: user.id,
       original_recipe_id: recipe.id,
       title: recipe.title,
-      description: recipe.description ?? null,
-      prep_time_minutes: recipe.prep_time_minutes ?? null,
       cook_time_minutes: recipe.cook_time_minutes ?? null,
       servings: recipe.servings,
       is_public: false,
@@ -154,20 +140,18 @@ export default function RecipeDetailPage() {
         return;
       }
       const listId = lists[0].id;
-      const rows = missing.map(ing => ({
-        id: randomUUID(),
-        list_id: listId,
-        name: ing.name,
-        quantity: ing.quantity ?? null,
-        unit: ing.unit ?? null,
-        category: 'other',
-        added_by: user.id,
-      }));
-      const { error } = await supabase.from('list_items').insert(rows);
-      if (error) {
-        toast(error.message, 'error');
-        return;
-      }
+      const { error } = await supabase.from('list_items').insert(
+        missing.map(ing => ({
+          id: randomUUID(),
+          list_id: listId,
+          name: ing.name,
+          quantity: ing.quantity ?? null,
+          unit: ing.unit ?? null,
+          category: 'other',
+          added_by: user.id,
+        }))
+      );
+      if (error) { toast(error.message, 'error'); return; }
       toast(`Added ${missing.length} item${missing.length > 1 ? 's' : ''} to list`, 'success');
     } finally {
       setAddingToList(false);
@@ -199,11 +183,7 @@ export default function RecipeDetailPage() {
         </div>
         <div className="flex flex-col items-center justify-center flex-1 gap-3 px-6">
           <p className="text-base font-semibold text-neutral-900 text-center">Recipe not found</p>
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="text-green-500 font-semibold text-sm"
-          >
+          <button type="button" onClick={() => navigate(-1)} className="text-green-500 font-semibold text-sm">
             Go back
           </button>
         </div>
@@ -213,12 +193,11 @@ export default function RecipeDetailPage() {
 
   const isOwner = user?.id === recipe.user_id;
   const withAvail = matchRecipeToPantry(recipe, pantryItems);
-  const totalTime = (recipe.prep_time_minutes ?? 0) + (recipe.cook_time_minutes ?? 0);
   const pantrySet = new Set(pantryItems.map(p => p.name.toLowerCase().trim().replace(/s$/, '').replace(/\s+/g, ' ')));
 
   return (
     <div className="flex flex-col h-full bg-neutral-0 pt-safe">
-      {/* Header */}
+      {/* Sticky header */}
       <div className="flex items-center justify-between h-[56px] px-4 border-b border-neutral-100 sticky top-0 bg-neutral-0 z-10">
         <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-700">
           <ArrowLeft size={24} />
@@ -259,27 +238,30 @@ export default function RecipeDetailPage() {
       </div>
 
       <div className="flex-1 overflow-y-auto">
+        {/* Cover photo */}
+        {recipe.image_url && (
+          <div className="relative w-full h-[200px] flex-shrink-0">
+            <img src={recipe.image_url} alt={recipe.title} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+          </div>
+        )}
+
         <div className="px-4 pt-4 pb-6 flex flex-col gap-5">
           {/* Title & meta */}
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-1">
             <h1 className="text-2xl font-semibold text-neutral-900 font-sans leading-snug">
               {recipe.title}
             </h1>
             {recipe.author && (
               <p className="text-sm text-neutral-400 font-sans">by {recipe.author.display_name}</p>
             )}
-            <div className="flex items-center gap-4 text-sm text-neutral-500 font-sans mt-1">
-              {totalTime > 0 && <span>{totalTime} min</span>}
-              {recipe.servings > 0 && <span>{recipe.servings} servings</span>}
-              {recipe.prep_time_minutes && <span>Prep {recipe.prep_time_minutes} min</span>}
-              {recipe.cook_time_minutes && <span>Cook {recipe.cook_time_minutes} min</span>}
-            </div>
+            {(recipe.cook_time_minutes || recipe.servings > 0) && (
+              <div className="flex items-center gap-4 text-sm text-neutral-500 font-sans mt-0.5">
+                {recipe.cook_time_minutes && <span>{recipe.cook_time_minutes} min</span>}
+                {recipe.servings > 0 && <span>{recipe.servings} servings</span>}
+              </div>
+            )}
           </div>
-
-          {/* Description */}
-          {recipe.description && (
-            <p className="text-sm text-neutral-600 font-sans leading-relaxed">{recipe.description}</p>
-          )}
 
           {/* Ingredients */}
           {recipe.ingredients.length > 0 && (
@@ -309,13 +291,9 @@ export default function RecipeDetailPage() {
                     );
                   })}
               </div>
-
-              {/* Availability summary */}
               <p className="text-xs text-neutral-400 font-sans px-1">
                 {withAvail.available_count} of {withAvail.total_count} required ingredients in pantry
               </p>
-
-              {/* Add missing */}
               {withAvail.missing_ingredients.length > 0 && (
                 <Button
                   variant="secondary"
@@ -331,8 +309,30 @@ export default function RecipeDetailPage() {
             </div>
           )}
 
-          {recipe.ingredients.length === 0 && (
-            <p className="text-sm text-neutral-400 font-sans italic">No ingredients listed</p>
+          {/* Steps */}
+          {recipe.steps.length > 0 && (
+            <div className="flex flex-col gap-4">
+              <h2 className="text-base font-semibold text-neutral-900 font-sans">Instructions</h2>
+              {recipe.steps.map(step => (
+                <div key={step.id} className="flex flex-col gap-3">
+                  <div className="flex items-start gap-3">
+                    <span className="flex-shrink-0 w-7 h-7 rounded-full bg-green-500 text-white text-sm font-semibold flex items-center justify-center font-sans">
+                      {step.step_number}
+                    </span>
+                    <p className="flex-1 text-sm text-neutral-800 font-sans leading-relaxed pt-0.5">
+                      {step.instruction}
+                    </p>
+                  </div>
+                  {step.image_url && (
+                    <img
+                      src={step.image_url}
+                      alt={`Step ${step.step_number}`}
+                      className="w-full rounded-xl object-cover max-h-[240px]"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>

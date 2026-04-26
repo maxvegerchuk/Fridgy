@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash } from 'phosphor-react';
+import { ArrowLeft, Plus, Trash, Camera, X } from 'phosphor-react';
 import { Button, ProductNameInput } from '../components/ui';
 import { useToast } from '../components/ui';
 import { useRecipes } from '../hooks/useRecipes';
@@ -20,8 +20,19 @@ type IngredientDraft = {
   optional: boolean;
 };
 
+type StepDraft = {
+  key: string;
+  instruction: string;
+  imageFile: File | null;
+  imagePreview: string | null;
+};
+
 function emptyIngredient(): IngredientDraft {
   return { key: randomUUID(), name: '', quantity: '', unit: 'pcs', optional: false };
+}
+
+function emptyStep(): StepDraft {
+  return { key: randomUUID(), instruction: '', imageFile: null, imagePreview: null };
 }
 
 export default function CreateRecipePage() {
@@ -30,15 +41,19 @@ export default function CreateRecipePage() {
   const { createRecipe } = useRecipes();
 
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [prepTime, setPrepTime] = useState('');
   const [cookTime, setCookTime] = useState('');
   const [servings, setServings] = useState('2');
   const [isPublic, setIsPublic] = useState(false);
   const [ingredients, setIngredients] = useState<IngredientDraft[]>([emptyIngredient()]);
+  const [steps, setSteps] = useState<StepDraft[]>([emptyStep()]);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // Refs for auto-focus after suggestion selection
   const qtyRefs = useRef<Map<string, HTMLInputElement | null>>(new Map());
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const stepFileInputRefs = useRef<Map<string, HTMLInputElement | null>>(new Map());
 
   const focusQuantity = (key: string) => {
     requestAnimationFrame(() => {
@@ -47,6 +62,8 @@ export default function CreateRecipePage() {
       el?.select();
     });
   };
+
+  // ─── Ingredient helpers ──────────────────────────────────
 
   const updateIngredient = (key: string, patch: Partial<IngredientDraft>) => {
     setIngredients(prev => prev.map(i => i.key === key ? { ...i, ...patch } : i));
@@ -62,26 +79,60 @@ export default function CreateRecipePage() {
     focusQuantity(key);
   };
 
+  // ─── Step helpers ────────────────────────────────────────
+
+  const updateStep = (key: string, patch: Partial<StepDraft>) => {
+    setSteps(prev => prev.map(s => s.key === key ? { ...s, ...patch } : s));
+  };
+
+  const removeStep = (key: string) => {
+    setSteps(prev => prev.filter(s => s.key !== key));
+    stepFileInputRefs.current.delete(key);
+  };
+
+  const handleStepPhotoSelect = (key: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    updateStep(key, { imageFile: file, imagePreview: URL.createObjectURL(file) });
+  };
+
+  // ─── Cover photo ─────────────────────────────────────────
+
+  const handleCoverSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setCoverFile(file);
+    setCoverPreview(URL.createObjectURL(file));
+  };
+
+  // ─── Submit ──────────────────────────────────────────────
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
 
-    const filledIngredients = ingredients.filter(i => i.name.trim());
     setSubmitting(true);
 
     const result = await createRecipe({
       title: title.trim(),
-      description: description.trim() || undefined,
-      prep_time_minutes: prepTime ? Number(prepTime) : undefined,
       cook_time_minutes: cookTime ? Number(cookTime) : undefined,
       servings: servings ? Number(servings) : 2,
       is_public: isPublic,
-      ingredients: filledIngredients.map(i => ({
-        name: i.name.trim(),
-        quantity: i.quantity ? Number(i.quantity) : undefined,
-        unit: i.unit !== 'pcs' ? i.unit : undefined,
-        optional: i.optional,
-      })),
+      ingredients: ingredients
+        .filter(i => i.name.trim())
+        .map(i => ({
+          name: i.name.trim(),
+          quantity: i.quantity ? Number(i.quantity) : undefined,
+          unit: i.unit !== 'pcs' ? i.unit : undefined,
+          optional: i.optional,
+        })),
+      steps: steps
+        .filter(s => s.instruction.trim())
+        .map(s => ({
+          instruction: s.instruction.trim(),
+          imageFile: s.imageFile ?? undefined,
+        })),
+      coverImageFile: coverFile ?? undefined,
     });
 
     setSubmitting(false);
@@ -108,49 +159,63 @@ export default function CreateRecipePage() {
       <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
         <div className="px-4 py-5 flex flex-col gap-5">
 
+          {/* Cover photo */}
+          <div className="flex flex-col gap-1.5">
+            <label className={LABEL_CLS}>
+              Cover photo <span className="text-neutral-400 font-normal">(optional)</span>
+            </label>
+            <input
+              ref={coverInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleCoverSelect}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => coverInputRef.current?.click()}
+              className={`relative w-full h-[160px] rounded-xl overflow-hidden transition-colors ${
+                coverPreview
+                  ? 'border-0'
+                  : 'border-2 border-dashed border-neutral-200 active:bg-neutral-50'
+              }`}
+            >
+              {coverPreview ? (
+                <>
+                  <img src={coverPreview} alt="Cover" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                  <span className="absolute bottom-2 right-2 text-xs text-white/80 font-sans">
+                    Tap to change
+                  </span>
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full gap-2 text-neutral-400">
+                  <Camera size={32} weight="light" />
+                  <span className="text-sm font-medium font-sans">Add cover photo</span>
+                </div>
+              )}
+            </button>
+          </div>
+
           {/* Title */}
           <div className="flex flex-col gap-1.5">
-            <label className={LABEL_CLS}>Title <span className="text-red-400">*</span></label>
+            <label className={LABEL_CLS}>
+              Title <span className="text-red-400">*</span>
+            </label>
             <input
               type="text"
               value={title}
               onChange={e => setTitle(e.target.value)}
               placeholder="e.g. Pasta Carbonara"
               required
-              autoFocus
               className={INPUT_CLS}
             />
           </div>
 
-          {/* Description */}
-          <div className="flex flex-col gap-1.5">
-            <label className={LABEL_CLS}>Description <span className="text-neutral-400 font-normal">(optional)</span></label>
-            <textarea
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="A short description of the recipe…"
-              rows={3}
-              className="w-full px-4 py-3 border border-neutral-200 rounded-lg bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400 resize-none"
-            />
-          </div>
-
-          {/* Times & Servings */}
+          {/* Cook time + Servings */}
           <div className="flex gap-3">
             <div className="flex flex-col gap-1.5 flex-1">
-              <label className={LABEL_CLS}>Prep (min)</label>
-              <input
-                type="number"
-                inputMode="numeric"
-                min="0"
-                value={prepTime}
-                onChange={e => setPrepTime(e.target.value)}
-                placeholder="0"
-                onFocus={e => e.target.select()}
-                className={INPUT_CLS}
-              />
-            </div>
-            <div className="flex flex-col gap-1.5 flex-1">
-              <label className={LABEL_CLS}>Cook (min)</label>
+              <label className={LABEL_CLS}>Cook time (min)</label>
               <input
                 type="number"
                 inputMode="numeric"
@@ -162,7 +227,7 @@ export default function CreateRecipePage() {
                 className={INPUT_CLS}
               />
             </div>
-            <div className="flex flex-col gap-1.5 w-20">
+            <div className="flex flex-col gap-1.5 w-24">
               <label className={LABEL_CLS}>Serves</label>
               <input
                 type="number"
@@ -198,7 +263,7 @@ export default function CreateRecipePage() {
             {ingredients.map((ing, idx) => (
               <div
                 key={ing.key}
-                className="flex flex-col gap-2 p-3 border border-neutral-200 rounded-xl bg-neutral-0"
+                className="flex flex-col gap-2 p-3 border border-neutral-200 rounded-xl"
               >
                 <ProductNameInput
                   value={ing.name}
@@ -256,6 +321,86 @@ export default function CreateRecipePage() {
             >
               <Plus size={18} />
               Add ingredient
+            </button>
+          </div>
+
+          {/* Steps */}
+          <div className="flex flex-col gap-3">
+            <h2 className="text-base font-semibold text-neutral-900">Instructions</h2>
+
+            {steps.map((step, idx) => (
+              <div key={step.key} className="flex flex-col gap-2 p-3 border border-neutral-200 rounded-xl">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-green-500 text-white text-xs font-semibold flex items-center justify-center flex-shrink-0 font-sans">
+                      {idx + 1}
+                    </span>
+                    <span className="text-sm font-medium text-neutral-600 font-sans">Step {idx + 1}</span>
+                  </div>
+                  {steps.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeStep(step.key)}
+                      className="p-1 text-neutral-400 active:text-red-400 transition-colors"
+                      aria-label="Remove step"
+                    >
+                      <Trash size={16} />
+                    </button>
+                  )}
+                </div>
+
+                <textarea
+                  value={step.instruction}
+                  onChange={e => updateStep(step.key, { instruction: e.target.value })}
+                  placeholder="Describe this step…"
+                  rows={3}
+                  className="w-full px-3 py-2.5 border border-neutral-200 rounded-lg bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400 resize-none"
+                />
+
+                {/* Step photo */}
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={el => { stepFileInputRefs.current.set(step.key, el); }}
+                  onChange={e => handleStepPhotoSelect(step.key, e)}
+                  className="hidden"
+                />
+                {step.imagePreview ? (
+                  <div className="relative">
+                    <img
+                      src={step.imagePreview}
+                      alt={`Step ${idx + 1}`}
+                      className="w-full rounded-lg object-cover max-h-[180px]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => updateStep(step.key, { imageFile: null, imagePreview: null })}
+                      className="absolute top-2 right-2 w-7 h-7 bg-black/50 rounded-full flex items-center justify-center text-white active:bg-black/70"
+                      aria-label="Remove photo"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => stepFileInputRefs.current.get(step.key)?.click()}
+                    className="self-start flex items-center gap-1.5 h-[34px] px-3 text-sm text-neutral-400 hover:text-neutral-600 active:bg-neutral-50 rounded-lg transition-colors font-sans"
+                  >
+                    <Camera size={17} />
+                    Add photo
+                  </button>
+                )}
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={() => setSteps(prev => [...prev, emptyStep()])}
+              className="flex items-center gap-2 h-[44px] px-4 border border-dashed border-neutral-300 rounded-xl text-sm font-medium text-neutral-500 active:bg-neutral-50 transition-colors"
+            >
+              <Plus size={18} />
+              Add step
             </button>
           </div>
 
