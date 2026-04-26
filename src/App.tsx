@@ -7,6 +7,8 @@ import ListPage from './pages/ListPage';
 import PantryPage from './pages/PantryPage';
 import JoinPantryPage from './pages/JoinPantryPage';
 import RecipesPage from './pages/RecipesPage';
+import RecipeDetailPage from './pages/RecipeDetailPage';
+import CreateRecipePage from './pages/CreateRecipePage';
 import ProfilePage from './pages/ProfilePage';
 
 function ProtectedRoute() {
@@ -46,6 +48,8 @@ export default function App() {
           </Route>
           {/* Full-screen flows — protected but no tab bar */}
           <Route path="/pantry/join/:token" element={<JoinPantryPage />} />
+          <Route path="/recipe/new" element={<CreateRecipePage />} />
+          <Route path="/recipe/:id" element={<RecipeDetailPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
