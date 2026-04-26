@@ -224,11 +224,11 @@ export function useShoppingLists() {
         list_id: string;
         user_id: string;
         role: string;
-        profile: { display_name: string | null; avatar_url: string | null } | null;
+        profile: { display_name: string | null; avatar_url: string | null }[];
       };
 
       const membersMap = new Map<string, RawMember[]>();
-      for (const m of (membersRes.data ?? []) as RawMember[]) {
+      for (const m of (membersRes.data ?? []) as unknown as RawMember[]) {
         const arr = membersMap.get(m.list_id) ?? [];
         arr.push(m);
         membersMap.set(m.list_id, arr);
@@ -244,8 +244,8 @@ export function useShoppingLists() {
         item_count: itemCountMap.get(list.id) ?? 0,
         members: (membersMap.get(list.id) ?? []).map(m => ({
           user_id: m.user_id,
-          display_name: m.profile?.display_name ?? null,
-          avatar_url: m.profile?.avatar_url ?? null,
+          display_name: m.profile[0]?.display_name ?? null,
+          avatar_url: m.profile[0]?.avatar_url ?? null,
           role: m.role as 'owner' | 'editor',
         })),
       }));
