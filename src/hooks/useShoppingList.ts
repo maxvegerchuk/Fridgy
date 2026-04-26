@@ -11,72 +11,56 @@ export type NewListItem = {
   category: ItemCategory;
 };
 
-export function useShoppingList() {
+export type ListSummary = {
+  id: string;
+  name: string;
+  owner_id: string;
+  invite_token: string;
+  created_at: string;
+  role: 'owner' | 'editor';
+  item_count: number;
+  members: Array<{
+    user_id: string;
+    display_name: string | null;
+    avatar_url: string | null;
+    role: 'owner' | 'editor';
+  }>;
+};
+
+// ─── Single-list detail hook ──────────────────────────────
+
+export function useShoppingList(listId: string | undefined) {
   const [list, setList] = useState<ShoppingList | null>(null);
   const [items, setItems] = useState<ListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const user = useAuthStore(state => state.user);
 
-  // Find or auto-create the user's active shopping list
   useEffect(() => {
-    if (!user) {
+    if (!listId || !user) {
       setLoading(false);
       return;
     }
     let cancelled = false;
 
     async function init() {
-      if (!user) return;
       setLoading(true);
-
       try {
-        const { data: lists } = await supabase
+        const { data: listData } = await supabase
           .from('shopping_lists')
           .select('*')
-          .order('created_at', { ascending: true })
-          .limit(1);
-
-        let targetList: ShoppingList | null = null;
-
-        if (lists && lists.length > 0) {
-          targetList = lists[0] as ShoppingList;
-        } else {
-          // Generate a client-side ID to avoid the RLS chicken-and-egg problem:
-          // INSERT returns nothing until list_members is also populated.
-          const newId = randomUUID();
-          const { error: listErr } = await supabase
-            .from('shopping_lists')
-            .insert({ id: newId, owner_id: user.id, name: 'Shopping List' });
-
-          if (!listErr) {
-            await supabase
-              .from('list_members')
-              .insert({ list_id: newId, user_id: user.id, role: 'owner' });
-
-            const { data: created } = await supabase
-              .from('shopping_lists')
-              .select('*')
-              .eq('id', newId)
-              .single();
-
-            if (created) targetList = created as ShoppingList;
-          }
-        }
+          .eq('id', listId)
+          .single();
 
         if (cancelled) return;
 
-        if (targetList) {
-          setList(targetList);
-
+        if (listData) {
+          setList(listData as ShoppingList);
           const { data: itemData } = await supabase
             .from('list_items')
             .select('*')
-            .eq('list_id', targetList.id)
+            .eq('list_id', listId)
             .order('created_at', { ascending: true });
-
-          if (!cancelled) {
-            setItems((itemData as ListItem[]) ?? []);
-          }
+          if (!cancelled) setItems((itemData as ListItem[]) ?? []);
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -85,17 +69,17 @@ export function useShoppingList() {
 
     init();
     return () => { cancelled = true; };
-  }, [user?.id]);
+  }, [listId, user?.id]);
 
-  // Realtime — spec §11
+  // Realtime
   useEffect(() => {
-    if (!list?.id) return;
+    if (!listId) return;
 
     const channel = supabase
-      .channel(`list-${list.id}`)
+      .channel(`list-${listId}`)
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'list_items', filter: `list_id=eq.${list.id}` },
+        { event: '*', schema: 'public', table: 'list_items', filter: `list_id=eq.${listId}` },
         (payload) => {
           if (payload.eventType === 'INSERT') {
             const incoming = payload.new as ListItem;
@@ -119,16 +103,16 @@ export function useShoppingList() {
       });
 
     return () => { supabase.removeChannel(channel); };
-  }, [list?.id]);
+  }, [listId]);
 
   const addItem = useCallback(async (newItem: NewListItem): Promise<void> => {
-    if (!list || !user) return;
+    if (!listId || !user) return;
 
     const id = randomUUID();
     const now = new Date().toISOString();
     const optimistic: ListItem = {
       id,
-      list_id: list.id,
+      list_id: listId,
       name: newItem.name,
       quantity: newItem.quantity,
       unit: newItem.unit,
@@ -143,7 +127,7 @@ export function useShoppingList() {
 
     const { error } = await supabase.from('list_items').insert({
       id,
-      list_id: list.id,
+      list_id: listId,
       name: newItem.name,
       quantity: newItem.quantity ?? null,
       unit: newItem.unit ?? null,
@@ -154,14 +138,13 @@ export function useShoppingList() {
     if (error) {
       setItems(prev => prev.filter(i => i.id !== id));
     }
-  }, [list, user]);
+  }, [listId, user]);
 
   const checkItem = useCallback(async (
     id: string,
     checked: boolean,
     onChecked?: () => void,
   ): Promise<void> => {
-    // Optimistic
     setItems(prev => prev.map(i => i.id === id ? { ...i, is_checked: checked } : i));
 
     const { error } = await supabase
@@ -171,13 +154,10 @@ export function useShoppingList() {
 
     if (error) {
       console.error('[useShoppingList] checkItem failed:', error);
-      // Rollback
       setItems(prev => prev.map(i => i.id === id ? { ...i, is_checked: !checked } : i));
       return;
     }
 
-    // DB trigger handle_item_checked auto-moves checked item → pantry + purchase_history.
-    // Call onChecked so the caller can pull-refresh pantry state after the trigger fires.
     if (checked) onChecked?.();
   }, []);
 
@@ -187,4 +167,126 @@ export function useShoppingList() {
   }, []);
 
   return { list, items, loading, addItem, checkItem, deleteItem };
+}
+
+// ─── Lists overview hook ──────────────────────────────────
+
+export function useShoppingLists() {
+  const [myLists, setMyLists] = useState<ListSummary[]>([]);
+  const [sharedLists, setSharedLists] = useState<ListSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const user = useAuthStore(state => state.user);
+
+  const fetchLists = useCallback(async () => {
+    if (!user) { setLoading(false); return; }
+    setLoading(true);
+    try {
+      const { data: memberships } = await supabase
+        .from('list_members')
+        .select('list_id, role')
+        .eq('user_id', user.id);
+
+      const listIds = (memberships ?? []).map((m: { list_id: string; role: string }) => m.list_id);
+
+      if (listIds.length === 0) {
+        setMyLists([]);
+        setSharedLists([]);
+        return;
+      }
+
+      const roleMap = new Map(
+        (memberships ?? []).map((m: { list_id: string; role: string }) => [m.list_id, m.role as 'owner' | 'editor'])
+      );
+
+      const [listsRes, itemsRes, membersRes] = await Promise.all([
+        supabase
+          .from('shopping_lists')
+          .select('*')
+          .in('id', listIds)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('list_items')
+          .select('list_id')
+          .in('list_id', listIds)
+          .eq('is_checked', false),
+        supabase
+          .from('list_members')
+          .select('list_id, user_id, role, profile:profiles!user_id(display_name, avatar_url)')
+          .in('list_id', listIds),
+      ]);
+
+      const itemCountMap = new Map<string, number>();
+      for (const item of (itemsRes.data ?? []) as { list_id: string }[]) {
+        itemCountMap.set(item.list_id, (itemCountMap.get(item.list_id) ?? 0) + 1);
+      }
+
+      type RawMember = {
+        list_id: string;
+        user_id: string;
+        role: string;
+        profile: { display_name: string | null; avatar_url: string | null } | null;
+      };
+
+      const membersMap = new Map<string, RawMember[]>();
+      for (const m of (membersRes.data ?? []) as RawMember[]) {
+        const arr = membersMap.get(m.list_id) ?? [];
+        arr.push(m);
+        membersMap.set(m.list_id, arr);
+      }
+
+      const summaries: ListSummary[] = ((listsRes.data ?? []) as ShoppingList[]).map(list => ({
+        id: list.id,
+        name: list.name,
+        owner_id: list.owner_id,
+        invite_token: list.invite_token,
+        created_at: list.created_at,
+        role: roleMap.get(list.id) ?? 'editor',
+        item_count: itemCountMap.get(list.id) ?? 0,
+        members: (membersMap.get(list.id) ?? []).map(m => ({
+          user_id: m.user_id,
+          display_name: m.profile?.display_name ?? null,
+          avatar_url: m.profile?.avatar_url ?? null,
+          role: m.role as 'owner' | 'editor',
+        })),
+      }));
+
+      setMyLists(summaries.filter(s => s.owner_id === user.id));
+      setSharedLists(summaries.filter(s => s.owner_id !== user.id));
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    fetchLists();
+  }, [fetchLists]);
+
+  const createList = useCallback(async (name: string): Promise<string | null> => {
+    if (!user) return null;
+    const id = randomUUID();
+
+    const { error: listErr } = await supabase
+      .from('shopping_lists')
+      .insert({ id, owner_id: user.id, name });
+
+    if (listErr) { console.error('[useShoppingLists] createList:', listErr); return null; }
+
+    await supabase
+      .from('list_members')
+      .insert({ list_id: id, user_id: user.id, role: 'owner' });
+
+    await fetchLists();
+    return id;
+  }, [user, fetchLists]);
+
+  const deleteList = useCallback(async (id: string): Promise<void> => {
+    setMyLists(prev => prev.filter(l => l.id !== id));
+    const { error } = await supabase.from('shopping_lists').delete().eq('id', id);
+    if (error) {
+      console.error('[useShoppingLists] deleteList:', error);
+      fetchLists();
+    }
+  }, [fetchLists]);
+
+  return { myLists, sharedLists, loading, createList, deleteList, refetch: fetchLists };
 }

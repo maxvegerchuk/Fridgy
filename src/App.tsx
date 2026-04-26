@@ -7,6 +7,8 @@ import ListPage from './pages/ListPage';
 import PantryPage from './pages/PantryPage';
 import JoinPantryPage from './pages/JoinPantryPage';
 import RecipesPage from './pages/RecipesPage';
+import ShoppingListDetailPage from './pages/ShoppingListDetailPage';
+import JoinListPage from './pages/JoinListPage';
 import RecipeDetailPage from './pages/RecipeDetailPage';
 import CreateRecipePage from './pages/CreateRecipePage';
 import ProfilePage from './pages/ProfilePage';
@@ -47,6 +49,8 @@ export default function App() {
             <Route path="/profile" element={<ProfilePage />} />
           </Route>
           {/* Full-screen flows — protected but no tab bar */}
+          <Route path="/list/:id" element={<ShoppingListDetailPage />} />
+          <Route path="/list/join/:token" element={<JoinListPage />} />
           <Route path="/pantry/join/:token" element={<JoinPantryPage />} />
           <Route path="/recipe/new" element={<CreateRecipePage />} />
           <Route path="/recipe/:id/edit" element={<CreateRecipePage />} />
