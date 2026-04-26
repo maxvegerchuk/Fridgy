@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, Trash } from 'phosphor-react';
 import { Button, ProductNameInput } from '../components/ui';
@@ -38,16 +38,28 @@ export default function CreateRecipePage() {
   const [ingredients, setIngredients] = useState<IngredientDraft[]>([emptyIngredient()]);
   const [submitting, setSubmitting] = useState(false);
 
+  const qtyRefs = useRef<Map<string, HTMLInputElement | null>>(new Map());
+
+  const focusQuantity = (key: string) => {
+    requestAnimationFrame(() => {
+      const el = qtyRefs.current.get(key);
+      el?.focus();
+      el?.select();
+    });
+  };
+
   const updateIngredient = (key: string, patch: Partial<IngredientDraft>) => {
     setIngredients(prev => prev.map(i => i.key === key ? { ...i, ...patch } : i));
   };
 
   const removeIngredient = (key: string) => {
     setIngredients(prev => prev.filter(i => i.key !== key));
+    qtyRefs.current.delete(key);
   };
 
   const handleSuggestion = (key: string, s: ProductSuggestion) => {
     updateIngredient(key, { name: s.name, unit: s.defaultUnit });
+    focusQuantity(key);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -192,11 +204,13 @@ export default function CreateRecipePage() {
                   value={ing.name}
                   onChange={v => updateIngredient(ing.key, { name: v })}
                   onSelect={s => handleSuggestion(ing.key, s)}
+                  onCommit={() => focusQuantity(ing.key)}
                   label=""
                   placeholder={idx === 0 ? 'e.g. Chicken breast' : 'Ingredient name'}
                 />
                 <div className="flex items-center gap-2">
                   <input
+                    ref={el => { qtyRefs.current.set(ing.key, el); }}
                     type="number"
                     inputMode="decimal"
                     min="0"
