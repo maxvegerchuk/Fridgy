@@ -152,9 +152,6 @@ type ItemRowProps = {
 function PantryItemRow({ item, onAddToList, onDelete }: ItemRowProps) {
   return (
     <div className="flex items-center gap-3 px-4 min-h-[56px] py-2 border-b border-neutral-100 last:border-0">
-      {/* Category emoji */}
-      <span className="text-xl flex-shrink-0">{CATEGORIES[item.category].emoji}</span>
-
       {/* Name + qty */}
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-neutral-900 font-sans truncate">{item.name}</p>

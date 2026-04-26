@@ -33,31 +33,45 @@ function RecipeCard({
     <button
       type="button"
       onClick={onClick}
-      className="flex flex-col gap-2 p-3 border border-neutral-200 rounded-xl bg-neutral-0 text-left active:scale-95 transition-transform"
+      className="flex flex-col border border-neutral-200 rounded-xl bg-neutral-0 overflow-hidden text-left active:scale-95 transition-transform"
     >
-      <div className="flex items-start justify-between gap-1">
-        <span className="text-sm font-semibold text-neutral-900 font-sans leading-snug flex-1">
-          {recipe.title}
-        </span>
-        {action && (
-          <div onClick={e => e.stopPropagation()}>
-            {action}
+      {/* Cover photo / placeholder */}
+      <div className="w-full h-[100px] flex-shrink-0">
+        {recipe.image_url ? (
+          <img src={recipe.image_url} alt={recipe.title} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full bg-neutral-100 flex items-center justify-center">
+            <BookOpen size={28} weight="light" className="text-neutral-300" />
           </div>
         )}
       </div>
 
-      {badge && (
-        <span className={`self-start text-xs font-medium px-2 py-0.5 rounded-full ${badge.cls}`}>
-          {badge.label}
-        </span>
-      )}
+      {/* Body */}
+      <div className="flex flex-col gap-1.5 p-3">
+        <div className="flex items-start justify-between gap-1">
+          <span className="text-sm font-semibold text-neutral-900 font-sans leading-snug flex-1">
+            {recipe.title}
+          </span>
+          {action && (
+            <div onClick={e => e.stopPropagation()}>
+              {action}
+            </div>
+          )}
+        </div>
 
-      <div className="flex items-center gap-3 text-xs text-neutral-400 font-sans">
-        {withAvail && (
-          <span>{withAvail.available_count}/{withAvail.total_count} ingredients</span>
+        {badge && (
+          <span className={`self-start text-xs font-medium px-2 py-0.5 rounded-full ${badge.cls}`}>
+            {badge.label}
+          </span>
         )}
-        {totalTime > 0 && <span>{totalTime} min</span>}
-        {recipe.servings > 1 && <span>{recipe.servings} srv</span>}
+
+        <div className="flex items-center gap-3 text-xs text-neutral-400 font-sans">
+          {withAvail && (
+            <span>{withAvail.available_count}/{withAvail.total_count} ingredients</span>
+          )}
+          {totalTime > 0 && <span>{totalTime} min</span>}
+          {recipe.servings > 1 && <span>{recipe.servings} srv</span>}
+        </div>
       </div>
     </button>
   );

@@ -1,7 +1,6 @@
 import { useState, useId, useRef } from 'react';
 import { BottomSheet, SegmentControl, Button, ProductNameInput } from '../ui';
 import { usePurchaseHistory } from '../../hooks/usePurchaseHistory';
-import { CATEGORIES } from '../../types';
 import type { ItemCategory } from '../../types';
 import type { NewListItem } from '../../hooks/useShoppingList';
 import type { PurchaseHistoryItem } from '../../types';
@@ -160,7 +159,6 @@ export default function AddItemSheet({ isOpen, onClose, onAddItem, listId }: Pro
               className="flex items-center justify-between h-[56px] px-1 border-b border-neutral-100 last:border-0 active:scale-95 active:bg-neutral-50 transition-all rounded-md"
             >
               <div className="flex items-center gap-3 min-w-0">
-                <span className="text-lg flex-shrink-0">{CATEGORIES[item.category].emoji}</span>
                 <div className="min-w-0 text-left">
                   <p className="text-sm font-medium text-neutral-900 truncate">{item.name}</p>
                   {(item.quantity || item.unit) && (
