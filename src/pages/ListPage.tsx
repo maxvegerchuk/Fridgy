@@ -89,7 +89,6 @@ export default function ListPage() {
             {groups.map(([cat, catItems]) => (
               <div key={cat}>
                 <div className="flex items-center gap-2 px-4 pt-4 pb-1">
-                  <span className="text-base leading-none">{CATEGORIES[cat].emoji}</span>
                   <span className="text-xs font-semibold uppercase tracking-wide text-neutral-400 font-sans">
                     {CATEGORIES[cat].label}
                   </span>
