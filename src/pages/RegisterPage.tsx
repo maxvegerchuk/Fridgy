@@ -7,6 +7,7 @@ export default function RegisterPage() {
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -29,6 +30,10 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
     setSubmitting(true);
     const err = await signUp(email, password, displayName);
     if (err) {
@@ -82,6 +87,16 @@ export default function RegisterPage() {
                 placeholder="Min. 8 characters"
                 autoComplete="new-password"
                 minLength={8}
+                required
+                inputSize="lg"
+              />
+              <Input
+                label="Confirm password"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Repeat your password"
+                autoComplete="new-password"
                 required
                 inputSize="lg"
               />
