@@ -49,6 +49,7 @@ export default function App() {
           {/* Full-screen flows — protected but no tab bar */}
           <Route path="/pantry/join/:token" element={<JoinPantryPage />} />
           <Route path="/recipe/new" element={<CreateRecipePage />} />
+          <Route path="/recipe/:id/edit" element={<CreateRecipePage />} />
           <Route path="/recipe/:id" element={<RecipeDetailPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

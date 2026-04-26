@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, XCircle, Trash, Globe, GlobeSimple } from 'phosphor-react';
+import { ArrowLeft, CheckCircle, XCircle, Trash, Globe, GlobeSimple, PencilSimple } from 'phosphor-react';
 import { Button } from '../components/ui';
 import { useToast } from '../components/ui';
 import { useAuthStore } from '../store/authStore';
@@ -212,6 +212,14 @@ export default function RecipeDetailPage() {
                 aria-label={recipe.is_public ? 'Make private' : 'Make public'}
               >
                 {recipe.is_public ? <Globe size={22} weight="fill" /> : <GlobeSimple size={22} />}
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate(`/recipe/${recipe.id}/edit`)}
+                className="p-2 text-neutral-500 rounded-full active:bg-neutral-100 transition-colors"
+                aria-label="Edit recipe"
+              >
+                <PencilSimple size={22} />
               </button>
               <button
                 type="button"

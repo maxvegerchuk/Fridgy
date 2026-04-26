@@ -14,6 +14,7 @@ export type NewIngredientRow = {
 export type NewRecipeStep = {
   instruction: string;
   imageFile?: File;
+  existingImageUrl?: string;
 };
 
 export type NewRecipe = {
@@ -24,6 +25,7 @@ export type NewRecipe = {
   ingredients: NewIngredientRow[];
   steps: NewRecipeStep[];
   coverImageFile?: File;
+  existingCoverUrl?: string;
 };
 
 const RECIPE_SELECT = '*, ingredients:recipe_ingredients(*), steps:recipe_steps(*)';
@@ -247,6 +249,88 @@ export function useRecipes() {
     if (error) console.error('[useRecipes] delete:', error);
   }, []);
 
+  const updateRecipe = useCallback(async (
+    recipeId: string,
+    recipe: NewRecipe,
+  ): Promise<{ id: string } | null> => {
+    if (!user) return null;
+
+    // 1. Determine cover URL (upload new file, keep existing, or clear)
+    let coverUrl: string | null = recipe.existingCoverUrl ?? null;
+    if (recipe.coverImageFile) {
+      const url = await uploadImage('recipe-images', `${user.id}/${recipeId}/cover.jpg`, recipe.coverImageFile);
+      if (url) coverUrl = url;
+    }
+
+    // 2. Update recipe record
+    const { error } = await supabase.from('recipes').update({
+      title: recipe.title,
+      cook_time_minutes: recipe.cook_time_minutes ?? null,
+      servings: recipe.servings,
+      is_public: recipe.is_public,
+      image_url: coverUrl,
+    }).eq('id', recipeId);
+    if (error) { console.error('[useRecipes] update:', error); return null; }
+
+    // 3. Replace ingredients
+    await supabase.from('recipe_ingredients').delete().eq('recipe_id', recipeId);
+    if (recipe.ingredients.length > 0) {
+      const { error: ingErr } = await supabase.from('recipe_ingredients').insert(
+        recipe.ingredients.map((ing, idx) => ({
+          id: randomUUID(),
+          recipe_id: recipeId,
+          name: ing.name,
+          quantity: ing.quantity ?? null,
+          unit: ing.unit ?? null,
+          optional: ing.optional,
+          sort_order: idx,
+        }))
+      );
+      if (ingErr) console.error('[useRecipes] update ingredients:', ingErr);
+    }
+
+    // 4. Replace steps (insert with any kept image_url, then upload new files)
+    await supabase.from('recipe_steps').delete().eq('recipe_id', recipeId);
+    let stepRecords: RecipeStep[] = [];
+    if (recipe.steps.length > 0) {
+      const { data: stepsData, error: stepsErr } = await supabase
+        .from('recipe_steps')
+        .insert(
+          recipe.steps.map((s, idx) => ({
+            id: randomUUID(),
+            recipe_id: recipeId,
+            step_number: idx + 1,
+            instruction: s.instruction,
+            image_url: s.existingImageUrl ?? null,
+          }))
+        )
+        .select('*');
+      if (stepsErr) console.error('[useRecipes] update steps:', stepsErr);
+      stepRecords = (stepsData as RecipeStep[]) ?? [];
+    }
+
+    // 5. Upload new step photos
+    for (let i = 0; i < recipe.steps.length; i++) {
+      const step = recipe.steps[i];
+      if (!step.imageFile) continue;
+      const stepNum = i + 1;
+      const record = stepRecords.find(r => r.step_number === stepNum);
+      if (!record) continue;
+      const url = await uploadImage('recipe-images', `${user.id}/${recipeId}/step_${stepNum}.jpg`, step.imageFile);
+      if (url) await supabase.from('recipe_steps').update({ image_url: url }).eq('id', record.id);
+    }
+
+    // 6. Refetch
+    const { data } = await supabase
+      .from('recipes')
+      .select(RECIPE_SELECT)
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+    if (data) setMyRecipes(data as Recipe[]);
+
+    return { id: recipeId };
+  }, [user]);
+
   return {
     myRecipes,
     publicRecipes,
@@ -255,6 +339,7 @@ export function useRecipes() {
     publicLoading,
     fetchPublicRecipes,
     createRecipe,
+    updateRecipe,
     togglePublic,
     saveRecipe,
     deleteRecipe,

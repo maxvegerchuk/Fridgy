@@ -1,9 +1,9 @@
-import { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Plus, Trash, Camera, X } from 'phosphor-react';
 import { Button, ProductNameInput } from '../components/ui';
 import { useToast } from '../components/ui';
-import { useRecipes } from '../hooks/useRecipes';
+import { useRecipes, fetchRecipeById } from '../hooks/useRecipes';
 import { randomUUID } from '../lib/uuid';
 import type { ProductSuggestion } from '../lib/productSuggestions';
 
@@ -25,6 +25,7 @@ type StepDraft = {
   instruction: string;
   imageFile: File | null;
   imagePreview: string | null;
+  existingImageUrl: string | null;
 };
 
 function emptyIngredient(): IngredientDraft {
@@ -32,14 +33,18 @@ function emptyIngredient(): IngredientDraft {
 }
 
 function emptyStep(): StepDraft {
-  return { key: randomUUID(), instruction: '', imageFile: null, imagePreview: null };
+  return { key: randomUUID(), instruction: '', imageFile: null, imagePreview: null, existingImageUrl: null };
 }
 
 export default function CreateRecipePage() {
+  const { id } = useParams<{ id?: string }>();
+  const isEdit = !!id;
+
   const navigate = useNavigate();
   const toast = useToast();
-  const { createRecipe } = useRecipes();
+  const { createRecipe, updateRecipe } = useRecipes();
 
+  const [loading, setLoading] = useState(isEdit);
   const [title, setTitle] = useState('');
   const [cookTime, setCookTime] = useState('');
   const [servings, setServings] = useState('2');
@@ -48,12 +53,63 @@ export default function CreateRecipePage() {
   const [steps, setSteps] = useState<StepDraft[]>([emptyStep()]);
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [existingCoverUrl, setExistingCoverUrl] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  // Refs for auto-focus after suggestion selection
   const qtyRefs = useRef<Map<string, HTMLInputElement | null>>(new Map());
   const coverInputRef = useRef<HTMLInputElement>(null);
   const stepFileInputRefs = useRef<Map<string, HTMLInputElement | null>>(new Map());
+
+  // Load existing recipe for edit mode
+  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+
+    async function load() {
+      const recipe = await fetchRecipeById(id!);
+      if (cancelled || !recipe) return;
+
+      setTitle(recipe.title);
+      setCookTime(recipe.cook_time_minutes ? String(recipe.cook_time_minutes) : '');
+      setServings(String(recipe.servings));
+      setIsPublic(recipe.is_public);
+
+      if (recipe.image_url) {
+        setCoverPreview(recipe.image_url);
+        setExistingCoverUrl(recipe.image_url);
+      }
+
+      const sortedIngs = [...recipe.ingredients].sort((a, b) => a.sort_order - b.sort_order);
+      setIngredients(
+        sortedIngs.length > 0
+          ? sortedIngs.map(ing => ({
+              key: randomUUID(),
+              name: ing.name,
+              quantity: ing.quantity != null ? String(ing.quantity) : '',
+              unit: ing.unit ?? 'pcs',
+              optional: ing.optional,
+            }))
+          : [emptyIngredient()],
+      );
+
+      setSteps(
+        recipe.steps.length > 0
+          ? recipe.steps.map(s => ({
+              key: randomUUID(),
+              instruction: s.instruction,
+              imageFile: null,
+              imagePreview: s.image_url ?? null,
+              existingImageUrl: s.image_url ?? null,
+            }))
+          : [emptyStep()],
+      );
+
+      setLoading(false);
+    }
+
+    load();
+    return () => { cancelled = true; };
+  }, [id]);
 
   const focusQuantity = (key: string) => {
     requestAnimationFrame(() => {
@@ -93,7 +149,7 @@ export default function CreateRecipePage() {
   const handleStepPhotoSelect = (key: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    updateStep(key, { imageFile: file, imagePreview: URL.createObjectURL(file) });
+    updateStep(key, { imageFile: file, imagePreview: URL.createObjectURL(file), existingImageUrl: null });
   };
 
   // ─── Cover photo ─────────────────────────────────────────
@@ -103,6 +159,14 @@ export default function CreateRecipePage() {
     if (!file) return;
     setCoverFile(file);
     setCoverPreview(URL.createObjectURL(file));
+    setExistingCoverUrl(null);
+  };
+
+  const handleRemoveCover = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCoverFile(null);
+    setCoverPreview(null);
+    setExistingCoverUrl(null);
   };
 
   // ─── Submit ──────────────────────────────────────────────
@@ -113,7 +177,7 @@ export default function CreateRecipePage() {
 
     setSubmitting(true);
 
-    const result = await createRecipe({
+    const payload = {
       title: title.trim(),
       cook_time_minutes: cookTime ? Number(cookTime) : undefined,
       servings: servings ? Number(servings) : 2,
@@ -131,20 +195,45 @@ export default function CreateRecipePage() {
         .map(s => ({
           instruction: s.instruction.trim(),
           imageFile: s.imageFile ?? undefined,
+          existingImageUrl: s.existingImageUrl ?? undefined,
         })),
       coverImageFile: coverFile ?? undefined,
-    });
+      existingCoverUrl: existingCoverUrl ?? undefined,
+    };
+
+    let result: { id: string } | null;
+
+    if (isEdit && id) {
+      result = await updateRecipe(id, payload);
+    } else {
+      result = await createRecipe(payload);
+    }
 
     setSubmitting(false);
 
     if (!result) {
-      toast('Failed to save recipe', 'error');
+      toast(isEdit ? 'Failed to save changes' : 'Failed to save recipe', 'error');
       return;
     }
 
-    toast('Recipe created!', 'success');
+    toast(isEdit ? 'Recipe updated!' : 'Recipe created!', 'success');
     navigate(`/recipe/${result.id}`, { replace: true });
   };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col h-full bg-neutral-0 pt-safe">
+        <div className="flex items-center h-[56px] px-4 border-b border-neutral-100">
+          <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-700">
+            <ArrowLeft size={24} />
+          </button>
+        </div>
+        <div className="flex items-center justify-center flex-1">
+          <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full bg-neutral-0 pt-safe">
@@ -153,7 +242,9 @@ export default function CreateRecipePage() {
         <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-700">
           <ArrowLeft size={24} />
         </button>
-        <h1 className="ml-3 text-lg font-semibold text-neutral-900">New Recipe</h1>
+        <h1 className="ml-3 text-lg font-semibold text-neutral-900">
+          {isEdit ? 'Edit Recipe' : 'New Recipe'}
+        </h1>
       </div>
 
       <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
@@ -187,6 +278,14 @@ export default function CreateRecipePage() {
                   <span className="absolute bottom-2 right-2 text-xs text-white/80 font-sans">
                     Tap to change
                   </span>
+                  <button
+                    type="button"
+                    onClick={handleRemoveCover}
+                    className="absolute top-2 right-2 w-7 h-7 bg-black/50 rounded-full flex items-center justify-center text-white active:bg-black/70"
+                    aria-label="Remove cover photo"
+                  >
+                    <X size={14} />
+                  </button>
                 </>
               ) : (
                 <div className="flex flex-col items-center justify-center h-full gap-2 text-neutral-400">
@@ -374,7 +473,7 @@ export default function CreateRecipePage() {
                     />
                     <button
                       type="button"
-                      onClick={() => updateStep(step.key, { imageFile: null, imagePreview: null })}
+                      onClick={() => updateStep(step.key, { imageFile: null, imagePreview: null, existingImageUrl: null })}
                       className="absolute top-2 right-2 w-7 h-7 bg-black/50 rounded-full flex items-center justify-center text-white active:bg-black/70"
                       aria-label="Remove photo"
                     >
@@ -405,7 +504,7 @@ export default function CreateRecipePage() {
           </div>
 
           <Button type="submit" size="lg" fullWidth loading={submitting} className="mt-1">
-            Save Recipe
+            {isEdit ? 'Save Changes' : 'Save Recipe'}
           </Button>
         </div>
       </form>
