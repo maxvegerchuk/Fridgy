@@ -1,5 +1,4 @@
 import { useId, useState } from 'react';
-import { CATEGORIES } from '../../types';
 import { searchProducts } from '../../lib/productSuggestions';
 import type { ProductSuggestion } from '../../lib/productSuggestions';
 
@@ -69,9 +68,6 @@ export default function ProductNameInput({
                 }}
                 className="w-full flex items-center gap-3 h-[44px] px-3 text-left active:bg-neutral-100 border-b border-neutral-100 last:border-0 transition-colors"
               >
-                <span className="text-base leading-none flex-shrink-0">
-                  {CATEGORIES[s.category].emoji}
-                </span>
                 <div className="flex-1 min-w-0">
                   <span className="text-sm font-medium text-neutral-900 font-sans">{s.name}</span>
                 </div>
