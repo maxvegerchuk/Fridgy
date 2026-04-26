@@ -23,7 +23,7 @@ export default function ProductNameInput({
   required,
 }: Props) {
   const id = useId();
-  const [dismissed, setDismissed] = useState(false);
+  const [dismissed, setDismissed] = useState(() => value.trim().length > 0);
   const suggestions = searchProducts(value);
   const showSuggestions = !dismissed && value.trim().length > 0 && suggestions.length > 0;
 
