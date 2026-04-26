@@ -1,42 +1,7 @@
-declare global {
-  interface Window {
-    SpeechRecognition: new () => SpeechRecognitionInstance;
-    webkitSpeechRecognition: new () => SpeechRecognitionInstance;
-  }
-
-  interface SpeechRecognitionInstance {
-    lang: string;
-    interimResults: boolean;
-    maxAlternatives: number;
-    start(): void;
-    stop(): void;
-    abort(): void;
-    onresult: (event: SpeechRecognitionEvent) => void;
-    onerror: (event: SpeechRecognitionErrorEvent) => void;
-    onend: () => void;
-  }
-
-  interface SpeechRecognitionEvent {
-    results: SpeechRecognitionResultList;
-  }
-
-  interface SpeechRecognitionErrorEvent {
-    error: string;
-  }
-}
-
-type SpeechRecognitionCtor = new () => SpeechRecognitionInstance;
-
-function getCtor(): SpeechRecognitionCtor | undefined {
-  if (typeof window === 'undefined') return undefined;
-  return (
-    ('SpeechRecognition' in window ? window.SpeechRecognition : undefined) ??
-    ('webkitSpeechRecognition' in window ? window.webkitSpeechRecognition : undefined)
-  );
-}
-
 export function isSpeechRecognitionSupported(): boolean {
-  return getCtor() !== undefined;
+  if (typeof window === 'undefined') return false;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return !!(window as any).SpeechRecognition || !!(window as any).webkitSpeechRecognition;
 }
 
 /** Starts voice recognition. Returns a stop/abort function. */
@@ -44,23 +9,30 @@ export function startVoiceRecognition(
   onResult: (text: string) => void,
   onError: (error: string) => void,
 ): () => void {
-  const Ctor = getCtor();
-  if (!Ctor) {
+  if (typeof window === 'undefined') {
     onError('not-supported');
     return () => {};
   }
 
-  const r = new Ctor();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+  if (!SpeechRecognitionAPI) {
+    onError('not-supported');
+    return () => {};
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const r: any = new SpeechRecognitionAPI();
   r.lang = 'en-US';
   r.interimResults = false;
   r.maxAlternatives = 1;
 
-  r.onresult = (e: SpeechRecognitionEvent) => {
+  r.onresult = (e: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
     const transcript = e.results[0][0].transcript.trim();
     onResult(transcript);
   };
 
-  r.onerror = (e: SpeechRecognitionErrorEvent) => {
+  r.onerror = (e: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
     // 'aborted' fires when we call r.abort() ourselves — ignore it silently
     if (e.error !== 'aborted' && e.error !== 'no-speech') {
       onError(e.error);
