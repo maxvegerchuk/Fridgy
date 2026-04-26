@@ -91,7 +91,7 @@ export default function RecipeDetailPage() {
   }, [recipe, toast]);
 
   const handleSave = useCallback(async () => {
-    if (!recipe || !user || isSaved) return;
+    if (!recipe || !user) return;
     setSavingOrDeleting(true);
     const savedId = randomUUID();
     const { error } = await supabase.from('saved_recipes').insert({
@@ -124,7 +124,25 @@ export default function RecipeDetailPage() {
     setIsSaved(true);
     setSavingOrDeleting(false);
     toast('Saved to your recipes', 'success');
-  }, [recipe, user, isSaved, toast]);
+  }, [recipe, user, toast]);
+
+  const handleUnsave = useCallback(async () => {
+    if (!recipe || !user) return;
+    setSavingOrDeleting(true);
+    const { error } = await supabase
+      .from('saved_recipes')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('original_recipe_id', recipe.id);
+    if (error) {
+      toast(error.message, 'error');
+      setSavingOrDeleting(false);
+      return;
+    }
+    setIsSaved(false);
+    setSavingOrDeleting(false);
+    toast('Removed from your recipes', 'success');
+  }, [recipe, user, toast]);
 
   const handleAddMissingToList = useCallback(async (missing: RecipeIngredient[]) => {
     if (!user || missing.length === 0) return;
@@ -235,9 +253,14 @@ export default function RecipeDetailPage() {
           {!isOwner && (
             <button
               type="button"
-              onClick={handleSave}
-              disabled={isSaved || savingOrDeleting}
-              className="flex items-center gap-1.5 px-3 h-[36px] rounded-full bg-neutral-100 text-sm font-medium text-neutral-700 active:bg-neutral-200 disabled:opacity-50 transition-colors"
+              onClick={isSaved ? handleUnsave : handleSave}
+              disabled={savingOrDeleting}
+              className={[
+                'flex items-center gap-1.5 px-3 h-[36px] rounded-full text-sm font-medium transition-colors disabled:opacity-50',
+                isSaved
+                  ? 'bg-green-500 text-white active:bg-green-600'
+                  : 'bg-neutral-100 text-neutral-700 active:bg-neutral-200',
+              ].join(' ')}
             >
               {isSaved ? 'Saved' : 'Save'}
             </button>
