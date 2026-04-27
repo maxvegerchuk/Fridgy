@@ -9,7 +9,7 @@ import type { ProductSuggestion } from '../lib/productSuggestions';
 
 const UNITS = ['pcs', 'g', 'kg', 'ml', 'l'] as const;
 
-const INPUT_CLS = 'w-full h-[44px] px-4 border border-neutral-200 rounded-lg bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400';
+const INPUT_CLS = 'w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400';
 const LABEL_CLS = 'text-sm font-medium text-neutral-700';
 
 type IngredientDraft = {
@@ -383,12 +383,12 @@ export default function CreateRecipePage() {
                     onChange={e => updateIngredient(ing.key, { quantity: e.target.value })}
                     placeholder="Qty"
                     onFocus={e => e.target.select()}
-                    className="h-[36px] w-16 px-3 border border-neutral-200 rounded-lg bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
+                    className="h-[36px] w-16 px-3 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
                   />
                   <select
                     value={ing.unit}
                     onChange={e => updateIngredient(ing.key, { unit: e.target.value })}
-                    className="h-[36px] w-20 px-2 border border-neutral-200 rounded-lg bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="h-[36px] w-20 px-2 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   >
                     {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
                   </select>
@@ -453,7 +453,7 @@ export default function CreateRecipePage() {
                   onChange={e => updateStep(step.key, { instruction: e.target.value })}
                   placeholder="Describe this step…"
                   rows={3}
-                  className="w-full px-3 py-2.5 border border-neutral-200 rounded-lg bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400 resize-none"
+                  className="w-full px-3 py-2.5 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400 resize-none"
                 />
 
                 {/* Step photo */}
@@ -469,7 +469,7 @@ export default function CreateRecipePage() {
                     <img
                       src={step.imagePreview}
                       alt={`Step ${idx + 1}`}
-                      className="w-full rounded-lg object-cover max-h-[180px]"
+                      className="w-full rounded-md object-cover max-h-[180px]"
                     />
                     <button
                       type="button"
@@ -484,7 +484,7 @@ export default function CreateRecipePage() {
                   <button
                     type="button"
                     onClick={() => stepFileInputRefs.current.get(step.key)?.click()}
-                    className="self-start flex items-center gap-1.5 h-[34px] px-3 text-sm text-neutral-400 hover:text-neutral-600 active:bg-neutral-50 rounded-lg transition-colors font-sans"
+                    className="self-start flex items-center gap-1.5 h-[34px] px-3 text-sm text-neutral-400 hover:text-neutral-600 active:bg-neutral-50 rounded-md transition-colors font-sans"
                   >
                     <Camera size={17} />
                     Add photo

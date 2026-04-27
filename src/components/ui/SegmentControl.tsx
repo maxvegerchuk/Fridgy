@@ -11,7 +11,7 @@ type Props = {
 };
 
 export default function SegmentControl({ options, value, onChange, className }: Props) {
-  const cls = ['flex p-1 bg-neutral-100 rounded-lg', className].filter(Boolean).join(' ');
+  const cls = ['flex p-1 bg-neutral-100 rounded-md', className].filter(Boolean).join(' ');
 
   return (
     <div className={cls}>

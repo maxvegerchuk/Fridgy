@@ -20,7 +20,7 @@ type Props = {
 
 const UNITS = ['pcs', 'g', 'kg', 'ml', 'l'] as const;
 
-const INPUT_CLS = 'w-full h-[44px] px-4 border border-neutral-200 rounded-lg bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400';
+const INPUT_CLS = 'w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400';
 const LABEL_CLS = 'text-sm font-medium text-neutral-700';
 
 export default function AddItemSheet({ isOpen, onClose, onAddItem, listId }: Props) {

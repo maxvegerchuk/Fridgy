@@ -61,7 +61,7 @@ export default function ShoppingListDetailPage() {
             <button
               type="button"
               onClick={() => setShareOpen(true)}
-              className="w-11 h-11 flex items-center justify-center rounded-lg text-neutral-500 active:scale-95 active:bg-neutral-100 transition-all"
+              className="w-11 h-11 flex items-center justify-center rounded-md text-neutral-500 active:scale-95 active:bg-neutral-100 transition-all"
               aria-label="Share list"
             >
               <ShareNetwork size={22} weight="regular" />
@@ -79,7 +79,7 @@ export default function ShoppingListDetailPage() {
         {loading && (
           <div className="flex flex-col gap-3 px-4 py-4">
             {[...Array(5)].map((_, i) => (
-              <Skeleton key={i} className="h-[56px] rounded-lg" />
+              <Skeleton key={i} className="h-[56px] rounded-md" />
             ))}
           </div>
         )}

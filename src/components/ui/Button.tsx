@@ -12,9 +12,9 @@ const variantClasses: Record<Variant, string> = {
 
 const sizeClasses: Record<Size, string> = {
   sm:  'h-[36px] px-3 text-sm rounded-md',
-  md:  'h-[44px] px-4 text-base rounded-lg',
-  lg:  'h-[52px] px-6 text-base rounded-lg',
-  xl:  'h-12 px-6 text-base rounded-full',
+  md:  'h-[44px] px-4 text-base rounded-md',
+  lg:  'h-[52px] px-6 text-base rounded-md',
+  xl:  'h-12 px-6 text-base rounded-md',
 };
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {

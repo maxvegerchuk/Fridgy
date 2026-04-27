@@ -4,7 +4,7 @@ import type { InputHTMLAttributes } from 'react';
 type InputSize = 'md' | 'lg';
 
 const sizeCls: Record<InputSize, string> = {
-  md: 'h-[44px] rounded-lg',
+  md: 'h-[44px] rounded-md',
   lg: 'h-12 rounded-md',
 };
 

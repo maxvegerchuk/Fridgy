@@ -52,11 +52,11 @@ export default function ProductNameInput({
             onCommit?.();
           }
         }}
-        className="w-full h-[44px] px-4 border border-neutral-200 rounded-lg bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
+        className="w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
       />
 
       {showSuggestions && (
-        <ul className="flex flex-col border border-neutral-200 rounded-lg overflow-hidden bg-neutral-0 shadow-sm">
+        <ul className="flex flex-col border border-neutral-200 rounded-md overflow-hidden bg-neutral-0 shadow-sm">
           {suggestions.map((s) => (
             <li key={s.name}>
               <button

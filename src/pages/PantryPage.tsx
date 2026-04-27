@@ -48,8 +48,8 @@ export default function PantryPage() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100 flex-shrink-0">
-        <h1 className="text-xl font-semibold text-neutral-900 font-display">Pantry</h1>
+      <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100 flex-shrink-0 bg-white">
+        <h1 className="text-2xl font-semibold text-neutral-900 font-display">Pantry</h1>
         <div className="flex items-center gap-1">
           {pantry?.invite_token && (
             <button
@@ -73,7 +73,7 @@ export default function PantryPage() {
       </div>
 
       {/* Search + filter */}
-      <div className="px-4 pt-3 pb-2 flex flex-col gap-2 border-b border-neutral-100 flex-shrink-0">
+      <div className="px-4 pt-3 pb-2 flex flex-col gap-2 border-b border-neutral-100 flex-shrink-0 bg-white">
         <div className="relative">
           <MagnifyingGlass
             size={18}
@@ -85,7 +85,7 @@ export default function PantryPage() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search ingredients"
-            className="w-full h-[44px] pl-9 pr-4 border border-neutral-200 rounded-lg bg-neutral-0 text-sm font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
+            className="w-full h-[44px] pl-9 pr-4 border border-neutral-200 rounded-md bg-neutral-0 text-sm font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
           />
         </div>
         <div className="flex gap-2">
@@ -221,7 +221,7 @@ type ItemRowProps = {
 
 function PantryItemRow({ item, onAddToList, onDelete }: ItemRowProps) {
   return (
-    <div className="flex items-center gap-3 px-4 py-3 border-b border-neutral-100 last:border-0">
+    <div className="flex items-center gap-3 px-4 py-3">
       {/* Image placeholder */}
       <div className="w-16 h-16 rounded-md bg-white border border-neutral-100 flex-shrink-0" />
 

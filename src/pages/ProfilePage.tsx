@@ -17,8 +17,8 @@ export default function ProfilePage() {
   return (
     <div className="flex flex-col h-full pt-safe">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-neutral-100 flex-shrink-0">
-        <h1 className="text-xl font-semibold text-neutral-900 font-display">Profile</h1>
+      <div className="px-4 py-3 border-b border-neutral-100 flex-shrink-0 bg-white">
+        <h1 className="text-2xl font-semibold text-neutral-900 font-display">Profile</h1>
       </div>
 
       <div className="scroll-area">

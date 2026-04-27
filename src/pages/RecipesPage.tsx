@@ -116,8 +116,8 @@ export default function RecipesPage() {
 
   return (
     <div className="flex flex-col h-full pt-safe relative">
-      <div className="px-4 pt-3 pb-2 border-b border-neutral-100 flex flex-col gap-3">
-        <h1 className="text-xl font-semibold text-neutral-900 font-display">Recipes</h1>
+      <div className="px-4 pt-3 pb-2 border-b border-neutral-100 flex flex-col gap-3 bg-white">
+        <h1 className="text-2xl font-semibold text-neutral-900 font-display">Recipes</h1>
         <SegmentControl
           options={[
             { value: 'mine',    label: 'My Recipes' },
@@ -139,7 +139,7 @@ export default function RecipesPage() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search recipes…"
-            className="w-full h-[44px] px-4 border border-neutral-200 rounded-lg bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
+            className="w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
           />
         )}
       </div>

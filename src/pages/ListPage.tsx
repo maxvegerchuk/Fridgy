@@ -55,8 +55,8 @@ export default function ListPage() {
   return (
     <div className="flex flex-col h-full pt-safe">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100 flex-shrink-0">
-        <h1 className="text-xl font-semibold text-neutral-900 font-display">Shopping Lists</h1>
+      <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100 flex-shrink-0 bg-white">
+        <h1 className="text-2xl font-semibold text-neutral-900 font-display">Shopping Lists</h1>
         <Button size="sm" variant="primary" onClick={() => setCreateOpen(true)}>
           <Plus size={16} weight="bold" className="mr-1" />
           New List
@@ -138,7 +138,7 @@ export default function ListPage() {
             placeholder="List name"
             autoFocus
             onKeyDown={e => { if (e.key === 'Enter') handleCreate(); }}
-            className="w-full h-[44px] px-4 border border-neutral-200 rounded-lg bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
+            className="w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
           />
           <Button size="lg" fullWidth loading={creating} onClick={handleCreate}>
             Create List
@@ -187,14 +187,14 @@ function ListCard({ list, isDeleteMode, onTap, onPressStart, onPressEnd, onDelet
           <button
             type="button"
             onClick={onCancelDelete}
-            className="h-[36px] px-3 text-sm font-medium text-neutral-600 font-sans rounded-lg active:bg-neutral-100 transition-colors"
+            className="h-[36px] px-3 text-sm font-medium text-neutral-600 font-sans rounded-md active:bg-neutral-100 transition-colors"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={onDelete}
-            className="h-[36px] px-3 text-sm font-medium text-white font-sans bg-red-500 rounded-lg active:bg-red-600 transition-colors"
+            className="h-[36px] px-3 text-sm font-medium text-white font-sans bg-red-500 rounded-md active:bg-red-600 transition-colors"
           >
             Delete
           </button>
