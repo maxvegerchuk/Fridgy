@@ -30,42 +30,34 @@ function RecipeCard({
   const totalTime = recipe.cook_time_minutes ?? 0;
 
   return (
-    <button
-      type="button"
+    <div
       onClick={onClick}
-      className="flex flex-col border border-neutral-200 rounded-xl bg-neutral-0 overflow-hidden text-left active:scale-95 transition-transform"
+      className="flex items-center gap-3 px-4 py-3 bg-white border border-neutral-100 rounded-md active:opacity-70 transition-opacity cursor-pointer"
     >
-      {/* Cover photo / placeholder */}
-      <div className="w-full h-[100px] flex-shrink-0">
+      {/* Image / placeholder */}
+      <div className="w-16 h-16 rounded-md overflow-hidden flex-shrink-0 bg-neutral-100 border border-neutral-100">
         {recipe.image_url ? (
           <img src={recipe.image_url} alt={recipe.title} className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full bg-neutral-100 flex items-center justify-center">
-            <BookOpen size={28} weight="light" className="text-neutral-300" />
+          <div className="w-full h-full flex items-center justify-center">
+            <BookOpen size={24} weight="light" className="text-neutral-300" />
           </div>
         )}
       </div>
 
-      {/* Body */}
-      <div className="flex flex-col gap-1.5 p-3">
-        <div className="flex items-start justify-between gap-1">
-          <span className="text-sm font-semibold text-neutral-900 font-display leading-snug flex-1">
-            {recipe.title}
-          </span>
-          {action && (
-            <div onClick={e => e.stopPropagation()}>
-              {action}
-            </div>
-          )}
-        </div>
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-neutral-900 font-display truncate leading-snug">
+          {recipe.title}
+        </p>
 
         {badge && (
-          <span className={`self-start text-xs font-medium px-2 py-0.5 rounded-full ${badge.cls}`}>
+          <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full mt-1 ${badge.cls}`}>
             {badge.label}
           </span>
         )}
 
-        <div className="flex items-center gap-3 text-xs text-neutral-400 font-sans">
+        <div className="flex items-center gap-2 text-xs text-neutral-400 font-sans mt-1">
           {withAvail && (
             <span>{withAvail.available_count}/{withAvail.total_count} ingredients</span>
           )}
@@ -73,7 +65,14 @@ function RecipeCard({
           {recipe.servings > 1 && <span>{recipe.servings} srv</span>}
         </div>
       </div>
-    </button>
+
+      {/* Action (e.g. bookmark) */}
+      {action && (
+        <div onClick={e => e.stopPropagation()} className="flex-shrink-0">
+          {action}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -116,7 +115,8 @@ export default function RecipesPage() {
 
   return (
     <div className="flex flex-col h-full pt-safe relative">
-      <div className="px-4 pb-2 border-b border-neutral-100 flex flex-col gap-2 bg-white">
+      {/* Header */}
+      <div className="px-4 pb-2 border-b border-neutral-100 flex flex-col gap-2 bg-white flex-shrink-0">
         <div className="flex items-center h-[56px]">
           <h1 className="text-2xl font-semibold text-neutral-900 font-display">Recipes</h1>
         </div>
@@ -146,13 +146,14 @@ export default function RecipesPage() {
         )}
       </div>
 
+      {/* Body */}
       <div className="flex-1 overflow-y-auto">
         {segment === 'mine' && (
           <>
             {loading && (
-              <div className="grid grid-cols-2 gap-3 p-4">
+              <div className="flex flex-col gap-2 px-4 pt-3">
                 {[1, 2, 3, 4].map(i => (
-                  <Skeleton key={i} className="h-24 rounded-xl" />
+                  <Skeleton key={i} className="h-[88px] rounded-md" />
                 ))}
               </div>
             )}
@@ -164,7 +165,7 @@ export default function RecipesPage() {
               />
             )}
             {!loading && filtered.length > 0 && (
-              <div className="grid grid-cols-2 gap-3 p-4">
+              <div className="flex flex-col gap-2 px-4 pt-3 pb-24">
                 {filtered.map(recipe => (
                   <RecipeCard
                     key={recipe.id}
@@ -180,9 +181,9 @@ export default function RecipesPage() {
         {segment === 'explore' && (
           <>
             {publicLoading && (
-              <div className="grid grid-cols-2 gap-3 p-4">
+              <div className="flex flex-col gap-2 px-4 pt-3">
                 {[1, 2, 3, 4].map(i => (
-                  <Skeleton key={i} className="h-24 rounded-xl" />
+                  <Skeleton key={i} className="h-[88px] rounded-md" />
                 ))}
               </div>
             )}
@@ -194,7 +195,7 @@ export default function RecipesPage() {
               />
             )}
             {!publicLoading && searchedPublic.length > 0 && (
-              <div className="grid grid-cols-2 gap-3 p-4">
+              <div className="flex flex-col gap-2 px-4 pt-3 pb-4">
                 {searchedPublic.map(recipe => (
                   <RecipeCard
                     key={recipe.id}
@@ -204,12 +205,12 @@ export default function RecipesPage() {
                       <button
                         type="button"
                         onClick={() => handleSave(recipe)}
-                        className="p-1 text-neutral-400 active:text-green-500 transition-colors"
+                        className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:text-green-500 active:bg-green-50 transition-colors"
                         aria-label={savedIds.has(recipe.id) ? 'Saved' : 'Save recipe'}
                       >
                         {savedIds.has(recipe.id)
-                          ? <Bookmark size={18} weight="fill" className="text-green-500" />
-                          : <BookmarkSimple size={18} weight="regular" />
+                          ? <Bookmark size={20} weight="fill" className="text-green-500" />
+                          : <BookmarkSimple size={20} weight="regular" />
                         }
                       </button>
                     }
@@ -221,6 +222,7 @@ export default function RecipesPage() {
         )}
       </div>
 
+      {/* FAB — create recipe */}
       {segment === 'mine' && (
         <button
           type="button"
