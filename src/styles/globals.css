@@ -10,7 +10,7 @@
     overflow: hidden;
     overscroll-behavior: none;
     -webkit-font-smoothing: antialiased;
-    background-color: #DFE1E6;
+    background-color: #F4F5F7;
   }
   #root {
     height: 100dvh;
