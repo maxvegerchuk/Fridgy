@@ -167,7 +167,7 @@ function ListSection({ title, children }: { title: string; children: React.React
           {title}
         </span>
       </div>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2 px-4">
         {children}
       </div>
     </div>
