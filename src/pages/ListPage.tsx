@@ -54,7 +54,7 @@ export default function ListPage() {
   return (
     <div className="flex flex-col h-full pt-safe">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100 flex-shrink-0 bg-white">
+      <div className="flex items-center justify-between h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
         <h1 className="text-2xl font-semibold text-neutral-900 font-display">Shopping Lists</h1>
         <Button size="sm" variant="primary" onClick={() => setCreateOpen(true)}>
           <Plus size={16} weight="bold" className="mr-1" />
@@ -184,7 +184,7 @@ function ListCard({ list, onTap, onDeleteClick }: CardProps) {
   const ownerMember = list.members.find(m => m.role === 'owner');
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3">
+    <div className="flex items-center gap-3 px-4 py-3 bg-white border border-neutral-100 rounded-md">
       {/* Tap area */}
       <button
         type="button"

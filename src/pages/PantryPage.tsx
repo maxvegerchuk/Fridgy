@@ -48,7 +48,7 @@ export default function PantryPage() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100 flex-shrink-0 bg-white">
+      <div className="flex items-center justify-between h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
         <h1 className="text-2xl font-semibold text-neutral-900 font-display">Pantry</h1>
         <div className="flex items-center gap-1">
           {pantry?.invite_token && (
@@ -97,7 +97,7 @@ export default function PantryPage() {
               className={`h-8 px-4 rounded-full text-sm font-medium font-sans transition-colors ${
                 view === v
                   ? 'bg-green-500 text-white'
-                  : 'bg-neutral-100 text-neutral-500 active:bg-neutral-200'
+                  : 'bg-[#F4F5F7] text-neutral-500 active:bg-neutral-200'
               }`}
             >
               {v === 'all' ? 'All' : 'Categories'}

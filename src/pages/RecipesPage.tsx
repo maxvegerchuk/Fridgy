@@ -116,8 +116,10 @@ export default function RecipesPage() {
 
   return (
     <div className="flex flex-col h-full pt-safe relative">
-      <div className="px-4 pt-3 pb-2 border-b border-neutral-100 flex flex-col gap-3 bg-white">
-        <h1 className="text-2xl font-semibold text-neutral-900 font-display">Recipes</h1>
+      <div className="px-4 pb-2 border-b border-neutral-100 flex flex-col gap-2 bg-white">
+        <div className="flex items-center h-[56px]">
+          <h1 className="text-2xl font-semibold text-neutral-900 font-display">Recipes</h1>
+        </div>
         <SegmentControl
           options={[
             { value: 'mine',    label: 'My Recipes' },

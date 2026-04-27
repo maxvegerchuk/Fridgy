@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ShoppingCart, ShareNetwork, Trash, Check, Plus, ArrowLeft } from 'phosphor-react';
+import { ShoppingCart, ShareNetwork, Trash, Check, ArrowCounterClockwise, Plus, ArrowLeft } from 'phosphor-react';
 import { EmptyState, Button, Skeleton } from '../components/ui';
 import AddItemSheet from '../components/list/AddItemSheet';
 import ShareSheet from '../components/list/ShareSheet';
@@ -209,11 +209,16 @@ function ItemRow({ item, onCheck, onDelete, onChecked, dimmed }: ItemRowProps) {
         onClick={() => onCheck(item.id, !item.is_checked, item.is_checked ? undefined : onChecked)}
         className={[
           'w-10 h-10 flex items-center justify-center rounded-md transition-all active:scale-95 flex-shrink-0',
-          item.is_checked ? 'text-green-500' : 'text-neutral-400 active:text-green-500 active:bg-green-50',
+          item.is_checked
+            ? 'text-neutral-400 active:text-neutral-600 active:bg-neutral-100'
+            : 'text-neutral-400 active:text-green-500 active:bg-green-50',
         ].join(' ')}
-        aria-label={item.is_checked ? 'Uncheck item' : 'Check item'}
+        aria-label={item.is_checked ? 'Return to list' : 'Mark as in cart'}
       >
-        <Check size={20} weight={item.is_checked ? 'bold' : 'regular'} />
+        {item.is_checked
+          ? <ArrowCounterClockwise size={20} weight="regular" />
+          : <Check size={20} weight="regular" />
+        }
       </button>
 
       {/* Delete */}
