@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ShoppingBagOpen, ShareNetwork, Trash, ShoppingCart, Plus } from 'phosphor-react';
+import { useState, useMemo } from 'react';
+import { ShoppingBagOpen, ShareNetwork, ShoppingCart, Plus, Trash, MagnifyingGlass } from 'phosphor-react';
 import { EmptyState, Button, Skeleton } from '../components/ui';
 import { useToast } from '../components/ui';
 import AddPantrySheet from '../components/pantry/AddPantrySheet';
@@ -31,16 +31,23 @@ export default function PantryPage() {
   const [addOpen, setAddOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [addToListItem, setAddToListItem] = useState<PantryItem | null>(null);
+  const [search, setSearch] = useState('');
   const toast = useToast();
 
-  const groups = groupByCategory(items);
+  const filteredItems = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter(item => item.name.toLowerCase().includes(q));
+  }, [items, search]);
+
+  const groups = groupByCategory(filteredItems);
 
   return (
-    <div className="flex flex-col h-full pt-safe">
+    <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100 flex-shrink-0">
         <h1 className="text-xl font-semibold text-neutral-900 font-sans">Pantry</h1>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           {pantry?.invite_token && (
             <button
               type="button"
@@ -51,10 +58,32 @@ export default function PantryPage() {
               <ShareNetwork size={22} weight="regular" />
             </button>
           )}
-          <Button size="sm" variant="primary" onClick={() => setAddOpen(true)}>
-            <Plus size={16} weight="bold" className="mr-1" />
-            Add
-          </Button>
+          <button
+            type="button"
+            onClick={() => setAddOpen(true)}
+            className="w-11 h-11 flex items-center justify-center rounded-lg text-neutral-500 active:scale-95 active:bg-neutral-100 transition-all"
+            aria-label="Add item"
+          >
+            <Plus size={22} weight="bold" />
+          </button>
+        </div>
+      </div>
+
+      {/* Search */}
+      <div className="px-4 py-3 border-b border-neutral-100 flex-shrink-0">
+        <div className="relative">
+          <MagnifyingGlass
+            size={18}
+            weight="regular"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+          />
+          <input
+            type="search"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search ingredients"
+            className="w-full h-[44px] pl-9 pr-4 border border-neutral-200 rounded-lg bg-neutral-0 text-sm font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
+          />
         </div>
       </div>
 
@@ -63,7 +92,7 @@ export default function PantryPage() {
         {loading && (
           <div className="flex flex-col gap-3 px-4 py-4">
             {[...Array(5)].map((_, i) => (
-              <Skeleton key={i} className="h-[56px] rounded-lg" />
+              <Skeleton key={i} className="h-[80px] rounded-lg" />
             ))}
           </div>
         )}
@@ -83,10 +112,24 @@ export default function PantryPage() {
 
         {!loading && items.length > 0 && (
           <div className="pb-4">
+            {/* Section header */}
+            <div className="flex items-center justify-between px-4 pt-4 pb-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-neutral-400 font-sans">
+                All Ingredients
+              </span>
+              <span className="text-xs text-neutral-400 font-sans">
+                {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'}
+              </span>
+            </div>
+
+            {filteredItems.length === 0 && (
+              <p className="text-sm text-neutral-400 text-center py-8 font-sans">No results</p>
+            )}
+
             {groups.map(([cat, catItems]) => (
               <div key={cat}>
-                <div className="flex items-center gap-2 px-4 pt-4 pb-1">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-neutral-400 font-sans">
+                <div className="flex items-center gap-2 px-4 pt-3 pb-1">
+                  <span className="text-[11px] font-medium uppercase tracking-wider text-neutral-300 font-sans">
                     {CATEGORIES[cat].label}
                   </span>
                 </div>
@@ -150,36 +193,38 @@ type ItemRowProps = {
 
 function PantryItemRow({ item, onAddToList, onDelete }: ItemRowProps) {
   return (
-    <div className="flex items-center gap-3 px-4 min-h-[56px] py-2 border-b border-neutral-100 last:border-0">
+    <div className="flex items-center gap-3 px-4 py-3 border-b border-neutral-100 last:border-0">
+      {/* Image placeholder */}
+      <div className="w-16 h-16 rounded-md bg-white border border-neutral-100 flex-shrink-0" />
+
       {/* Name + qty */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-neutral-900 font-sans truncate">{item.name}</p>
+        <p className="text-sm font-semibold text-neutral-900 font-sans truncate">{item.name}</p>
         {(item.quantity || item.unit) && (
-          <p className="text-xs text-neutral-400 font-sans">
+          <p className="text-xs text-neutral-400 font-sans mt-0.5">
             {[item.quantity, item.unit].filter(Boolean).join(' ')}
           </p>
         )}
       </div>
 
-      {/* Add to list — opens sheet to confirm qty/unit */}
+      {/* Add to shopping list */}
       <button
         type="button"
         onClick={onAddToList}
-        className="flex items-center gap-1 h-[36px] px-3 rounded-md border border-green-500 text-green-600 text-xs font-semibold font-sans active:scale-95 active:bg-green-50 transition-all flex-shrink-0"
+        className="w-10 h-10 flex items-center justify-center rounded-lg text-neutral-400 active:scale-95 active:bg-neutral-100 transition-all flex-shrink-0"
         aria-label={`Add ${item.name} to shopping list`}
       >
-        <ShoppingCart size={14} weight="bold" />
-        List
+        <ShoppingCart size={20} weight="regular" />
       </button>
 
-      {/* Delete */}
+      {/* Delete from pantry */}
       <button
         type="button"
         onClick={() => onDelete(item.id)}
-        className="w-11 h-11 flex items-center justify-center text-neutral-400 active:scale-95 active:text-danger-600 transition-all flex-shrink-0"
-        aria-label={`Delete ${item.name}`}
+        className="w-10 h-10 flex items-center justify-center rounded-lg text-neutral-400 active:scale-95 active:text-danger-600 active:bg-danger-50 transition-all flex-shrink-0"
+        aria-label={`Remove ${item.name} from pantry`}
       >
-        <Trash size={18} weight="regular" />
+        <Trash size={20} weight="regular" />
       </button>
     </div>
   );
