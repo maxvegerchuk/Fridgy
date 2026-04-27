@@ -52,7 +52,7 @@ export default function ShoppingListDetailPage() {
           <ArrowLeft size={24} />
         </button>
 
-        <h1 className="flex-1 text-base font-semibold text-neutral-900 font-sans text-center mx-2 truncate">
+        <h1 className="flex-1 text-base font-semibold text-neutral-900 font-display text-center mx-2 truncate">
           {list?.name ?? 'Shopping List'}
         </h1>
 

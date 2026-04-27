@@ -16,7 +16,10 @@ export default {
         danger:  { 50: '#FEF2F2', 400: '#F87171', 600: '#DC2626' },
         warning: { 50: '#FFFBEB', 400: '#FBBF24', 600: '#D97706' },
       },
-      fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Fraunces', 'serif'],
+      },
       borderRadius: { sm: '8px', md: '12px', lg: '16px', xl: '20px' },
       boxShadow: {
         xs: '0 1px 2px rgba(0,0,0,0.05)',

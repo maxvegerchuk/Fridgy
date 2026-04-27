@@ -49,7 +49,7 @@ function RecipeCard({
       {/* Body */}
       <div className="flex flex-col gap-1.5 p-3">
         <div className="flex items-start justify-between gap-1">
-          <span className="text-sm font-semibold text-neutral-900 font-sans leading-snug flex-1">
+          <span className="text-sm font-semibold text-neutral-900 font-display leading-snug flex-1">
             {recipe.title}
           </span>
           {action && (
@@ -117,7 +117,7 @@ export default function RecipesPage() {
   return (
     <div className="flex flex-col h-full pt-safe relative">
       <div className="px-4 pt-3 pb-2 border-b border-neutral-100 flex flex-col gap-3">
-        <h1 className="text-xl font-semibold text-neutral-900">Recipes</h1>
+        <h1 className="text-xl font-semibold text-neutral-900 font-display">Recipes</h1>
         <SegmentControl
           options={[
             { value: 'mine',    label: 'My Recipes' },

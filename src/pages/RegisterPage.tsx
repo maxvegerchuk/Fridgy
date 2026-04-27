@@ -53,7 +53,7 @@ export default function RegisterPage() {
 
             {/* Logo */}
             <div className="text-center mb-10">
-              <h1 className="text-5xl font-bold text-green-500 tracking-tight font-sans">fridgy</h1>
+              <h1 className="text-5xl font-bold italic text-green-500 tracking-tight font-display">fridgy</h1>
               <p className="text-neutral-400 text-sm mt-2 font-sans">Shopping List · Pantry · Recipes</p>
             </div>
 

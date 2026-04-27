@@ -27,7 +27,7 @@ export default function BottomSheet({ isOpen, onClose, title, children }: Props)
         </div>
         {title && (
           <div className="px-4 pb-3 border-b border-neutral-100 flex-shrink-0">
-            <h2 className="text-lg font-semibold text-neutral-900">{title}</h2>
+            <h2 className="text-lg font-semibold text-neutral-900 font-display">{title}</h2>
           </div>
         )}
         <div className="scroll-area px-4 py-4">
