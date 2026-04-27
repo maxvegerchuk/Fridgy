@@ -40,6 +40,15 @@ export default function ListPage() {
     if (id) navigate(`/list/${id}`);
   };
 
+  const handleConfirmDelete = () => {
+    if (confirmDeleteId) {
+      deleteList(confirmDeleteId);
+      setConfirmDeleteId(null);
+    }
+  };
+
+  const allLists = [...myLists, ...sharedLists];
+  const listToDelete = allLists.find(l => l.id === confirmDeleteId);
   const isEmpty = !loading && myLists.length === 0 && sharedLists.length === 0;
 
   return (
@@ -56,7 +65,7 @@ export default function ListPage() {
       <div className="scroll-area">
         {loading && (
           <div className="flex flex-col gap-3 px-4 py-4">
-            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-[88px] rounded-md" />)}
+            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-[64px] rounded-md" />)}
           </div>
         )}
 
@@ -79,11 +88,8 @@ export default function ListPage() {
                   <ListCard
                     key={list.id}
                     list={list}
-                    isDeleteMode={confirmDeleteId === list.id}
                     onTap={() => navigate(`/list/${list.id}`)}
                     onDeleteClick={() => setConfirmDeleteId(list.id)}
-                    onDelete={() => { deleteList(list.id); setConfirmDeleteId(null); }}
-                    onCancelDelete={() => setConfirmDeleteId(null)}
                   />
                 ))}
               </ListSection>
@@ -95,11 +101,8 @@ export default function ListPage() {
                   <ListCard
                     key={list.id}
                     list={list}
-                    isDeleteMode={false}
                     onTap={() => navigate(`/list/${list.id}`)}
                     onDeleteClick={() => {}}
-                    onDelete={() => {}}
-                    onCancelDelete={() => {}}
                   />
                 ))}
               </ListSection>
@@ -108,6 +111,7 @@ export default function ListPage() {
         )}
       </div>
 
+      {/* New List sheet */}
       <BottomSheet
         isOpen={createOpen}
         onClose={() => { setCreateOpen(false); setNewName('Shopping List'); }}
@@ -129,6 +133,28 @@ export default function ListPage() {
           </Button>
         </div>
       </BottomSheet>
+
+      {/* Delete confirmation modal */}
+      {confirmDeleteId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-6 bg-neutral-900/50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-sm shadow-lg">
+            <h3 className="text-base font-semibold text-neutral-900 font-display mb-1">
+              Delete list?
+            </h3>
+            <p className="text-sm text-neutral-500 font-sans mb-6">
+              "{listToDelete?.name}" will be permanently deleted.
+            </p>
+            <div className="flex gap-3">
+              <Button variant="secondary" size="md" fullWidth onClick={() => setConfirmDeleteId(null)}>
+                No
+              </Button>
+              <Button variant="danger" size="md" fullWidth onClick={handleConfirmDelete}>
+                Yes, delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -150,51 +176,20 @@ function ListSection({ title, children }: { title: string; children: React.React
 
 type CardProps = {
   list: ListSummary;
-  isDeleteMode: boolean;
   onTap: () => void;
   onDeleteClick: () => void;
-  onDelete: () => void;
-  onCancelDelete: () => void;
 };
 
-function ListCard({ list, isDeleteMode, onTap, onDeleteClick, onDelete, onCancelDelete }: CardProps) {
+function ListCard({ list, onTap, onDeleteClick }: CardProps) {
   const ownerMember = list.members.find(m => m.role === 'owner');
 
-  if (isDeleteMode) {
-    return (
-      <div className="flex items-center min-h-[88px] px-4 bg-danger-50 border border-danger-400">
-        <p className="text-sm font-medium text-danger-600 font-sans flex-1 truncate pr-3">
-          Delete "{list.name}"?
-        </p>
-        <div className="flex items-center gap-1 flex-shrink-0">
-          <button
-            type="button"
-            onClick={onCancelDelete}
-            className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 font-sans text-sm active:bg-neutral-100 transition-colors"
-            aria-label="Cancel"
-          >
-            ✕
-          </button>
-          <button
-            type="button"
-            onClick={onDelete}
-            className="w-10 h-10 flex items-center justify-center rounded-md bg-danger-600 text-white active:opacity-80 transition-opacity"
-            aria-label="Confirm delete"
-          >
-            <Trash size={18} weight="regular" />
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex items-center min-h-[88px] px-4 gap-3">
+    <div className="flex items-center gap-3 px-4 py-3">
       {/* Tap area */}
       <button
         type="button"
         onClick={onTap}
-        className="flex-1 min-w-0 text-left py-3 active:opacity-70 transition-opacity"
+        className="flex-1 min-w-0 text-left active:opacity-70 transition-opacity"
       >
         <p className="text-sm font-semibold text-neutral-900 font-sans truncate">{list.name}</p>
         <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
@@ -234,7 +229,7 @@ function ListCard({ list, isDeleteMode, onTap, onDeleteClick, onDelete, onCancel
         </div>
       )}
 
-      {/* Delete button — owners only */}
+      {/* Delete — owners only */}
       {list.role === 'owner' && (
         <button
           type="button"

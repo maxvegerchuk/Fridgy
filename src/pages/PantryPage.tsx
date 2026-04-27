@@ -227,7 +227,7 @@ type ItemRowProps = {
 
 function PantryItemRow({ item, onAddToList, onDelete }: ItemRowProps) {
   return (
-    <div className="flex items-center gap-3 px-4 py-3">
+    <div className="flex items-center gap-3 px-4">
       {/* Image placeholder */}
       <div className="w-16 h-16 rounded-md bg-white border border-neutral-100 flex-shrink-0" />
 
@@ -245,7 +245,7 @@ function PantryItemRow({ item, onAddToList, onDelete }: ItemRowProps) {
       <button
         type="button"
         onClick={onAddToList}
-        className="w-10 h-10 flex items-center justify-center rounded-lg text-neutral-400 active:scale-95 active:bg-neutral-100 transition-all flex-shrink-0"
+        className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:bg-neutral-100 transition-all flex-shrink-0"
         aria-label={`Add ${item.name} to shopping list`}
       >
         <ShoppingCart size={20} weight="regular" />
@@ -255,7 +255,7 @@ function PantryItemRow({ item, onAddToList, onDelete }: ItemRowProps) {
       <button
         type="button"
         onClick={() => onDelete(item.id)}
-        className="w-10 h-10 flex items-center justify-center rounded-lg text-neutral-400 active:scale-95 active:text-danger-600 active:bg-danger-50 transition-all flex-shrink-0"
+        className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-danger-600 active:bg-danger-50 transition-all flex-shrink-0"
         aria-label={`Remove ${item.name} from pantry`}
       >
         <Trash size={20} weight="regular" />

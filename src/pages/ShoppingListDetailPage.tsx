@@ -179,7 +179,7 @@ function ItemRow({ item, onCheck, onDelete, onChecked, dimmed }: ItemRowProps) {
   return (
     <div
       className={[
-        'flex items-center gap-3 px-4 py-3',
+        'flex items-center gap-3 px-4',
         dimmed ? 'opacity-50' : '',
       ].join(' ')}
     >
