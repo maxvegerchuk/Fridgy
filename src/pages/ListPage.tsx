@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Plus, Trash } from 'phosphor-react';
 import { Button, BottomSheet, Skeleton } from '../components/ui';
@@ -30,16 +30,6 @@ export default function ListPage() {
   const [creating, setCreating] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const startPress = (id: string) => {
-    pressTimerRef.current = setTimeout(() => setConfirmDeleteId(id), 500);
-  };
-
-  const cancelPress = () => {
-    if (pressTimerRef.current) { clearTimeout(pressTimerRef.current); pressTimerRef.current = null; }
-  };
-
   const handleCreate = async () => {
     if (!newName.trim()) return;
     setCreating(true);
@@ -66,7 +56,7 @@ export default function ListPage() {
       <div className="scroll-area">
         {loading && (
           <div className="flex flex-col gap-3 px-4 py-4">
-            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-[76px] rounded-xl" />)}
+            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-[88px] rounded-md" />)}
           </div>
         )}
 
@@ -90,12 +80,8 @@ export default function ListPage() {
                     key={list.id}
                     list={list}
                     isDeleteMode={confirmDeleteId === list.id}
-                    onTap={() => {
-                      if (confirmDeleteId === list.id) { setConfirmDeleteId(null); return; }
-                      navigate(`/list/${list.id}`);
-                    }}
-                    onPressStart={() => startPress(list.id)}
-                    onPressEnd={cancelPress}
+                    onTap={() => navigate(`/list/${list.id}`)}
+                    onDeleteClick={() => setConfirmDeleteId(list.id)}
                     onDelete={() => { deleteList(list.id); setConfirmDeleteId(null); }}
                     onCancelDelete={() => setConfirmDeleteId(null)}
                   />
@@ -111,8 +97,7 @@ export default function ListPage() {
                     list={list}
                     isDeleteMode={false}
                     onTap={() => navigate(`/list/${list.id}`)}
-                    onPressStart={() => {}}
-                    onPressEnd={() => {}}
+                    onDeleteClick={() => {}}
                     onDelete={() => {}}
                     onCancelDelete={() => {}}
                   />
@@ -123,7 +108,6 @@ export default function ListPage() {
         )}
       </div>
 
-      {/* New List sheet */}
       <BottomSheet
         isOpen={createOpen}
         onClose={() => { setCreateOpen(false); setNewName('Shopping List'); }}
@@ -157,7 +141,7 @@ function ListSection({ title, children }: { title: string; children: React.React
           {title}
         </span>
       </div>
-      <div className="flex flex-col gap-2 px-4">
+      <div className="flex flex-col gap-3">
         {children}
       </div>
     </div>
@@ -168,35 +152,36 @@ type CardProps = {
   list: ListSummary;
   isDeleteMode: boolean;
   onTap: () => void;
-  onPressStart: () => void;
-  onPressEnd: () => void;
+  onDeleteClick: () => void;
   onDelete: () => void;
   onCancelDelete: () => void;
 };
 
-function ListCard({ list, isDeleteMode, onTap, onPressStart, onPressEnd, onDelete, onCancelDelete }: CardProps) {
+function ListCard({ list, isDeleteMode, onTap, onDeleteClick, onDelete, onCancelDelete }: CardProps) {
   const ownerMember = list.members.find(m => m.role === 'owner');
 
   if (isDeleteMode) {
     return (
-      <div className="flex items-center justify-between h-[72px] px-4 bg-red-50 rounded-xl border border-red-200">
-        <p className="text-sm font-medium text-red-700 font-sans flex-1 truncate pr-3">
+      <div className="flex items-center min-h-[88px] px-4 bg-danger-50 border border-danger-400">
+        <p className="text-sm font-medium text-danger-600 font-sans flex-1 truncate pr-3">
           Delete "{list.name}"?
         </p>
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-1 flex-shrink-0">
           <button
             type="button"
             onClick={onCancelDelete}
-            className="h-[36px] px-3 text-sm font-medium text-neutral-600 font-sans rounded-md active:bg-neutral-100 transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 font-sans text-sm active:bg-neutral-100 transition-colors"
+            aria-label="Cancel"
           >
-            Cancel
+            ✕
           </button>
           <button
             type="button"
             onClick={onDelete}
-            className="h-[36px] px-3 text-sm font-medium text-white font-sans bg-red-500 rounded-md active:bg-red-600 transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-md bg-danger-600 text-white active:opacity-80 transition-opacity"
+            aria-label="Confirm delete"
           >
-            Delete
+            <Trash size={18} weight="regular" />
           </button>
         </div>
       </div>
@@ -204,67 +189,62 @@ function ListCard({ list, isDeleteMode, onTap, onPressStart, onPressEnd, onDelet
   }
 
   return (
-    <div
-      onPointerDown={onPressStart}
-      onPointerUp={onPressEnd}
-      onPointerLeave={onPressEnd}
-      onPointerCancel={onPressEnd}
-    >
+    <div className="flex items-center min-h-[88px] px-4 gap-3">
+      {/* Tap area */}
       <button
         type="button"
         onClick={onTap}
-        className="w-full flex items-center gap-3 px-4 py-3 bg-neutral-0 rounded-xl border border-neutral-100 active:scale-95 active:bg-neutral-50 transition-all text-left"
+        className="flex-1 min-w-0 text-left py-3 active:opacity-70 transition-opacity"
       >
-        {/* Icon */}
-        <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
-          <ShoppingCart size={20} weight="regular" className="text-green-500" />
+        <p className="text-sm font-semibold text-neutral-900 font-sans truncate">{list.name}</p>
+        <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+          <span className="text-xs text-neutral-400 font-sans">
+            {list.item_count} item{list.item_count !== 1 ? 's' : ''}
+          </span>
+          {list.role === 'editor' && ownerMember && (
+            <>
+              <span className="text-neutral-300 text-xs">·</span>
+              <span className="text-xs text-neutral-400 font-sans">
+                by {ownerMember.display_name ?? 'Unknown'}
+              </span>
+            </>
+          )}
+          <span className="text-neutral-300 text-xs">·</span>
+          <span className="text-xs text-neutral-400 font-sans">{formatDate(list.created_at)}</span>
         </div>
-
-        {/* Info */}
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-neutral-900 font-sans truncate">{list.name}</p>
-          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-            <span className="text-xs text-neutral-400 font-sans">
-              {list.item_count} item{list.item_count !== 1 ? 's' : ''}
-            </span>
-            {list.role === 'editor' && ownerMember && (
-              <>
-                <span className="text-neutral-300 text-xs">·</span>
-                <span className="text-xs text-neutral-400 font-sans">
-                  by {ownerMember.display_name ?? 'Unknown'}
-                </span>
-              </>
-            )}
-            <span className="text-neutral-300 text-xs">·</span>
-            <span className="text-xs text-neutral-400 font-sans">{formatDate(list.created_at)}</span>
-          </div>
-        </div>
-
-        {/* Member avatars (only when >1 member) */}
-        {list.members.length > 1 && (
-          <div className="flex items-center flex-shrink-0">
-            {list.members.slice(0, 3).map((m, i) => (
-              <div
-                key={m.user_id}
-                style={{ backgroundColor: memberColor(m.user_id), zIndex: 3 - i }}
-                className="relative -ml-2 first:ml-0 w-7 h-7 rounded-full border-2 border-neutral-0 flex items-center justify-center text-white text-[10px] font-semibold font-sans flex-shrink-0"
-              >
-                {m.display_name ? m.display_name[0].toUpperCase() : '?'}
-              </div>
-            ))}
-            {list.members.length > 3 && (
-              <div className="relative -ml-2 w-7 h-7 rounded-full border-2 border-neutral-0 bg-neutral-200 flex items-center justify-center text-neutral-500 text-[10px] font-semibold font-sans flex-shrink-0">
-                +{list.members.length - 3}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Long-press hint for owners */}
-        {list.role === 'owner' && (
-          <Trash size={15} className="text-neutral-200 flex-shrink-0 ml-1" />
-        )}
       </button>
+
+      {/* Member avatars */}
+      {list.members.length > 1 && (
+        <div className="flex items-center flex-shrink-0">
+          {list.members.slice(0, 3).map((m, i) => (
+            <div
+              key={m.user_id}
+              style={{ backgroundColor: memberColor(m.user_id), zIndex: 3 - i }}
+              className="relative -ml-2 first:ml-0 w-7 h-7 rounded-full border-2 border-neutral-0 flex items-center justify-center text-white text-[10px] font-semibold font-sans flex-shrink-0"
+            >
+              {m.display_name ? m.display_name[0].toUpperCase() : '?'}
+            </div>
+          ))}
+          {list.members.length > 3 && (
+            <div className="relative -ml-2 w-7 h-7 rounded-full border-2 border-neutral-0 bg-neutral-200 flex items-center justify-center text-neutral-500 text-[10px] font-semibold font-sans flex-shrink-0">
+              +{list.members.length - 3}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Delete button — owners only */}
+      {list.role === 'owner' && (
+        <button
+          type="button"
+          onClick={onDeleteClick}
+          className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-danger-600 active:bg-danger-50 transition-all flex-shrink-0"
+          aria-label="Delete list"
+        >
+          <Trash size={20} weight="regular" />
+        </button>
+      )}
     </div>
   );
 }

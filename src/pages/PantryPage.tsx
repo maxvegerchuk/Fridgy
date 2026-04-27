@@ -145,14 +145,18 @@ export default function PantryPage() {
               <p className="text-sm text-neutral-400 text-center py-8 font-sans">No results</p>
             )}
 
-            {view === 'all' && filteredItems.map(item => (
-              <PantryItemRow
-                key={item.id}
-                item={item}
-                onAddToList={() => setAddToListItem(item)}
-                onDelete={deleteItem}
-              />
-            ))}
+            {view === 'all' && (
+              <div className="flex flex-col gap-3">
+                {filteredItems.map(item => (
+                  <PantryItemRow
+                    key={item.id}
+                    item={item}
+                    onAddToList={() => setAddToListItem(item)}
+                    onDelete={deleteItem}
+                  />
+                ))}
+              </div>
+            )}
 
             {view === 'categories' && groups.map(([cat, catItems]) => (
               <div key={cat}>
@@ -161,14 +165,16 @@ export default function PantryPage() {
                     {CATEGORIES[cat].label}
                   </span>
                 </div>
-                {catItems.map(item => (
-                  <PantryItemRow
-                    key={item.id}
-                    item={item}
-                    onAddToList={() => setAddToListItem(item)}
-                    onDelete={deleteItem}
-                  />
-                ))}
+                <div className="flex flex-col gap-3">
+                  {catItems.map(item => (
+                    <PantryItemRow
+                      key={item.id}
+                      item={item}
+                      onAddToList={() => setAddToListItem(item)}
+                      onDelete={deleteItem}
+                    />
+                  ))}
+                </div>
               </div>
             ))}
           </div>

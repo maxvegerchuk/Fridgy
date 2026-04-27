@@ -40,37 +40,41 @@ export default function ShoppingListDetailPage() {
   const groups = groupByCategory(unchecked);
 
   return (
-    <div className="flex flex-col h-full bg-neutral-0 pt-safe">
+    <div className="flex flex-col h-full pt-safe">
       {/* Header */}
-      <div className="flex items-center justify-between h-[56px] px-4 border-b border-neutral-100 sticky top-0 bg-neutral-0 z-10 flex-shrink-0">
+      <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
         <button
           type="button"
           onClick={() => navigate('/')}
-          className="p-1 -ml-1 text-neutral-700 active:scale-95 transition-transform"
+          className="text-neutral-700 active:scale-95 transition-transform flex-shrink-0"
           aria-label="Back to lists"
         >
           <ArrowLeft size={24} />
         </button>
 
-        <h1 className="flex-1 text-base font-semibold text-neutral-900 font-display text-center mx-2 truncate">
+        <h1 className="ml-6 flex-1 min-w-0 text-base font-semibold text-neutral-900 font-display truncate">
           {list?.name ?? 'Shopping List'}
         </h1>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 flex-shrink-0">
           {list?.invite_token && (
             <button
               type="button"
               onClick={() => setShareOpen(true)}
-              className="w-11 h-11 flex items-center justify-center rounded-md text-neutral-500 active:scale-95 active:bg-neutral-100 transition-all"
+              className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-500 active:scale-95 active:bg-neutral-100 transition-all"
               aria-label="Share list"
             >
               <ShareNetwork size={22} weight="regular" />
             </button>
           )}
-          <Button size="sm" variant="primary" onClick={() => setAddOpen(true)}>
-            <Plus size={16} weight="bold" className="mr-1" />
-            Add
-          </Button>
+          <button
+            type="button"
+            onClick={() => setAddOpen(true)}
+            className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-500 active:scale-95 active:bg-neutral-100 transition-all"
+            aria-label="Add item"
+          >
+            <Plus size={22} weight="bold" />
+          </button>
         </div>
       </div>
 
@@ -79,7 +83,7 @@ export default function ShoppingListDetailPage() {
         {loading && (
           <div className="flex flex-col gap-3 px-4 py-4">
             {[...Array(5)].map((_, i) => (
-              <Skeleton key={i} className="h-[56px] rounded-md" />
+              <Skeleton key={i} className="h-[88px] rounded-md" />
             ))}
           </div>
         )}
@@ -88,7 +92,7 @@ export default function ShoppingListDetailPage() {
           <EmptyState
             icon={<ShoppingCart size={56} weight="light" />}
             title="Your list is empty"
-            description="Tap Add to start building your shopping list"
+            description="Tap + to start building your shopping list"
             action={
               <Button size="md" onClick={() => setAddOpen(true)}>
                 Add First Item
@@ -101,39 +105,43 @@ export default function ShoppingListDetailPage() {
           <div className="pb-4">
             {groups.map(([cat, catItems]) => (
               <div key={cat}>
-                <div className="flex items-center gap-2 px-4 pt-4 pb-1">
+                <div className="flex items-center gap-2 px-4 pt-4 pb-2">
                   <span className="text-xs font-semibold uppercase tracking-wide text-neutral-400 font-sans">
                     {CATEGORIES[cat].label}
                   </span>
                 </div>
-                {catItems.map(item => (
-                  <ItemRow
-                    key={item.id}
-                    item={item}
-                    onCheck={checkItem}
-                    onDelete={deleteItem}
-                    onChecked={refetchPantry}
-                  />
-                ))}
+                <div className="flex flex-col gap-3">
+                  {catItems.map(item => (
+                    <ItemRow
+                      key={item.id}
+                      item={item}
+                      onCheck={checkItem}
+                      onDelete={deleteItem}
+                      onChecked={refetchPantry}
+                    />
+                  ))}
+                </div>
               </div>
             ))}
 
             {checked.length > 0 && (
               <div>
-                <div className="flex items-center gap-2 px-4 pt-5 pb-1">
+                <div className="flex items-center gap-2 px-4 pt-5 pb-2">
                   <span className="text-xs font-semibold uppercase tracking-wide text-neutral-400 font-sans">
                     In Cart ({checked.length})
                   </span>
                 </div>
-                {checked.map(item => (
-                  <ItemRow
-                    key={item.id}
-                    item={item}
-                    onCheck={checkItem}
-                    onDelete={deleteItem}
-                    dimmed
-                  />
-                ))}
+                <div className="flex flex-col gap-3">
+                  {checked.map(item => (
+                    <ItemRow
+                      key={item.id}
+                      item={item}
+                      onCheck={checkItem}
+                      onDelete={deleteItem}
+                      dimmed
+                    />
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -171,47 +179,51 @@ function ItemRow({ item, onCheck, onDelete, onChecked, dimmed }: ItemRowProps) {
   return (
     <div
       className={[
-        'flex items-center gap-3 px-4 h-[56px] border-b border-neutral-100 last:border-0',
+        'flex items-center gap-3 px-4 py-3',
         dimmed ? 'opacity-50' : '',
       ].join(' ')}
     >
-      <button
-        type="button"
-        onClick={() => onCheck(item.id, !item.is_checked, item.is_checked ? undefined : onChecked)}
-        className={[
-          'w-[26px] h-[26px] flex-shrink-0 rounded-full border-2 flex items-center justify-center active:scale-95 transition-all',
-          item.is_checked
-            ? 'bg-green-500 border-green-500'
-            : 'bg-neutral-0 border-neutral-300',
-        ].join(' ')}
-        aria-label={item.is_checked ? 'Uncheck item' : 'Check item'}
-      >
-        {item.is_checked && <Check size={14} weight="bold" className="text-neutral-0" />}
-      </button>
+      {/* Image placeholder */}
+      <div className="w-16 h-16 rounded-md bg-white border border-neutral-100 flex-shrink-0" />
 
+      {/* Name + qty */}
       <div className="flex-1 min-w-0">
         <p
           className={[
-            'text-sm font-medium font-sans truncate',
+            'text-sm font-semibold font-sans truncate',
             item.is_checked ? 'line-through text-neutral-400' : 'text-neutral-900',
           ].join(' ')}
         >
           {item.name}
         </p>
         {(item.quantity || item.unit) && (
-          <p className="text-xs text-neutral-400 font-sans">
+          <p className="text-xs text-neutral-400 font-sans mt-0.5">
             {[item.quantity, item.unit].filter(Boolean).join(' ')}
           </p>
         )}
       </div>
 
+      {/* Check / uncheck */}
+      <button
+        type="button"
+        onClick={() => onCheck(item.id, !item.is_checked, item.is_checked ? undefined : onChecked)}
+        className={[
+          'w-10 h-10 flex items-center justify-center rounded-md transition-all active:scale-95 flex-shrink-0',
+          item.is_checked ? 'text-green-500' : 'text-neutral-400 active:text-green-500 active:bg-green-50',
+        ].join(' ')}
+        aria-label={item.is_checked ? 'Uncheck item' : 'Check item'}
+      >
+        <Check size={20} weight={item.is_checked ? 'bold' : 'regular'} />
+      </button>
+
+      {/* Delete */}
       <button
         type="button"
         onClick={() => onDelete(item.id)}
-        className="w-11 h-11 flex items-center justify-center text-neutral-400 active:scale-95 active:text-danger-600 transition-all flex-shrink-0"
+        className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-danger-600 active:bg-danger-50 transition-all flex-shrink-0"
         aria-label="Delete item"
       >
-        <Trash size={18} weight="regular" />
+        <Trash size={20} weight="regular" />
       </button>
     </div>
   );
