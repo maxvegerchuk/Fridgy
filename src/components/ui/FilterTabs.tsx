@@ -26,7 +26,7 @@ export default function FilterTabs({ tabs, value, onChange, className }: Props) 
             'active:scale-95 transition-all whitespace-nowrap min-h-[36px]',
             value === tab.value
               ? 'bg-green-500 text-white'
-              : 'bg-neutral-100 text-neutral-600',
+              : 'bg-[#F4F5F7] text-neutral-600',
           ].join(' ')}
         >
           {tab.label}

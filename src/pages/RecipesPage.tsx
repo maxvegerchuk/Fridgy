@@ -1,12 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Globe, Plus, Bookmark, BookmarkSimple } from 'phosphor-react';
-import { EmptyState, SegmentControl, FilterTabs, Skeleton } from '../components/ui';
+import { EmptyState, SegmentControl, FilterTabs, Skeleton, BottomSheet, Button } from '../components/ui';
 import { useToast } from '../components/ui';
-import { useRecipes } from '../hooks/useRecipes';
+import { useRecipes, fetchRecipeById } from '../hooks/useRecipes';
 import { usePantry } from '../hooks/usePantry';
+import { useShoppingLists } from '../hooks/useShoppingList';
+import { useAuthStore } from '../store/authStore';
+import { supabase } from '../lib/supabase';
+import { randomUUID } from '../lib/uuid';
 import { getFilteredRecipes, getFilterCounts } from '../lib/recipeEngine';
-import type { RecipeFilter, RecipeWithAvailability, Recipe } from '../types';
+import type { RecipeFilter, RecipeWithAvailability, Recipe, RecipeIngredient } from '../types';
 
 type Segment = 'mine' | 'explore';
 
@@ -16,13 +20,27 @@ const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
   missing_many: { label: 'Missing',   cls: 'bg-neutral-100 text-neutral-500' },
 };
 
+type PendingAdd = {
+  recipeName: string;
+  ingredients: RecipeIngredient[];
+  mode: 'all' | 'missing';
+};
+
 function RecipeCard({
   recipe,
   onClick,
+  onAddAll,
+  onAddMissing,
+  loadingMode,
+  showMissing,
   action,
 }: {
   recipe: RecipeWithAvailability | Recipe;
   onClick: () => void;
+  onAddAll: () => void;
+  onAddMissing?: () => void;
+  loadingMode: 'all' | 'missing' | null;
+  showMissing: boolean;
   action?: React.ReactNode;
 }) {
   const withAvail = 'status' in recipe ? recipe as RecipeWithAvailability : null;
@@ -30,48 +48,72 @@ function RecipeCard({
   const totalTime = recipe.cook_time_minutes ?? 0;
 
   return (
-    <div
-      onClick={onClick}
-      className="flex items-center gap-3 px-4 py-3 bg-white border border-neutral-100 rounded-md active:opacity-70 transition-opacity cursor-pointer"
-    >
-      {/* Image / placeholder */}
-      <div className="w-16 h-16 rounded-md overflow-hidden flex-shrink-0 bg-neutral-100 border border-neutral-100">
+    <div className="bg-white border border-neutral-100 rounded-md overflow-hidden">
+      {/* Cover image */}
+      <div
+        className="w-full h-[200px] cursor-pointer active:opacity-80 transition-opacity"
+        onClick={onClick}
+      >
         {recipe.image_url ? (
           <img src={recipe.image_url} alt={recipe.title} className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <BookOpen size={24} weight="light" className="text-neutral-300" />
+          <div className="w-full h-full bg-neutral-100 flex items-center justify-center">
+            <BookOpen size={40} weight="light" className="text-neutral-300" />
           </div>
         )}
       </div>
 
-      {/* Info */}
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-neutral-900 font-display truncate leading-snug">
-          {recipe.title}
-        </p>
-
-        {badge && (
-          <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full mt-1 ${badge.cls}`}>
-            {badge.label}
-          </span>
-        )}
-
-        <div className="flex items-center gap-2 text-xs text-neutral-400 font-sans mt-1">
-          {withAvail && (
-            <span>{withAvail.available_count}/{withAvail.total_count} ingredients</span>
+      {/* Content */}
+      <div className="px-4 pt-3 pb-4">
+        <div className="flex items-start justify-between gap-2">
+          <p
+            className="text-base font-semibold text-neutral-900 font-display leading-snug flex-1 cursor-pointer"
+            onClick={onClick}
+          >
+            {recipe.title}
+          </p>
+          {action && (
+            <div className="flex-shrink-0">{action}</div>
           )}
-          {totalTime > 0 && <span>{totalTime} min</span>}
-          {recipe.servings > 1 && <span>{recipe.servings} srv</span>}
+        </div>
+
+        <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+          {badge && (
+            <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${badge.cls}`}>
+              {badge.label}
+            </span>
+          )}
+          <div className="flex items-center gap-2 text-xs text-neutral-400 font-sans">
+            {withAvail && (
+              <span>{withAvail.available_count}/{withAvail.total_count} ingredients</span>
+            )}
+            {totalTime > 0 && <span>{totalTime} min</span>}
+            {recipe.servings > 1 && <span>{recipe.servings} srv</span>}
+          </div>
+        </div>
+
+        {/* Action buttons */}
+        <div className="flex gap-2 mt-3">
+          <button
+            type="button"
+            onClick={onAddAll}
+            disabled={loadingMode !== null}
+            className="flex-1 h-[40px] border border-neutral-200 rounded-md text-sm font-medium font-sans text-neutral-700 active:bg-neutral-50 transition-colors disabled:opacity-50"
+          >
+            {loadingMode === 'all' ? '…' : 'Add All'}
+          </button>
+          {showMissing && onAddMissing && (
+            <button
+              type="button"
+              onClick={onAddMissing}
+              disabled={loadingMode !== null}
+              className="flex-1 h-[40px] bg-green-500 text-white rounded-md text-sm font-medium font-sans active:bg-green-600 transition-colors disabled:opacity-50"
+            >
+              {loadingMode === 'missing' ? '…' : 'Add Missing'}
+            </button>
+          )}
         </div>
       </div>
-
-      {/* Action (e.g. bookmark) */}
-      {action && (
-        <div onClick={e => e.stopPropagation()} className="flex-shrink-0">
-          {action}
-        </div>
-      )}
     </div>
   );
 }
@@ -86,6 +128,13 @@ export default function RecipesPage() {
 
   const { myRecipes, publicRecipes, savedIds, loading, publicLoading, fetchPublicRecipes, saveRecipe } = useRecipes();
   const { items: pantryItems } = usePantry();
+  const { myLists } = useShoppingLists();
+  const user = useAuthStore(s => s.user);
+
+  const [loadingRecipeId, setLoadingRecipeId] = useState<string | null>(null);
+  const [loadingMode, setLoadingMode]         = useState<'all' | 'missing' | null>(null);
+  const [pendingAdd, setPendingAdd]           = useState<PendingAdd | null>(null);
+  const [addingToListId, setAddingToListId]   = useState<string | null>(null);
 
   useEffect(() => {
     if (segment === 'explore' && !exploreFetched.current) {
@@ -94,7 +143,7 @@ export default function RecipesPage() {
     }
   }, [segment, fetchPublicRecipes]);
 
-  const counts = getFilterCounts(myRecipes, pantryItems);
+  const counts  = getFilterCounts(myRecipes, pantryItems);
   const filtered = getFilteredRecipes(myRecipes, pantryItems, filter);
 
   const filterTabs = [
@@ -111,6 +160,57 @@ export default function RecipesPage() {
     const err = await saveRecipe(recipe);
     if (err) toast(err, 'error');
     else toast('Saved to your recipes', 'success');
+  };
+
+  const handleAddClick = async (recipe: Recipe | RecipeWithAvailability, mode: 'all' | 'missing') => {
+    setLoadingRecipeId(recipe.id);
+    setLoadingMode(mode);
+
+    const full = await fetchRecipeById(recipe.id);
+    setLoadingRecipeId(null);
+    setLoadingMode(null);
+
+    if (!full) { toast('Could not load recipe', 'error'); return; }
+
+    let ingredients = full.ingredients ?? [];
+    if (mode === 'missing') {
+      const pantryNames = new Set(pantryItems.map(p => p.name.toLowerCase()));
+      ingredients = ingredients.filter(ing => !pantryNames.has(ing.name.toLowerCase()));
+      if (ingredients.length === 0) {
+        toast('All ingredients are already in your pantry', 'info');
+        return;
+      }
+    }
+
+    setPendingAdd({ recipeName: full.title, ingredients, mode });
+  };
+
+  const handleAddToList = async (listId: string) => {
+    if (!pendingAdd || !user) return;
+    setAddingToListId(listId);
+
+    const rows = pendingAdd.ingredients.map(ing => ({
+      id: randomUUID(),
+      list_id: listId,
+      name: ing.name,
+      quantity: ing.quantity ?? null,
+      unit: ing.unit ?? null,
+      category: 'other' as const,
+      is_checked: false,
+      added_by: user.id,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }));
+
+    const { error } = await supabase.from('list_items').insert(rows);
+    setAddingToListId(null);
+
+    if (error) {
+      toast('Failed to add items', 'error');
+    } else {
+      toast(`${rows.length} item${rows.length !== 1 ? 's' : ''} added`, 'success');
+      setPendingAdd(null);
+    }
   };
 
   return (
@@ -152,9 +252,7 @@ export default function RecipesPage() {
           <>
             {loading && (
               <div className="flex flex-col gap-2 px-4 pt-3">
-                {[1, 2, 3, 4].map(i => (
-                  <Skeleton key={i} className="h-[88px] rounded-md" />
-                ))}
+                {[1, 2, 3].map(i => <Skeleton key={i} className="h-[300px] rounded-md" />)}
               </div>
             )}
             {!loading && filtered.length === 0 && (
@@ -171,6 +269,10 @@ export default function RecipesPage() {
                     key={recipe.id}
                     recipe={recipe}
                     onClick={() => navigate(`/recipe/${recipe.id}`)}
+                    onAddAll={() => handleAddClick(recipe, 'all')}
+                    onAddMissing={() => handleAddClick(recipe, 'missing')}
+                    loadingMode={loadingRecipeId === recipe.id ? loadingMode : null}
+                    showMissing={recipe.status !== 'ready'}
                   />
                 ))}
               </div>
@@ -182,9 +284,7 @@ export default function RecipesPage() {
           <>
             {publicLoading && (
               <div className="flex flex-col gap-2 px-4 pt-3">
-                {[1, 2, 3, 4].map(i => (
-                  <Skeleton key={i} className="h-[88px] rounded-md" />
-                ))}
+                {[1, 2, 3].map(i => <Skeleton key={i} className="h-[300px] rounded-md" />)}
               </div>
             )}
             {!publicLoading && searchedPublic.length === 0 && (
@@ -201,6 +301,9 @@ export default function RecipesPage() {
                     key={recipe.id}
                     recipe={recipe}
                     onClick={() => navigate(`/recipe/${recipe.id}`)}
+                    onAddAll={() => handleAddClick(recipe, 'all')}
+                    loadingMode={loadingRecipeId === recipe.id ? loadingMode : null}
+                    showMissing={false}
                     action={
                       <button
                         type="button"
@@ -222,7 +325,7 @@ export default function RecipesPage() {
         )}
       </div>
 
-      {/* FAB — create recipe */}
+      {/* FAB */}
       {segment === 'mine' && (
         <button
           type="button"
@@ -233,6 +336,46 @@ export default function RecipesPage() {
           <Plus size={24} weight="bold" />
         </button>
       )}
+
+      {/* Select list bottom sheet */}
+      <BottomSheet
+        isOpen={pendingAdd !== null}
+        onClose={() => setPendingAdd(null)}
+        title={`Add ${pendingAdd?.mode === 'missing' ? 'missing' : 'all'} ingredients`}
+      >
+        {pendingAdd && (
+          <div className="flex flex-col gap-3">
+            <p className="text-sm text-neutral-500 font-sans">
+              {pendingAdd.ingredients.length} ingredient{pendingAdd.ingredients.length !== 1 ? 's' : ''} from "{pendingAdd.recipeName}" — choose a list:
+            </p>
+
+            {myLists.length === 0 && (
+              <p className="text-sm text-neutral-400 text-center py-4 font-sans">
+                No lists yet. Create one first.
+              </p>
+            )}
+
+            {myLists.map(list => (
+              <button
+                key={list.id}
+                type="button"
+                onClick={() => handleAddToList(list.id)}
+                disabled={addingToListId !== null}
+                className="flex items-center justify-between h-[52px] px-4 bg-white border border-neutral-100 rounded-md active:bg-neutral-50 transition-colors disabled:opacity-50"
+              >
+                <span className="text-sm font-semibold text-neutral-900 font-sans">{list.name}</span>
+                <span className="text-xs text-neutral-400 font-sans">
+                  {addingToListId === list.id ? 'Adding…' : `${list.item_count} items`}
+                </span>
+              </button>
+            ))}
+
+            <Button variant="secondary" size="md" fullWidth onClick={() => setPendingAdd(null)}>
+              Cancel
+            </Button>
+          </div>
+        )}
+      </BottomSheet>
     </div>
   );
 }
