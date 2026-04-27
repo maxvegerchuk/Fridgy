@@ -4,16 +4,16 @@ type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type Size = 'sm' | 'md' | 'lg' | 'xl';
 
 const variantClasses: Record<Variant, string> = {
-  primary:   'bg-green-500 text-white shadow-sm active:bg-green-600 active:shadow-none disabled:bg-neutral-200 disabled:text-neutral-400 disabled:shadow-none',
-  secondary: 'bg-neutral-0 text-neutral-900 border border-neutral-200 active:bg-neutral-100',
+  primary:   'bg-green-500 text-white active:bg-green-600 disabled:bg-neutral-200 disabled:text-neutral-400',
+  secondary: 'bg-neutral-0 text-neutral-900 border border-neutral-200 active:bg-neutral-50',
   ghost:     'text-neutral-700 active:bg-neutral-100',
   danger:    'bg-danger-600 text-white active:bg-red-700',
 };
 
 const sizeClasses: Record<Size, string> = {
-  sm:  'h-[36px] px-4 text-sm rounded-full',
-  md:  'h-[44px] px-5 text-base rounded-full',
-  lg:  'h-[52px] px-6 text-base rounded-full',
+  sm:  'h-[36px] px-3 text-sm rounded-md',
+  md:  'h-[44px] px-4 text-base rounded-lg',
+  lg:  'h-[52px] px-6 text-base rounded-lg',
   xl:  'h-12 px-6 text-base rounded-full',
 };
 
@@ -37,7 +37,7 @@ export default function Button({
 }: Props) {
   const cls = [
     'inline-flex items-center justify-center font-medium font-sans',
-    'active:scale-95 transition-all',
+    'active:scale-95 transition-transform',
     'disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100',
     variantClasses[variant],
     sizeClasses[size],

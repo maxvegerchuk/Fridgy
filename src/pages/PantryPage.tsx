@@ -39,7 +39,7 @@ export default function PantryPage() {
     <div className="flex flex-col h-full pt-safe">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100 flex-shrink-0">
-        <h1 className="text-2xl font-bold text-neutral-900 font-display">Pantry</h1>
+        <h1 className="text-xl font-semibold text-neutral-900 font-sans">Pantry</h1>
         <div className="flex items-center gap-2">
           {pantry?.invite_token && (
             <button

@@ -56,7 +56,7 @@ export default function ListPage() {
     <div className="flex flex-col h-full pt-safe">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100 flex-shrink-0">
-        <h1 className="text-2xl font-bold text-neutral-900 font-display">Shopping Lists</h1>
+        <h1 className="text-xl font-semibold text-neutral-900 font-sans">Shopping Lists</h1>
         <Button size="sm" variant="primary" onClick={() => setCreateOpen(true)}>
           <Plus size={16} weight="bold" className="mr-1" />
           New List
