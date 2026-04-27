@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Leaf } from 'phosphor-react';
 import { useAuthStore } from '../store/authStore';
 import { Input, Button } from '../components/ui';
 
@@ -49,8 +50,13 @@ export default function LoginPage() {
 
             {/* Logo */}
             <div className="text-center mb-10">
-              <h1 className="text-5xl font-bold text-green-500 tracking-tight font-sans">fridgy</h1>
-              <p className="text-neutral-400 text-sm mt-2 font-sans">Shopping List · Pantry · Recipes</p>
+              <div className="flex justify-center mb-4">
+                <div className="w-14 h-14 rounded-2xl bg-green-50 border border-green-100 flex items-center justify-center shadow-sm">
+                  <Leaf size={26} weight="fill" className="text-green-500" />
+                </div>
+              </div>
+              <h1 className="text-6xl font-bold italic font-display text-green-600 leading-none tracking-tight">fridgy</h1>
+              <p className="text-neutral-400 text-xs mt-3 font-sans tracking-[0.12em] uppercase">Shopping · Pantry · Recipes</p>
             </div>
 
             {/* Form */}

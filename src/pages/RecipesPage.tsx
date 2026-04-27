@@ -33,23 +33,23 @@ function RecipeCard({
     <button
       type="button"
       onClick={onClick}
-      className="flex flex-col border border-neutral-200 rounded-xl bg-neutral-0 overflow-hidden text-left active:scale-95 transition-transform"
+      className="flex flex-col border border-neutral-200 rounded-2xl bg-neutral-0 overflow-hidden text-left active:scale-95 transition-all shadow-xs hover:shadow-sm"
     >
       {/* Cover photo / placeholder */}
-      <div className="w-full h-[100px] flex-shrink-0">
+      <div className="w-full h-[120px] flex-shrink-0">
         {recipe.image_url ? (
           <img src={recipe.image_url} alt={recipe.title} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full bg-neutral-100 flex items-center justify-center">
-            <BookOpen size={28} weight="light" className="text-neutral-300" />
+            <BookOpen size={30} weight="light" className="text-neutral-300" />
           </div>
         )}
       </div>
 
       {/* Body */}
-      <div className="flex flex-col gap-1.5 p-3">
+      <div className="flex flex-col gap-1.5 p-3.5">
         <div className="flex items-start justify-between gap-1">
-          <span className="text-sm font-semibold text-neutral-900 font-sans leading-snug flex-1">
+          <span className="text-sm font-semibold text-neutral-900 font-display leading-snug flex-1">
             {recipe.title}
           </span>
           {action && (
@@ -67,7 +67,7 @@ function RecipeCard({
 
         <div className="flex items-center gap-3 text-xs text-neutral-400 font-sans">
           {withAvail && (
-            <span>{withAvail.available_count}/{withAvail.total_count} ingredients</span>
+            <span>{withAvail.available_count}/{withAvail.total_count}</span>
           )}
           {totalTime > 0 && <span>{totalTime} min</span>}
           {recipe.servings > 1 && <span>{recipe.servings} srv</span>}
@@ -117,7 +117,7 @@ export default function RecipesPage() {
   return (
     <div className="flex flex-col h-full pt-safe relative">
       <div className="px-4 pt-3 pb-2 border-b border-neutral-100 flex flex-col gap-3">
-        <h1 className="text-xl font-semibold text-neutral-900">Recipes</h1>
+        <h1 className="text-2xl font-bold text-neutral-900 font-display">Recipes</h1>
         <SegmentControl
           options={[
             { value: 'mine',    label: 'My Recipes' },
