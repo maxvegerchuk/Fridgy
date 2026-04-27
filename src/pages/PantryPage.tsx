@@ -26,12 +26,15 @@ function groupByCategory(items: PantryItem[]): [ItemCategory, PantryItem[]][] {
     .map(cat => [cat, map.get(cat)!]);
 }
 
+type ViewMode = 'all' | 'categories';
+
 export default function PantryPage() {
   const { pantry, items, loading, addItem, deleteItem, addToShoppingList } = usePantry();
   const [addOpen, setAddOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [addToListItem, setAddToListItem] = useState<PantryItem | null>(null);
   const [search, setSearch] = useState('');
+  const [view, setView] = useState<ViewMode>('all');
   const toast = useToast();
 
   const filteredItems = useMemo(() => {
@@ -69,8 +72,8 @@ export default function PantryPage() {
         </div>
       </div>
 
-      {/* Search */}
-      <div className="px-4 py-3 border-b border-neutral-100 flex-shrink-0">
+      {/* Search + filter */}
+      <div className="px-4 pt-3 pb-2 flex flex-col gap-2 border-b border-neutral-100 flex-shrink-0">
         <div className="relative">
           <MagnifyingGlass
             size={18}
@@ -84,6 +87,22 @@ export default function PantryPage() {
             placeholder="Search ingredients"
             className="w-full h-[44px] pl-9 pr-4 border border-neutral-200 rounded-lg bg-neutral-0 text-sm font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
           />
+        </div>
+        <div className="flex gap-2">
+          {(['all', 'categories'] as ViewMode[]).map(v => (
+            <button
+              key={v}
+              type="button"
+              onClick={() => setView(v)}
+              className={`h-8 px-4 rounded-full text-sm font-medium font-sans transition-colors ${
+                view === v
+                  ? 'bg-green-500 text-white'
+                  : 'bg-neutral-100 text-neutral-500 active:bg-neutral-200'
+              }`}
+            >
+              {v === 'all' ? 'All' : 'Categories'}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -126,7 +145,16 @@ export default function PantryPage() {
               <p className="text-sm text-neutral-400 text-center py-8 font-sans">No results</p>
             )}
 
-            {groups.map(([cat, catItems]) => (
+            {view === 'all' && filteredItems.map(item => (
+              <PantryItemRow
+                key={item.id}
+                item={item}
+                onAddToList={() => setAddToListItem(item)}
+                onDelete={deleteItem}
+              />
+            ))}
+
+            {view === 'categories' && groups.map(([cat, catItems]) => (
               <div key={cat}>
                 <div className="flex items-center gap-2 px-4 pt-3 pb-1">
                   <span className="text-[11px] font-medium uppercase tracking-wider text-neutral-300 font-sans">
