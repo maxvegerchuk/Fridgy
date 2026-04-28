@@ -12,20 +12,19 @@ export default function TabBar() {
   return (
     <nav className="flex border-t border-neutral-200 bg-neutral-0 pb-safe flex-shrink-0">
       {tabs.map(({ to, icon: Icon, label, end }) => (
-        <NavLink
-          key={to}
-          to={to}
-          end={end}
-          className={({ isActive }) =>
-            [
-              'flex-1 flex flex-col items-center justify-center gap-0.5 min-h-[56px]',
-              'active:scale-95 transition-transform',
-              isActive ? 'text-green-500' : 'text-neutral-400',
-            ].join(' ')
-          }
-        >
-          <Icon size={24} weight="regular" />
-          <span className="text-xs font-medium">{label}</span>
+        <NavLink key={to} to={to} end={end} className="flex-1">
+          {({ isActive }) => (
+            <div
+              className={[
+                'flex flex-col items-center justify-center gap-0.5 min-h-[56px]',
+                'active:scale-95 transition-transform',
+                isActive ? 'text-green-500' : 'text-neutral-400',
+              ].join(' ')}
+            >
+              <Icon size={24} weight={isActive ? 'fill' : 'regular'} />
+              <span className="text-xs font-medium">{label}</span>
+            </div>
+          )}
         </NavLink>
       ))}
     </nav>

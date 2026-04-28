@@ -52,14 +52,10 @@ export default function ListPage() {
   const isEmpty = !loading && myLists.length === 0 && sharedLists.length === 0;
 
   return (
-    <div className="flex flex-col h-full pt-safe">
+    <div className="flex flex-col h-full pt-safe relative">
       {/* Header */}
-      <div className="flex items-center justify-between h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
+      <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
         <h1 className="text-2xl font-semibold text-neutral-900 font-display">Shopping Lists</h1>
-        <Button size="sm" variant="primary" onClick={() => setCreateOpen(true)}>
-          <Plus size={16} weight="bold" className="mr-1" />
-          New List
-        </Button>
       </div>
 
       <div className="scroll-area">
@@ -110,6 +106,16 @@ export default function ListPage() {
           </div>
         )}
       </div>
+
+      {/* FAB */}
+      <button
+        type="button"
+        onClick={() => setCreateOpen(true)}
+        className="absolute bottom-6 right-4 w-14 h-14 bg-green-500 text-white rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform"
+        aria-label="New list"
+      >
+        <Plus size={24} weight="bold" />
+      </button>
 
       {/* New List sheet */}
       <BottomSheet

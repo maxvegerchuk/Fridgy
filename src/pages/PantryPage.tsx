@@ -1,13 +1,14 @@
 import { useState, useMemo } from 'react';
-import { ShoppingBagOpen, ShareNetwork, ShoppingCart, Plus, Trash, MagnifyingGlass } from 'phosphor-react';
-import { EmptyState, Button, Skeleton } from '../components/ui';
+import { ShoppingBagOpen, ShoppingCart, Plus, Trash, MagnifyingGlass, UserPlus } from 'phosphor-react';
+import { EmptyState, Button, Skeleton, BottomSheet } from '../components/ui';
 import { useToast } from '../components/ui';
 import AddPantrySheet from '../components/pantry/AddPantrySheet';
 import AddToListSheet from '../components/pantry/AddToListSheet';
-import ShareSheet from '../components/list/ShareSheet';
 import { usePantry } from '../hooks/usePantry';
+import { supabase } from '../lib/supabase';
+import { randomUUID } from '../lib/uuid';
 import { CATEGORIES } from '../types';
-import type { ItemCategory, PantryItem } from '../types';
+import type { ItemCategory, PantryItem, Profile } from '../types';
 
 const CATEGORY_ORDER: ItemCategory[] = [
   'vegetables', 'fruits', 'dairy', 'meat', 'fish',
@@ -31,11 +32,56 @@ type ViewMode = 'all' | 'categories';
 export default function PantryPage() {
   const { pantry, items, loading, addItem, deleteItem, addToShoppingList } = usePantry();
   const [addOpen, setAddOpen] = useState(false);
-  const [shareOpen, setShareOpen] = useState(false);
   const [addToListItem, setAddToListItem] = useState<PantryItem | null>(null);
   const [search, setSearch] = useState('');
   const [view, setView] = useState<ViewMode>('all');
   const toast = useToast();
+
+  const [addMemberOpen, setAddMemberOpen] = useState(false);
+  const [memberIdInput, setMemberIdInput] = useState('');
+  const [foundProfile, setFoundProfile] = useState<Profile | null>(null);
+  const [memberNotFound, setMemberNotFound] = useState(false);
+  const [lookingUp, setLookingUp] = useState(false);
+  const [addingMember, setAddingMember] = useState(false);
+
+  const handleLookupUser = async () => {
+    const id = memberIdInput.trim();
+    if (!id) return;
+    setLookingUp(true);
+    setFoundProfile(null);
+    setMemberNotFound(false);
+    const { data } = await supabase.from('profiles').select('id, display_name, avatar_url').eq('id', id).maybeSingle();
+    setLookingUp(false);
+    if (data) setFoundProfile(data as Profile);
+    else setMemberNotFound(true);
+  };
+
+  const handleAddMember = async () => {
+    if (!foundProfile || !pantry) return;
+    setAddingMember(true);
+    const { error } = await supabase.from('pantry_members').insert({
+      id: randomUUID(),
+      pantry_id: pantry.id,
+      user_id: foundProfile.id,
+      role: 'editor',
+    });
+    setAddingMember(false);
+    if (error) {
+      toast(error.message, 'error');
+    } else {
+      toast(`${foundProfile.display_name} added to pantry`, 'success');
+      setAddMemberOpen(false);
+      setMemberIdInput('');
+      setFoundProfile(null);
+    }
+  };
+
+  const closeAddMember = () => {
+    setAddMemberOpen(false);
+    setMemberIdInput('');
+    setFoundProfile(null);
+    setMemberNotFound(false);
+  };
 
   const filteredItems = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -50,21 +96,14 @@ export default function PantryPage() {
       {/* Header */}
       <div className="flex items-center justify-between h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
         <h1 className="text-2xl font-semibold text-neutral-900 font-display">Pantry</h1>
-        <div className="flex items-center gap-1">
-          {pantry?.invite_token && (
-            <button
-              type="button"
-              onClick={() => setShareOpen(true)}
-              className="w-11 h-11 flex items-center justify-center rounded-lg text-neutral-500 active:scale-95 active:bg-neutral-100 transition-all"
-              aria-label="Share pantry"
-            >
-              <ShareNetwork size={22} weight="regular" />
-            </button>
-          )}
-          <Button size="sm" onClick={() => setAddOpen(true)}>
-            Add
-          </Button>
-        </div>
+        <button
+          type="button"
+          onClick={() => setAddMemberOpen(true)}
+          className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-500 active:scale-95 active:bg-neutral-100 transition-all"
+          aria-label="Add member"
+        >
+          <UserPlus size={22} weight="regular" />
+        </button>
       </div>
 
       {/* Search + filter */}
@@ -212,14 +251,46 @@ export default function PantryPage() {
         }}
       />
 
-      {pantry?.invite_token && (
-        <ShareSheet
-          isOpen={shareOpen}
-          onClose={() => setShareOpen(false)}
-          link={`https://fridgy-olive.vercel.app/pantry/join/${pantry.invite_token}`}
-          title="Share Pantry"
-        />
-      )}
+      {/* Add member sheet */}
+      <BottomSheet isOpen={addMemberOpen} onClose={closeAddMember} title="Add Member">
+        <div className="flex flex-col gap-4">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={memberIdInput}
+              onChange={e => { setMemberIdInput(e.target.value); setFoundProfile(null); setMemberNotFound(false); }}
+              onKeyDown={e => { if (e.key === 'Enter') handleLookupUser(); }}
+              placeholder="Paste user ID"
+              className="flex-1 h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-sm font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
+            />
+            <Button size="md" variant="secondary" loading={lookingUp} onClick={handleLookupUser}>
+              Find
+            </Button>
+          </div>
+
+          {memberNotFound && (
+            <p className="text-sm text-red-500 font-sans">User not found</p>
+          )}
+
+          {foundProfile && (
+            <div className="flex items-center gap-3 px-4 py-3 bg-neutral-50 rounded-md">
+              <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                <span className="text-sm font-bold text-green-600 font-sans">
+                  {foundProfile.display_name?.charAt(0).toUpperCase() ?? '?'}
+                </span>
+              </div>
+              <p className="flex-1 text-sm font-semibold text-neutral-900 font-sans">{foundProfile.display_name}</p>
+            </div>
+          )}
+
+          <div className="flex gap-3">
+            <Button variant="secondary" size="md" fullWidth onClick={closeAddMember}>Cancel</Button>
+            <Button size="md" fullWidth disabled={!foundProfile} loading={addingMember} onClick={handleAddMember}>
+              Add to Pantry
+            </Button>
+          </div>
+        </div>
+      </BottomSheet>
     </div>
   );
 }
