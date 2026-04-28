@@ -36,9 +36,9 @@ export default function ProfilePage() {
       .then(({ data }) => {
         if (data) {
           setFriends(
-            (data as Array<{ profile: Profile }>)
-              .map(row => row.profile)
-              .filter(Boolean)
+            (data as unknown as Array<{ profile: Profile | Profile[] }>)
+              .map(row => Array.isArray(row.profile) ? row.profile[0] : row.profile)
+              .filter((p): p is Profile => !!p)
           );
         }
       });
