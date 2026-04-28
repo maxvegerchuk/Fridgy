@@ -357,7 +357,19 @@ export default function CreateRecipePage() {
 
           {/* Ingredients */}
           <div className="flex flex-col gap-3">
-            <h2 className="text-base font-semibold text-neutral-900">Ingredients</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-semibold text-neutral-900">Ingredients</h2>
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                onClick={() => setIngredients(prev => [...prev, emptyIngredient()])}
+                className="gap-1.5"
+              >
+                <Plus size={14} weight="bold" />
+                Add
+              </Button>
+            </div>
 
             {ingredients.map((ing, idx) => (
               <div
@@ -413,19 +425,23 @@ export default function CreateRecipePage() {
               </div>
             ))}
 
-            <button
-              type="button"
-              onClick={() => setIngredients(prev => [...prev, emptyIngredient()])}
-              className="flex items-center gap-2 h-[44px] px-4 border border-dashed border-neutral-300 rounded-xl text-sm font-medium text-neutral-500 active:bg-neutral-50 transition-colors"
-            >
-              <Plus size={18} />
-              Add ingredient
-            </button>
           </div>
 
           {/* Steps */}
           <div className="flex flex-col gap-3">
-            <h2 className="text-base font-semibold text-neutral-900">Instructions</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-semibold text-neutral-900">Instructions</h2>
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                onClick={() => setSteps(prev => [...prev, emptyStep()])}
+                className="gap-1.5"
+              >
+                <Plus size={14} weight="bold" />
+                Add
+              </Button>
+            </div>
 
             {steps.map((step, idx) => (
               <div key={step.key} className="flex flex-col gap-2 p-3 border border-neutral-200 rounded-xl">
@@ -493,14 +509,6 @@ export default function CreateRecipePage() {
               </div>
             ))}
 
-            <button
-              type="button"
-              onClick={() => setSteps(prev => [...prev, emptyStep()])}
-              className="flex items-center gap-2 h-[44px] px-4 border border-dashed border-neutral-300 rounded-xl text-sm font-medium text-neutral-500 active:bg-neutral-50 transition-colors"
-            >
-              <Plus size={18} />
-              Add step
-            </button>
           </div>
 
           <Button type="submit" size="lg" fullWidth loading={submitting} className="mt-1">

@@ -320,6 +320,7 @@ export default function RecipeDetailPage() {
                             </p>
                           )}
                         </div>
+                        <div className={`w-2 h-2 rounded-full flex-shrink-0 ${inPantry ? 'bg-green-500' : 'bg-neutral-300'}`} />
                       </div>
                     );
                   })}
