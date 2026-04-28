@@ -153,7 +153,7 @@ export type SavedRecipe = {
 // ─── Recipe Engine ──────────────────────────────────────
 
 export type RecipeStatus = 'ready' | 'need_few' | 'missing_many';
-export type RecipeFilter = 'ready' | 'need_few' | 'all';
+export type RecipeFilter = 'available' | 'missing' | 'all';
 
 export type RecipeWithAvailability = Recipe & {
   status: RecipeStatus;

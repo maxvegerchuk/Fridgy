@@ -13,11 +13,12 @@ import { getFilteredRecipes, getFilterCounts } from '../lib/recipeEngine';
 import type { RecipeFilter, RecipeWithAvailability, Recipe, RecipeIngredient } from '../types';
 
 type Segment = 'mine' | 'explore';
+type SheetStep = 'ingredients' | 'select-list';
 
 const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
-  ready:        { label: 'Can cook',  cls: 'bg-green-100 text-green-700' },
-  need_few:     { label: 'Need 1–3',  cls: 'bg-amber-100 text-amber-700' },
-  missing_many: { label: 'Missing',   cls: 'bg-neutral-100 text-neutral-500' },
+  ready:        { label: 'Available',  cls: 'bg-green-100 text-green-700' },
+  need_few:     { label: 'Need 1–3',   cls: 'bg-amber-100 text-amber-700' },
+  missing_many: { label: 'Missing',    cls: 'bg-neutral-100 text-neutral-500' },
 };
 
 type PendingAdd = {
@@ -67,14 +68,12 @@ function RecipeCard({
       <div className="px-4 pt-3 pb-4">
         <div className="flex items-start justify-between gap-2">
           <p
-            className="text-base font-semibold text-neutral-900 font-display leading-snug flex-1 cursor-pointer"
+            className="text-base font-semibold text-neutral-900 font-sans leading-snug flex-1 cursor-pointer"
             onClick={onClick}
           >
             {recipe.title}
           </p>
-          {action && (
-            <div className="flex-shrink-0">{action}</div>
-          )}
+          {action && <div className="flex-shrink-0">{action}</div>}
         </div>
 
         <div className="flex items-center gap-2 mt-1.5 flex-wrap">
@@ -92,7 +91,7 @@ function RecipeCard({
           </div>
         </div>
 
-        {/* Action buttons */}
+        {/* Buttons */}
         <div className="flex gap-2 mt-3">
           <button
             type="button"
@@ -120,10 +119,10 @@ function RecipeCard({
 
 export default function RecipesPage() {
   const [segment, setSegment] = useState<Segment>('mine');
-  const [filter, setFilter] = useState<RecipeFilter>('all');
-  const [search, setSearch] = useState('');
-  const navigate = useNavigate();
-  const toast = useToast();
+  const [filter, setFilter]   = useState<RecipeFilter>('all');
+  const [search, setSearch]   = useState('');
+  const navigate  = useNavigate();
+  const toast     = useToast();
   const exploreFetched = useRef(false);
 
   const { myRecipes, publicRecipes, savedIds, loading, publicLoading, fetchPublicRecipes, saveRecipe } = useRecipes();
@@ -134,6 +133,7 @@ export default function RecipesPage() {
   const [loadingRecipeId, setLoadingRecipeId] = useState<string | null>(null);
   const [loadingMode, setLoadingMode]         = useState<'all' | 'missing' | null>(null);
   const [pendingAdd, setPendingAdd]           = useState<PendingAdd | null>(null);
+  const [sheetStep, setSheetStep]             = useState<SheetStep>('ingredients');
   const [addingToListId, setAddingToListId]   = useState<string | null>(null);
 
   useEffect(() => {
@@ -143,13 +143,13 @@ export default function RecipesPage() {
     }
   }, [segment, fetchPublicRecipes]);
 
-  const counts  = getFilterCounts(myRecipes, pantryItems);
+  const counts   = getFilterCounts(myRecipes, pantryItems);
   const filtered = getFilteredRecipes(myRecipes, pantryItems, filter);
 
   const filterTabs = [
-    { value: 'ready' as RecipeFilter,    label: 'Can cook', count: counts.ready },
-    { value: 'need_few' as RecipeFilter, label: 'Need 1–3', count: counts.need_few },
-    { value: 'all' as RecipeFilter,      label: 'All',      count: counts.all },
+    { value: 'all' as RecipeFilter,       label: 'All',       count: counts.all },
+    { value: 'available' as RecipeFilter, label: 'Available', count: counts.available },
+    { value: 'missing' as RecipeFilter,   label: 'Missing',   count: counts.missing },
   ];
 
   const searchedPublic = publicRecipes.filter(r =>
@@ -183,6 +183,7 @@ export default function RecipesPage() {
     }
 
     setPendingAdd({ recipeName: full.title, ingredients, mode });
+    setSheetStep('ingredients');
   };
 
   const handleAddToList = async (listId: string) => {
@@ -212,6 +213,8 @@ export default function RecipesPage() {
       setPendingAdd(null);
     }
   };
+
+  const closeSheet = () => { setPendingAdd(null); setSheetStep('ingredients'); };
 
   return (
     <div className="flex flex-col h-full pt-safe relative">
@@ -337,17 +340,51 @@ export default function RecipesPage() {
         </button>
       )}
 
-      {/* Select list bottom sheet */}
+      {/* Add ingredients sheet */}
       <BottomSheet
         isOpen={pendingAdd !== null}
-        onClose={() => setPendingAdd(null)}
-        title={`Add ${pendingAdd?.mode === 'missing' ? 'missing' : 'all'} ingredients`}
+        onClose={closeSheet}
+        title={
+          sheetStep === 'ingredients'
+            ? `${pendingAdd?.mode === 'missing' ? 'Missing' : 'All'} ingredients`
+            : 'Add to list'
+        }
       >
-        {pendingAdd && (
-          <div className="flex flex-col gap-3">
-            <p className="text-sm text-neutral-500 font-sans">
-              {pendingAdd.ingredients.length} ingredient{pendingAdd.ingredients.length !== 1 ? 's' : ''} from "{pendingAdd.recipeName}" — choose a list:
+        {pendingAdd && sheetStep === 'ingredients' && (
+          <div className="flex flex-col gap-4">
+            <p className="text-sm text-neutral-500 font-sans -mt-1">
+              {pendingAdd.ingredients.length} ingredient{pendingAdd.ingredients.length !== 1 ? 's' : ''} from "{pendingAdd.recipeName}"
             </p>
+
+            <div className="flex flex-col gap-2 max-h-[40vh] overflow-y-auto">
+              {pendingAdd.ingredients.map(ing => (
+                <div key={ing.id} className="flex items-center gap-3 px-4 py-3 bg-neutral-50 rounded-md">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-neutral-900 font-sans truncate">{ing.name}</p>
+                    {(ing.quantity || ing.unit) && (
+                      <p className="text-xs text-neutral-400 font-sans mt-0.5">
+                        {[ing.quantity, ing.unit].filter(Boolean).join(' ')}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex gap-3">
+              <Button variant="secondary" size="md" fullWidth onClick={closeSheet}>
+                Cancel
+              </Button>
+              <Button size="md" fullWidth onClick={() => setSheetStep('select-list')}>
+                Add to List
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {pendingAdd && sheetStep === 'select-list' && (
+          <div className="flex flex-col gap-3">
+            <p className="text-sm text-neutral-500 font-sans -mt-1">Choose a shopping list:</p>
 
             {myLists.length === 0 && (
               <p className="text-sm text-neutral-400 text-center py-4 font-sans">
@@ -370,8 +407,8 @@ export default function RecipesPage() {
               </button>
             ))}
 
-            <Button variant="secondary" size="md" fullWidth onClick={() => setPendingAdd(null)}>
-              Cancel
+            <Button variant="secondary" size="md" fullWidth onClick={() => setSheetStep('ingredients')}>
+              Back
             </Button>
           </div>
         )}

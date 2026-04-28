@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, XCircle, Trash, Globe, GlobeSimple, PencilSimple } from 'phosphor-react';
+import { ArrowLeft, Trash, Globe, GlobeSimple, PencilSimple } from 'phosphor-react';
 import { Button } from '../components/ui';
 import { useToast } from '../components/ui';
 import { useAuthStore } from '../store/authStore';
@@ -178,8 +178,8 @@ export default function RecipeDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col h-full bg-neutral-0 pt-safe">
-        <div className="flex items-center h-[56px] px-4 border-b border-neutral-100">
+      <div className="flex flex-col h-full pt-safe">
+        <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 bg-white">
           <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-700">
             <ArrowLeft size={24} />
           </button>
@@ -193,8 +193,8 @@ export default function RecipeDetailPage() {
 
   if (!recipe) {
     return (
-      <div className="flex flex-col h-full bg-neutral-0 pt-safe">
-        <div className="flex items-center h-[56px] px-4 border-b border-neutral-100">
+      <div className="flex flex-col h-full pt-safe">
+        <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 bg-white">
           <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-700">
             <ArrowLeft size={24} />
           </button>
@@ -214,9 +214,9 @@ export default function RecipeDetailPage() {
   const pantrySet = new Set(pantryItems.map(p => p.name.toLowerCase().trim().replace(/s$/, '').replace(/\s+/g, ' ')));
 
   return (
-    <div className="flex flex-col h-full bg-neutral-0 pt-safe">
+    <div className="flex flex-col h-full pt-safe">
       {/* Sticky header */}
-      <div className="flex items-center justify-between h-[56px] px-4 border-b border-neutral-100 sticky top-0 bg-neutral-0 z-10">
+      <div className="flex items-center justify-between h-[56px] px-4 border-b border-neutral-100 sticky top-0 bg-white z-10">
         <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-700">
           <ArrowLeft size={24} />
         </button>
@@ -296,33 +296,35 @@ export default function RecipeDetailPage() {
 
           {/* Ingredients */}
           {recipe.ingredients.length > 0 && (
-            <div className="flex flex-col gap-2">
-              <h2 className="text-base font-semibold text-neutral-900 font-sans">Ingredients</h2>
-              <div className="flex flex-col border border-neutral-200 rounded-xl overflow-hidden">
+            <div className="flex flex-col gap-3">
+              <h2 className="text-base font-semibold text-neutral-900 font-sans px-0">Ingredients</h2>
+              <div className="flex flex-col gap-3">
                 {[...recipe.ingredients]
                   .sort((a, b) => a.sort_order - b.sort_order)
-                  .map((ing, idx) => {
+                  .map(ing => {
                     const normalized = ing.name.toLowerCase().trim().replace(/s$/, '').replace(/\s+/g, ' ');
                     const inPantry = pantrySet.has(normalized);
                     return (
                       <div
                         key={ing.id}
-                        className={`flex items-center gap-3 px-4 py-3 ${idx < recipe.ingredients.length - 1 ? 'border-b border-neutral-100' : ''} ${ing.optional ? 'opacity-60' : ''}`}
+                        className={`flex items-center gap-3 ${ing.optional ? 'opacity-60' : ''}`}
                       >
-                        {inPantry
-                          ? <CheckCircle size={20} weight="fill" className="text-green-500 flex-shrink-0" />
-                          : <XCircle size={20} weight="fill" className="text-red-400 flex-shrink-0" />
-                        }
-                        <span className="flex-1 text-sm text-neutral-900 font-sans">{ing.name}</span>
-                        <span className="text-sm text-neutral-400 font-sans">
-                          {[ing.quantity, ing.unit].filter(Boolean).join(' ')}
-                          {ing.optional ? ' (opt)' : ''}
-                        </span>
+                        <div className={`w-16 h-16 rounded-md flex-shrink-0 ${inPantry ? 'bg-green-50 border border-green-100' : 'bg-white border border-neutral-100'}`} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-neutral-900 font-sans truncate">
+                            {ing.name}{ing.optional ? ' (optional)' : ''}
+                          </p>
+                          {(ing.quantity || ing.unit) && (
+                            <p className="text-xs text-neutral-400 font-sans mt-0.5">
+                              {[ing.quantity, ing.unit].filter(Boolean).join(' ')}
+                            </p>
+                          )}
+                        </div>
                       </div>
                     );
                   })}
               </div>
-              <p className="text-xs text-neutral-400 font-sans px-1">
+              <p className="text-xs text-neutral-400 font-sans">
                 {withAvail.available_count} of {withAvail.total_count} required ingredients in pantry
               </p>
               {withAvail.missing_ingredients.length > 0 && (
@@ -332,7 +334,6 @@ export default function RecipeDetailPage() {
                   fullWidth
                   loading={addingToList}
                   onClick={() => handleAddMissingToList(withAvail.missing_ingredients)}
-                  className="mt-1"
                 >
                   Add {withAvail.missing_ingredients.length} missing to list
                 </Button>

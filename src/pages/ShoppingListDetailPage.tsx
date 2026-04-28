@@ -40,7 +40,7 @@ export default function ShoppingListDetailPage() {
   const groups = groupByCategory(unchecked);
 
   return (
-    <div className="flex flex-col h-full pt-safe">
+    <div className="flex flex-col h-full pt-safe relative">
       {/* Header */}
       <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
         <button
@@ -147,6 +147,16 @@ export default function ShoppingListDetailPage() {
           </div>
         )}
       </div>
+
+      {/* FAB */}
+      <button
+        type="button"
+        onClick={() => setAddOpen(true)}
+        className="absolute bottom-6 right-4 w-14 h-14 bg-green-500 text-white rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform"
+        aria-label="Add item"
+      >
+        <Plus size={24} weight="bold" />
+      </button>
 
       <AddItemSheet
         isOpen={addOpen}

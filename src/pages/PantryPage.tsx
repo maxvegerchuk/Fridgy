@@ -46,7 +46,7 @@ export default function PantryPage() {
   const groups = groupByCategory(filteredItems);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full relative">
       {/* Header */}
       <div className="flex items-center justify-between h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
         <h1 className="text-2xl font-semibold text-neutral-900 font-display">Pantry</h1>
@@ -61,14 +61,9 @@ export default function PantryPage() {
               <ShareNetwork size={22} weight="regular" />
             </button>
           )}
-          <button
-            type="button"
-            onClick={() => setAddOpen(true)}
-            className="w-11 h-11 flex items-center justify-center rounded-lg text-neutral-500 active:scale-95 active:bg-neutral-100 transition-all"
-            aria-label="Add item"
-          >
-            <Plus size={22} weight="bold" />
-          </button>
+          <Button size="sm" onClick={() => setAddOpen(true)}>
+            Add
+          </Button>
         </div>
       </div>
 
@@ -180,6 +175,16 @@ export default function PantryPage() {
           </div>
         )}
       </div>
+
+      {/* FAB */}
+      <button
+        type="button"
+        onClick={() => setAddOpen(true)}
+        className="absolute bottom-6 right-4 w-14 h-14 bg-green-500 text-white rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform"
+        aria-label="Add item"
+      >
+        <Plus size={24} weight="bold" />
+      </button>
 
       <AddPantrySheet
         isOpen={addOpen}

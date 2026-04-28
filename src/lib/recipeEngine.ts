@@ -33,8 +33,8 @@ export function getFilteredRecipes(
 ): RecipeWithAvailability[] {
   const enriched = recipes.map(r => matchRecipeToPantry(r, pantryItems));
   if (filter === 'all') return enriched;
-  if (filter === 'ready') return enriched.filter(r => r.status === 'ready');
-  return enriched.filter(r => r.status === 'need_few');
+  if (filter === 'available') return enriched.filter(r => r.status === 'ready');
+  return enriched.filter(r => r.status === 'need_few' || r.status === 'missing_many');
 }
 
 export function getFilterCounts(
@@ -43,8 +43,8 @@ export function getFilterCounts(
 ): Record<RecipeFilter, number> {
   const enriched = recipes.map(r => matchRecipeToPantry(r, pantryItems));
   return {
-    ready:    enriched.filter(r => r.status === 'ready').length,
-    need_few: enriched.filter(r => r.status === 'need_few').length,
-    all:      enriched.length,
+    available: enriched.filter(r => r.status === 'ready').length,
+    missing:   enriched.filter(r => r.status !== 'ready').length,
+    all:       enriched.length,
   };
 }
