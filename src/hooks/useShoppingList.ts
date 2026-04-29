@@ -220,11 +220,12 @@ export function useShoppingLists() {
         itemCountMap.set(item.list_id, (itemCountMap.get(item.list_id) ?? 0) + 1);
       }
 
+      type RawProfile = { display_name: string | null; avatar_url: string | null };
       type RawMember = {
         list_id: string;
         user_id: string;
         role: string;
-        profile: { display_name: string | null; avatar_url: string | null }[];
+        profile: RawProfile | RawProfile[];
       };
 
       const membersMap = new Map<string, RawMember[]>();
@@ -242,12 +243,15 @@ export function useShoppingLists() {
         created_at: list.created_at,
         role: roleMap.get(list.id) ?? 'editor',
         item_count: itemCountMap.get(list.id) ?? 0,
-        members: (membersMap.get(list.id) ?? []).map(m => ({
-          user_id: m.user_id,
-          display_name: m.profile[0]?.display_name ?? null,
-          avatar_url: m.profile[0]?.avatar_url ?? null,
-          role: m.role as 'owner' | 'editor',
-        })),
+        members: (membersMap.get(list.id) ?? []).map(m => {
+          const p = Array.isArray(m.profile) ? m.profile[0] : m.profile;
+          return {
+            user_id: m.user_id,
+            display_name: p?.display_name ?? null,
+            avatar_url: p?.avatar_url ?? null,
+            role: m.role as 'owner' | 'editor',
+          };
+        }),
       }));
 
       setMyLists(summaries.filter(s => s.owner_id === user.id));
