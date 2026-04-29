@@ -23,9 +23,9 @@ export default function ProfilePage() {
   const initial = user?.display_name?.charAt(0).toUpperCase() ?? 'U';
 
   const handleCopyId = async () => {
-    if (!user) return;
-    await navigator.clipboard.writeText(user.id);
-    toast('ID copied to clipboard', 'success');
+    if (!user?.short_id) return;
+    await navigator.clipboard.writeText(user.short_id);
+    toast('Code copied to clipboard', 'success');
   };
 
   const handleLookupFriend = async () => {
@@ -34,16 +34,8 @@ export default function ProfilePage() {
     setLookingUp(true);
     setFoundProfile(null);
     setFriendNotFound(false);
-    const isShort = /^ID-/i.test(raw);
-    let profile: Profile | null = null;
-    if (isShort) {
-      const prefix = raw.replace(/^ID-/i, '').slice(0, 6).toLowerCase();
-      const { data } = await supabase.rpc('find_user_by_short_id', { p_prefix: prefix });
-      profile = (Array.isArray(data) ? data[0] : data) as Profile | null;
-    } else {
-      const { data } = await supabase.rpc('find_user_by_id', { p_user_id: raw });
-      profile = data as Profile | null;
-    }
+    const { data } = await supabase.rpc('find_user_by_short_id', { p_prefix: raw });
+    const profile = (Array.isArray(data) ? data[0] : data) as Profile | null;
     setLookingUp(false);
     if (profile) setFoundProfile(profile);
     else setFriendNotFound(true);
@@ -103,18 +95,18 @@ export default function ProfilePage() {
 
           {/* My ID */}
           <div className="flex flex-col gap-1.5">
-            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 font-sans">My ID</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 font-sans">My Code</p>
             <button
               type="button"
               onClick={handleCopyId}
               className="flex items-center gap-3 px-4 py-3 bg-white border border-neutral-100 rounded-md active:bg-neutral-50 transition-colors"
             >
               <span className="flex-1 text-base font-mono font-semibold text-neutral-900 text-left tracking-wider">
-                ID-{user?.id.slice(0, 6).toUpperCase()}
+                {user?.short_id ?? '—'}
               </span>
               <Copy size={18} weight="regular" className="text-neutral-400 flex-shrink-0" />
             </button>
-            <p className="text-xs text-neutral-400 font-sans px-1">Share this ID · tap to copy full ID</p>
+            <p className="text-xs text-neutral-400 font-sans px-1">Share this code so others can find you</p>
           </div>
 
           <div className="border-t border-neutral-100" />
@@ -180,7 +172,7 @@ export default function ProfilePage() {
               value={friendIdInput}
               onChange={e => { setFriendIdInput(e.target.value); setFoundProfile(null); setFriendNotFound(false); }}
               onKeyDown={e => { if (e.key === 'Enter') handleLookupFriend(); }}
-              placeholder="Paste friend's ID"
+              placeholder="Enter 6-character code"
               style={{ fontSize: '16px' }}
               className="flex-1 h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-sm font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
             />

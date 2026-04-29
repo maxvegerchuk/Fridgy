@@ -52,21 +52,8 @@ export default function PantryPage() {
     setLookingUp(true);
     setFoundProfile(null);
     setMemberNotFound(false);
-    const isShort = /^ID-/i.test(raw);
-    console.log('[PantryPage] raw input:', JSON.stringify(raw), '| isShort:', isShort);
-    let profile: Profile | null = null;
-    if (isShort) {
-      const prefix = raw.replace(/^ID-/i, '').slice(0, 6).toLowerCase();
-      console.log('[PantryPage] p_prefix sent to find_user_by_short_id:', JSON.stringify(prefix));
-      const { data, error } = await supabase.rpc('find_user_by_short_id', { p_prefix: prefix });
-      console.log('[PantryPage] find_user_by_short_id response:', JSON.stringify(data), error ?? 'ok');
-      profile = (Array.isArray(data) ? data[0] : data) as Profile | null;
-    } else {
-      console.log('[PantryPage] p_user_id sent to find_user_by_id:', JSON.stringify(raw));
-      const { data, error } = await supabase.rpc('find_user_by_id', { p_user_id: raw });
-      console.log('[PantryPage] find_user_by_id response:', JSON.stringify(data), error ?? 'ok');
-      profile = data as Profile | null;
-    }
+    const { data } = await supabase.rpc('find_user_by_short_id', { p_prefix: raw });
+    const profile = (Array.isArray(data) ? data[0] : data) as Profile | null;
     setLookingUp(false);
     if (profile) setFoundProfile(profile);
     else setMemberNotFound(true);
@@ -312,7 +299,7 @@ export default function PantryPage() {
               value={memberIdInput}
               onChange={e => { setMemberIdInput(e.target.value); setFoundProfile(null); setMemberNotFound(false); }}
               onKeyDown={e => { if (e.key === 'Enter') handleLookupUser(); }}
-              placeholder="Paste user ID"
+              placeholder="Enter 6-character code"
               style={{ fontSize: '16px' }}
               className="flex-1 h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-sm font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
             />

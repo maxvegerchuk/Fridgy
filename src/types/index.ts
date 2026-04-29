@@ -2,6 +2,7 @@
 
 export type Profile = {
   id: string;
+  short_id?: string;
   display_name: string;
   avatar_url?: string;
   created_at: string;
