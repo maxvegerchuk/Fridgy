@@ -51,14 +51,23 @@ export default function ProfilePage() {
   };
 
   const handleLookupFriend = async () => {
-    const id = friendIdInput.trim();
-    if (!id) return;
+    const raw = friendIdInput.trim();
+    if (!raw) return;
     setLookingUp(true);
     setFoundProfile(null);
     setFriendNotFound(false);
-    const { data } = await supabase.rpc('find_user_by_id', { p_user_id: id });
+    const isShort = /^ID-/i.test(raw);
+    let profile: Profile | null = null;
+    if (isShort) {
+      const prefix = raw.slice(3).toLowerCase().slice(0, 6);
+      const { data } = await supabase.rpc('find_user_by_short_id', { p_prefix: prefix });
+      profile = (Array.isArray(data) ? data[0] : data) as Profile | null;
+    } else {
+      const { data } = await supabase.rpc('find_user_by_id', { p_user_id: raw });
+      profile = data as Profile | null;
+    }
     setLookingUp(false);
-    if (data) setFoundProfile(data as Profile);
+    if (profile) setFoundProfile(profile);
     else setFriendNotFound(true);
   };
 
@@ -122,12 +131,12 @@ export default function ProfilePage() {
               onClick={handleCopyId}
               className="flex items-center gap-3 px-4 py-3 bg-white border border-neutral-100 rounded-md active:bg-neutral-50 transition-colors"
             >
-              <span className="flex-1 text-sm font-mono text-neutral-700 truncate text-left">
-                {user?.id.slice(0, 8)}…{user?.id.slice(-6)}
+              <span className="flex-1 text-base font-mono font-semibold text-neutral-900 text-left tracking-wider">
+                ID-{user?.id.slice(0, 6).toUpperCase()}
               </span>
               <Copy size={18} weight="regular" className="text-neutral-400 flex-shrink-0" />
             </button>
-            <p className="text-xs text-neutral-400 font-sans px-1">Share your ID so others can add you to their pantry or list</p>
+            <p className="text-xs text-neutral-400 font-sans px-1">Share this ID · tap to copy full ID</p>
           </div>
 
           <div className="border-t border-neutral-100" />

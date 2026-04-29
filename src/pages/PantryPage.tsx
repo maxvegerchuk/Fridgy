@@ -45,14 +45,23 @@ export default function PantryPage() {
   const [addingMember, setAddingMember] = useState(false);
 
   const handleLookupUser = async () => {
-    const id = memberIdInput.trim();
-    if (!id) return;
+    const raw = memberIdInput.trim();
+    if (!raw) return;
     setLookingUp(true);
     setFoundProfile(null);
     setMemberNotFound(false);
-    const { data } = await supabase.rpc('find_user_by_id', { p_user_id: id });
+    const isShort = /^ID-/i.test(raw);
+    let profile: Profile | null = null;
+    if (isShort) {
+      const prefix = raw.slice(3).toLowerCase().slice(0, 6);
+      const { data } = await supabase.rpc('find_user_by_short_id', { p_prefix: prefix });
+      profile = (Array.isArray(data) ? data[0] : data) as Profile | null;
+    } else {
+      const { data } = await supabase.rpc('find_user_by_id', { p_user_id: raw });
+      profile = data as Profile | null;
+    }
     setLookingUp(false);
-    if (data) setFoundProfile(data as Profile);
+    if (profile) setFoundProfile(profile);
     else setMemberNotFound(true);
   };
 
