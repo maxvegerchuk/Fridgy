@@ -50,7 +50,7 @@ export default function ShoppingListDetailPage() {
     setLookingUp(true);
     setFoundProfile(null);
     setMemberNotFound(false);
-    const { data } = await supabase.from('profiles').select('id, display_name, avatar_url').eq('id', uid).maybeSingle();
+    const { data } = await supabase.rpc('find_user_by_id', { p_user_id: uid });
     setLookingUp(false);
     if (data) setFoundProfile(data as Profile);
     else setMemberNotFound(true);
@@ -209,6 +209,7 @@ export default function ShoppingListDetailPage() {
               onChange={e => { setMemberIdInput(e.target.value); setFoundProfile(null); setMemberNotFound(false); }}
               onKeyDown={e => { if (e.key === 'Enter') handleLookupUser(); }}
               placeholder="Paste user ID"
+              style={{ fontSize: '16px' }}
               className="flex-1 h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-sm font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
             />
             <Button size="md" variant="secondary" loading={lookingUp} onClick={handleLookupUser}>

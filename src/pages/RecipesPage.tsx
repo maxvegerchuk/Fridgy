@@ -244,6 +244,7 @@ export default function RecipesPage() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search recipes…"
+            style={{ fontSize: '16px' }}
             className="w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
           />
         )}

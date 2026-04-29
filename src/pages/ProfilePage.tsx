@@ -56,7 +56,7 @@ export default function ProfilePage() {
     setLookingUp(true);
     setFoundProfile(null);
     setFriendNotFound(false);
-    const { data } = await supabase.from('profiles').select('id, display_name, avatar_url').eq('id', id).maybeSingle();
+    const { data } = await supabase.rpc('find_user_by_id', { p_user_id: id });
     setLookingUp(false);
     if (data) setFoundProfile(data as Profile);
     else setFriendNotFound(true);
@@ -186,6 +186,7 @@ export default function ProfilePage() {
               onChange={e => { setFriendIdInput(e.target.value); setFoundProfile(null); setFriendNotFound(false); }}
               onKeyDown={e => { if (e.key === 'Enter') handleLookupFriend(); }}
               placeholder="Paste friend's ID"
+              style={{ fontSize: '16px' }}
               className="flex-1 h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-sm font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
             />
             <Button size="md" variant="secondary" loading={lookingUp} onClick={handleLookupFriend}>

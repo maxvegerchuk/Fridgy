@@ -307,6 +307,7 @@ export default function CreateRecipePage() {
               onChange={e => setTitle(e.target.value)}
               placeholder="e.g. Pasta Carbonara"
               required
+              style={{ fontSize: '16px' }}
               className={INPUT_CLS}
             />
           </div>
@@ -323,6 +324,7 @@ export default function CreateRecipePage() {
                 onChange={e => setCookTime(e.target.value)}
                 placeholder="0"
                 onFocus={e => e.target.select()}
+                style={{ fontSize: '16px' }}
                 className={INPUT_CLS}
               />
             </div>
@@ -335,6 +337,7 @@ export default function CreateRecipePage() {
                 value={servings}
                 onChange={e => setServings(e.target.value)}
                 onFocus={e => e.target.select()}
+                style={{ fontSize: '16px' }}
                 className={INPUT_CLS}
               />
             </div>
@@ -395,6 +398,7 @@ export default function CreateRecipePage() {
                     onChange={e => updateIngredient(ing.key, { quantity: e.target.value })}
                     placeholder="Qty"
                     onFocus={e => e.target.select()}
+                    style={{ fontSize: '16px' }}
                     className="h-[36px] w-16 px-3 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
                   />
                   <select

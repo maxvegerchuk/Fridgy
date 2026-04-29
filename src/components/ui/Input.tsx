@@ -14,7 +14,7 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   inputSize?: InputSize;
 };
 
-export default function Input({ label, error, className, inputSize = 'md', ...props }: Props) {
+export default function Input({ label, error, className, inputSize = 'md', style, ...props }: Props) {
   const id = useId();
 
   const inputCls = [
@@ -33,7 +33,7 @@ export default function Input({ label, error, className, inputSize = 'md', ...pr
           {label}
         </label>
       )}
-      <input id={id} className={inputCls} {...props} />
+      <input id={id} className={inputCls} style={{ fontSize: '16px', ...style }} {...props} />
       {error && <p className="text-xs text-danger-600">{error}</p>}
     </div>
   );

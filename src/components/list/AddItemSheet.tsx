@@ -192,6 +192,7 @@ export default function AddItemSheet({ isOpen, onClose, onAddItem, listId }: Pro
                 onChange={(e) => setQuantity(e.target.value)}
                 placeholder="0"
                 onFocus={(e) => e.target.select()}
+                style={{ fontSize: '16px' }}
                 className={INPUT_CLS}
               />
             </div>

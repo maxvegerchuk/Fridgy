@@ -130,6 +130,7 @@ export default function ListPage() {
             onChange={e => setNewName(e.target.value)}
             onFocus={e => e.target.select()}
             placeholder="List name"
+            style={{ fontSize: '16px' }}
             autoFocus
             onKeyDown={e => { if (e.key === 'Enter') handleCreate(); }}
             className="w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
