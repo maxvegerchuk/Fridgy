@@ -1,21 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Copy, UserPlus } from 'phosphor-react';
+import { useState } from 'react';
+import { Copy, UserPlus, Trash } from 'phosphor-react';
 import { Button, BottomSheet } from '../components/ui';
 import { useToast } from '../components/ui';
 import { useAuthStore } from '../store/authStore';
-import { usePantry } from '../hooks/usePantry';
 import { supabase } from '../lib/supabase';
-import { randomUUID } from '../lib/uuid';
+import { useFriends } from '../hooks/useFriends';
 import type { Profile } from '../types';
-
-type Friend = Profile & { pantry_member_id?: string };
 
 export default function ProfilePage() {
   const { user, email, signOut } = useAuthStore();
-  const { pantry } = usePantry();
+  const { friends, addFriend, removeFriend } = useFriends();
   const toast = useToast();
   const [signingOut, setSigningOut] = useState(false);
-  const [friends, setFriends] = useState<Friend[]>([]);
 
   const [addFriendOpen, setAddFriendOpen] = useState(false);
   const [friendIdInput, setFriendIdInput] = useState('');
@@ -25,24 +21,6 @@ export default function ProfilePage() {
   const [addingFriend, setAddingFriend] = useState(false);
 
   const initial = user?.display_name?.charAt(0).toUpperCase() ?? 'U';
-
-  useEffect(() => {
-    if (!pantry?.id || !user) return;
-    supabase
-      .from('pantry_members')
-      .select('user_id, profile:profiles!user_id(id, display_name, avatar_url)')
-      .eq('pantry_id', pantry.id)
-      .neq('user_id', user.id)
-      .then(({ data }) => {
-        if (data) {
-          setFriends(
-            (data as unknown as Array<{ profile: Profile | Profile[] }>)
-              .map(row => Array.isArray(row.profile) ? row.profile[0] : row.profile)
-              .filter((p): p is Profile => !!p)
-          );
-        }
-      });
-  }, [pantry?.id, user?.id]);
 
   const handleCopyId = async () => {
     if (!user) return;
@@ -57,18 +35,13 @@ export default function ProfilePage() {
     setFoundProfile(null);
     setFriendNotFound(false);
     const isShort = /^ID-/i.test(raw);
-    console.log('[ProfilePage] raw input:', JSON.stringify(raw), '| isShort:', isShort);
     let profile: Profile | null = null;
     if (isShort) {
       const prefix = raw.replace(/^ID-/i, '').slice(0, 6).toLowerCase();
-      console.log('[ProfilePage] p_prefix sent to find_user_by_short_id:', JSON.stringify(prefix));
-      const { data, error } = await supabase.rpc('find_user_by_short_id', { p_prefix: prefix });
-      console.log('[ProfilePage] find_user_by_short_id response:', JSON.stringify(data), error ?? 'ok');
+      const { data } = await supabase.rpc('find_user_by_short_id', { p_prefix: prefix });
       profile = (Array.isArray(data) ? data[0] : data) as Profile | null;
     } else {
-      console.log('[ProfilePage] p_user_id sent to find_user_by_id:', JSON.stringify(raw));
-      const { data, error } = await supabase.rpc('find_user_by_id', { p_user_id: raw });
-      console.log('[ProfilePage] find_user_by_id response:', JSON.stringify(data), error ?? 'ok');
+      const { data } = await supabase.rpc('find_user_by_id', { p_user_id: raw });
       profile = data as Profile | null;
     }
     setLookingUp(false);
@@ -77,22 +50,22 @@ export default function ProfilePage() {
   };
 
   const handleAddFriend = async () => {
-    if (!foundProfile || !pantry) return;
+    if (!foundProfile) return;
     setAddingFriend(true);
-    const { error } = await supabase.from('pantry_members').insert({
-      id: randomUUID(),
-      pantry_id: pantry.id,
-      user_id: foundProfile.id,
-      role: 'editor',
-    });
+    const err = await addFriend(foundProfile);
     setAddingFriend(false);
-    if (error) {
-      toast(error.message, 'error');
+    if (err) {
+      toast(err, 'error');
     } else {
-      toast(`${foundProfile.display_name} added`, 'success');
-      setFriends(prev => [...prev, foundProfile]);
+      toast('Friend added!', 'success');
       closeAddFriend();
     }
+  };
+
+  const handleRemoveFriend = async (friendId: string, name: string) => {
+    const err = await removeFriend(friendId);
+    if (err) toast(err, 'error');
+    else toast(`${name} removed`, 'success');
   };
 
   const closeAddFriend = () => {
@@ -174,6 +147,14 @@ export default function ProfilePage() {
                       </span>
                     </div>
                     <p className="flex-1 text-sm font-semibold text-neutral-900 font-sans truncate">{f.display_name}</p>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveFriend(f.id, f.display_name)}
+                      className="w-8 h-8 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-danger-600 active:bg-danger-50 transition-all flex-shrink-0"
+                      aria-label={`Remove ${f.display_name}`}
+                    >
+                      <Trash size={16} weight="regular" />
+                    </button>
                   </div>
                 ))}
               </div>

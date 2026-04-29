@@ -6,6 +6,7 @@ import { useToast } from '../components/ui';
 import AddItemSheet from '../components/list/AddItemSheet';
 import { useShoppingList } from '../hooks/useShoppingList';
 import { usePantry } from '../hooks/usePantry';
+import { useFriends } from '../hooks/useFriends';
 import { supabase } from '../lib/supabase';
 import { randomUUID } from '../lib/uuid';
 import { CATEGORIES } from '../types';
@@ -34,6 +35,7 @@ export default function ShoppingListDetailPage() {
 
   const { list, items, loading, addItem, checkItem, deleteItem } = useShoppingList(id);
   const { refetch: refetchPantry } = usePantry();
+  const { friends } = useFriends();
   const [addOpen, setAddOpen] = useState(false);
 
   const [addMemberOpen, setAddMemberOpen] = useState(false);
@@ -216,6 +218,41 @@ export default function ShoppingListDetailPage() {
       {/* Add member sheet */}
       <BottomSheet isOpen={addMemberOpen} onClose={closeAddMember} title="Add Member">
         <div className="flex flex-col gap-4">
+          {/* Friends quick-add */}
+          {friends.length > 0 && (
+            <div className="flex flex-col gap-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 font-sans">Friends</p>
+              {friends.map(f => (
+                <button
+                  key={f.id}
+                  type="button"
+                  onClick={async () => {
+                    if (!list) return;
+                    const { error } = await supabase.from('list_members').insert({
+                      id: randomUUID(),
+                      list_id: list.id,
+                      user_id: f.id,
+                      role: 'editor',
+                    });
+                    if (error) toast(error.message, 'error');
+                    else { toast(`${f.display_name} added to list`, 'success'); closeAddMember(); }
+                  }}
+                  className="flex items-center gap-3 px-4 py-3 bg-white border border-neutral-100 rounded-md active:bg-neutral-50 active:scale-[0.99] transition-all"
+                >
+                  <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                    <span className="text-sm font-bold text-green-600 font-sans">
+                      {f.display_name?.charAt(0).toUpperCase() ?? '?'}
+                    </span>
+                  </div>
+                  <p className="flex-1 text-sm font-semibold text-neutral-900 font-sans text-left truncate">{f.display_name}</p>
+                  <UserPlus size={18} className="text-neutral-400 flex-shrink-0" />
+                </button>
+              ))}
+              <div className="border-t border-neutral-100 mt-1" />
+            </div>
+          )}
+
+          {/* Manual ID lookup */}
           <div className="flex gap-2">
             <input
               type="text"
