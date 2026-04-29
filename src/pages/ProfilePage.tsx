@@ -57,13 +57,18 @@ export default function ProfilePage() {
     setFoundProfile(null);
     setFriendNotFound(false);
     const isShort = /^ID-/i.test(raw);
+    console.log('[ProfilePage] search input:', raw, '| isShort:', isShort);
     let profile: Profile | null = null;
     if (isShort) {
       const prefix = raw.slice(3).toLowerCase().slice(0, 6);
-      const { data } = await supabase.rpc('find_user_by_short_id', { p_prefix: prefix });
+      console.log('[ProfilePage] calling find_user_by_short_id, p_prefix:', prefix);
+      const { data, error } = await supabase.rpc('find_user_by_short_id', { p_prefix: prefix });
+      console.log('[ProfilePage] find_user_by_short_id response:', data, error ?? 'ok');
       profile = (Array.isArray(data) ? data[0] : data) as Profile | null;
     } else {
-      const { data } = await supabase.rpc('find_user_by_id', { p_user_id: raw });
+      console.log('[ProfilePage] calling find_user_by_id, p_user_id:', raw);
+      const { data, error } = await supabase.rpc('find_user_by_id', { p_user_id: raw });
+      console.log('[ProfilePage] find_user_by_id response:', data, error ?? 'ok');
       profile = data as Profile | null;
     }
     setLookingUp(false);
