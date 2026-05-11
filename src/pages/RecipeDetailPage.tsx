@@ -200,8 +200,8 @@ export default function RecipeDetailPage() {
           </button>
         </div>
         <div className="flex flex-col items-center justify-center flex-1 gap-3 px-6">
-          <p className="text-base font-semibold text-neutral-900 text-center">Recipe not found</p>
-          <button type="button" onClick={() => navigate(-1)} className="text-green-500 font-semibold text-sm">
+          <p className="text-body font-semibold text-neutral-900 font-heading text-center">Recipe not found</p>
+          <button type="button" onClick={() => navigate(-1)} className="text-green-500 font-semibold text-body-sm font-sans">
             Go back
           </button>
         </div>
@@ -256,7 +256,7 @@ export default function RecipeDetailPage() {
               onClick={isSaved ? handleUnsave : handleSave}
               disabled={savingOrDeleting}
               className={[
-                'flex items-center gap-1.5 px-3 h-[36px] rounded-full text-sm font-medium transition-colors disabled:opacity-50',
+                'flex items-center gap-1.5 px-3 h-[36px] rounded-full text-body-sm font-medium font-sans transition-colors disabled:opacity-50',
                 isSaved
                   ? 'bg-green-500 text-white active:bg-green-600'
                   : 'bg-neutral-100 text-neutral-700 active:bg-neutral-200',
@@ -280,14 +280,14 @@ export default function RecipeDetailPage() {
         <div className="px-4 pt-4 pb-6 flex flex-col gap-5">
           {/* Title & meta */}
           <div className="flex flex-col gap-1">
-            <h1 className="text-2xl font-semibold text-neutral-900 font-sans leading-snug">
+            <h1 className="text-h2 font-heading text-neutral-900 leading-snug">
               {recipe.title}
             </h1>
             {recipe.author && (
-              <p className="text-sm text-neutral-400 font-sans">by {recipe.author.display_name}</p>
+              <p className="text-body-sm text-neutral-400 font-sans">by {recipe.author.display_name}</p>
             )}
             {(recipe.cook_time_minutes || recipe.servings > 0) && (
-              <div className="flex items-center gap-4 text-sm text-neutral-500 font-sans mt-0.5">
+              <div className="flex items-center gap-4 text-body-sm text-neutral-500 font-sans mt-0.5">
                 {recipe.cook_time_minutes && <span>{recipe.cook_time_minutes} min</span>}
                 {recipe.servings > 0 && <span>{recipe.servings} servings</span>}
               </div>
@@ -297,7 +297,7 @@ export default function RecipeDetailPage() {
           {/* Ingredients */}
           {recipe.ingredients.length > 0 && (
             <div className="flex flex-col gap-3">
-              <h2 className="text-base font-semibold text-neutral-900 font-sans px-0">Ingredients</h2>
+              <h2 className="text-h3 font-heading text-neutral-900 px-0">Ingredients</h2>
               <div className="flex flex-col gap-3">
                 {[...recipe.ingredients]
                   .sort((a, b) => a.sort_order - b.sort_order)
@@ -311,11 +311,11 @@ export default function RecipeDetailPage() {
                       >
                         <div className={`w-16 h-16 rounded-md flex-shrink-0 ${inPantry ? 'bg-green-50 border border-green-100' : 'bg-white border border-neutral-100'}`} />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-neutral-900 font-sans truncate">
+                          <p className="text-body-sm font-semibold text-neutral-900 font-sans truncate">
                             {ing.name}{ing.optional ? ' (optional)' : ''}
                           </p>
                           {(ing.quantity || ing.unit) && (
-                            <p className="text-xs text-neutral-400 font-sans mt-0.5">
+                            <p className="text-badge text-neutral-400 font-sans mt-0.5">
                               {[ing.quantity, ing.unit].filter(Boolean).join(' ')}
                             </p>
                           )}
@@ -325,7 +325,7 @@ export default function RecipeDetailPage() {
                     );
                   })}
               </div>
-              <p className="text-xs text-neutral-400 font-sans">
+              <p className="text-badge text-neutral-400 font-sans">
                 {withAvail.available_count} of {withAvail.total_count} required ingredients in pantry
               </p>
               {withAvail.missing_ingredients.length > 0 && (
@@ -345,14 +345,14 @@ export default function RecipeDetailPage() {
           {/* Steps */}
           {recipe.steps.length > 0 && (
             <div className="flex flex-col gap-4">
-              <h2 className="text-base font-semibold text-neutral-900 font-sans">Instructions</h2>
+              <h2 className="text-h3 font-heading text-neutral-900">Instructions</h2>
               {recipe.steps.map(step => (
                 <div key={step.id} className="flex flex-col gap-3">
                   <div className="flex items-start gap-3">
-                    <span className="flex-shrink-0 w-7 h-7 rounded-full bg-green-500 text-white text-sm font-semibold flex items-center justify-center font-sans">
+                    <span className="flex-shrink-0 w-7 h-7 rounded-full bg-green-500 text-white text-body-sm font-semibold flex items-center justify-center font-sans">
                       {step.step_number}
                     </span>
-                    <p className="flex-1 text-sm text-neutral-800 font-sans leading-relaxed pt-0.5">
+                    <p className="flex-1 text-body-sm text-neutral-800 font-sans leading-relaxed pt-0.5">
                       {step.instruction}
                     </p>
                   </div>

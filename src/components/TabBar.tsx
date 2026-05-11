@@ -24,7 +24,7 @@ function TabItem({ to, icon: Icon, label, end }: { to: string; icon: PhosphorIco
       ].join(' ')}
     >
       <Icon size={24} weight={isActive ? 'fill' : 'regular'} />
-      <span className="text-xs font-medium">{label}</span>
+      <span className="text-badge font-medium font-sans">{label}</span>
     </NavLink>
   );
 }

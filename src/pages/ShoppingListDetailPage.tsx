@@ -111,7 +111,7 @@ export default function ShoppingListDetailPage() {
           <ArrowLeft size={24} />
         </button>
 
-        <h1 className="ml-6 flex-1 min-w-0 text-base font-semibold text-neutral-900 font-display truncate">
+        <h1 className="ml-6 flex-1 min-w-0 text-h3 font-heading text-neutral-900 truncate">
           {list?.name ?? 'Shopping List'}
         </h1>
 
@@ -153,7 +153,7 @@ export default function ShoppingListDetailPage() {
             {groups.map(([cat, catItems]) => (
               <div key={cat}>
                 <div className="flex items-center gap-2 px-4 pt-4 pb-2">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-neutral-400 font-sans">
+                  <span className="text-badge font-semibold uppercase tracking-wide text-neutral-400 font-sans">
                     {CATEGORIES[cat].label}
                   </span>
                 </div>
@@ -174,7 +174,7 @@ export default function ShoppingListDetailPage() {
             {checked.length > 0 && (
               <div>
                 <div className="flex items-center gap-2 px-4 pt-5 pb-2">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-neutral-400 font-sans">
+                  <span className="text-badge font-semibold uppercase tracking-wide text-neutral-400 font-sans">
                     In Cart ({checked.length})
                   </span>
                 </div>
@@ -218,7 +218,7 @@ export default function ShoppingListDetailPage() {
           {/* Friends quick-add */}
           {friends.length > 0 && (
             <div className="flex flex-col gap-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 font-sans">Friends</p>
+              <p className="text-badge font-semibold uppercase tracking-wide text-neutral-400 font-sans">Friends</p>
               {friends.map(f => {
                 const isMember = memberUserIds.has(f.id);
                 return (
@@ -250,7 +250,7 @@ export default function ShoppingListDetailPage() {
                         {f.display_name?.charAt(0).toUpperCase() ?? '?'}
                       </span>
                     </div>
-                    <p className="flex-1 text-sm font-semibold text-neutral-900 font-sans text-left truncate">{f.display_name}</p>
+                    <p className="flex-1 text-body-sm font-semibold text-neutral-900 font-sans text-left truncate">{f.display_name}</p>
                     {isMember
                       ? <Check size={18} weight="bold" className="text-green-500 flex-shrink-0" />
                       : <UserPlus size={18} className="text-neutral-400 flex-shrink-0" />
@@ -289,7 +289,7 @@ export default function ShoppingListDetailPage() {
                   {foundProfile.display_name?.charAt(0).toUpperCase() ?? '?'}
                 </span>
               </div>
-              <p className="flex-1 text-sm font-semibold text-neutral-900 font-sans">{foundProfile.display_name}</p>
+              <p className="flex-1 text-body-sm font-semibold text-neutral-900 font-sans">{foundProfile.display_name}</p>
             </div>
           )}
 
@@ -328,14 +328,14 @@ function ItemRow({ item, onCheck, onDelete, onChecked, dimmed }: ItemRowProps) {
       <div className="flex-1 min-w-0">
         <p
           className={[
-            'text-sm font-semibold font-sans truncate',
+            'text-body-sm font-semibold font-sans truncate',
             item.is_checked ? 'line-through text-neutral-400' : 'text-neutral-900',
           ].join(' ')}
         >
           {item.name}
         </p>
         {(item.quantity || item.unit) && (
-          <p className="text-xs text-neutral-400 font-sans mt-0.5">
+          <p className="text-badge text-neutral-400 font-sans mt-0.5">
             {[item.quantity, item.unit].filter(Boolean).join(' ')}
           </p>
         )}

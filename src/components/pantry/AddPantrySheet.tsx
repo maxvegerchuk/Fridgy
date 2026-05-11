@@ -17,8 +17,8 @@ type Props = {
 
 const UNITS = ['pcs', 'g', 'kg', 'ml', 'l'] as const;
 
-const INPUT_CLS = 'w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400';
-const LABEL_CLS = 'text-sm font-medium text-neutral-700';
+const INPUT_CLS = 'w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400';
+const LABEL_CLS = 'text-caption font-medium text-neutral-700 font-sans';
 
 export default function AddPantrySheet({ isOpen, onClose, onAddItem }: Props) {
   const [name, setName] = useState('');
@@ -125,7 +125,7 @@ export default function AddPantrySheet({ isOpen, onClose, onAddItem }: Props) {
                 type="button"
                 onClick={listening ? stopVoice : handleVoiceStart}
                 className={[
-                  'flex items-center gap-1.5 h-7 px-2.5 rounded-full text-xs font-medium font-sans',
+                  'flex items-center gap-1.5 h-7 px-2.5 rounded-full text-badge font-medium font-sans',
                   'active:scale-95 transition-all',
                   listening
                     ? 'bg-green-500 text-white'
@@ -174,7 +174,7 @@ export default function AddPantrySheet({ isOpen, onClose, onAddItem }: Props) {
               id={unitId}
               value={unit}
               onChange={(e) => setUnit(e.target.value)}
-              className="h-[44px] w-full px-3 border border-neutral-200 rounded-lg bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="h-[44px] w-full px-3 border border-neutral-200 rounded-lg bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             >
               {UNITS.map(u => (
                 <option key={u} value={u}>{u}</option>

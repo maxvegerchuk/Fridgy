@@ -53,8 +53,8 @@ export default function RegisterPage() {
 
             {/* Logo */}
             <div className="text-center mb-10">
-              <h1 className="text-5xl font-bold italic text-green-500 tracking-tight font-display">fridgy</h1>
-              <p className="text-neutral-400 text-sm mt-2 font-sans">Shopping List · Pantry · Recipes</p>
+              <h1 className="text-5xl font-bold italic text-green-500 tracking-tight font-heading">fridgy</h1>
+              <p className="text-neutral-400 text-body-sm mt-2 font-sans">Shopping List · Pantry · Recipes</p>
             </div>
 
             {/* Form */}
@@ -102,7 +102,7 @@ export default function RegisterPage() {
               />
 
               {error && (
-                <p className="text-sm text-danger-600 text-center bg-danger-50 rounded-md px-3 py-2">
+                <p className="text-body-sm text-danger-600 text-center bg-danger-50 rounded-md px-3 py-2 font-sans">
                   {error}
                 </p>
               )}
@@ -118,7 +118,7 @@ export default function RegisterPage() {
               </Button>
             </form>
 
-            <p className="text-center text-sm text-neutral-500 mt-6 font-sans">
+            <p className="text-center text-body-sm text-neutral-500 mt-6 font-sans">
               Already have an account?{' '}
               <Link to="/login" className="text-green-500 font-semibold active:opacity-70">
                 Sign in

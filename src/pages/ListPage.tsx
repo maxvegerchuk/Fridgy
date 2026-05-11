@@ -55,7 +55,7 @@ export default function ListPage() {
     <div className="flex flex-col h-full pt-safe relative">
       {/* Header */}
       <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
-        <h1 className="text-2xl font-semibold text-neutral-900 font-display">Shopping Lists</h1>
+        <h1 className="text-h1 font-heading text-neutral-900">Shopping Lists</h1>
       </div>
 
       <div className="scroll-area">
@@ -68,8 +68,8 @@ export default function ListPage() {
         {isEmpty && (
           <div className="flex flex-col items-center justify-center py-20 gap-3 px-6 text-center">
             <ShoppingCart size={56} weight="light" className="text-neutral-300" />
-            <p className="text-base font-semibold text-neutral-900 font-sans">No lists yet</p>
-            <p className="text-sm text-neutral-400 font-sans leading-relaxed">
+            <p className="text-body font-semibold text-neutral-900 font-heading">No lists yet</p>
+            <p className="text-body-sm text-neutral-400 font-sans leading-relaxed">
               Create your first shopping list to get started.
             </p>
             <Button size="md" onClick={() => setCreateOpen(true)}>New List</Button>
@@ -133,7 +133,7 @@ export default function ListPage() {
             style={{ fontSize: '16px' }}
             autoFocus
             onKeyDown={e => { if (e.key === 'Enter') handleCreate(); }}
-            className="w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
+            className="w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
           />
           <Button size="lg" fullWidth loading={creating} onClick={handleCreate}>
             Create List
@@ -145,10 +145,10 @@ export default function ListPage() {
       {confirmDeleteId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-6 bg-neutral-900/50">
           <div className="bg-white rounded-xl p-6 w-full max-w-sm shadow-lg">
-            <h3 className="text-base font-semibold text-neutral-900 font-display mb-1">
+            <h3 className="text-h3 font-heading text-neutral-900 mb-1">
               Delete list?
             </h3>
-            <p className="text-sm text-neutral-500 font-sans mb-6">
+            <p className="text-body-sm text-neutral-500 font-sans mb-6">
               "{listToDelete?.name}" will be permanently deleted.
             </p>
             <div className="flex gap-3">
@@ -170,7 +170,7 @@ function ListSection({ title, children }: { title: string; children: React.React
   return (
     <div>
       <div className="px-4 pt-5 pb-2">
-        <span className="text-xs font-semibold uppercase tracking-wide text-neutral-400 font-sans">
+        <span className="text-badge font-semibold uppercase tracking-wide text-neutral-400 font-sans">
           {title}
         </span>
       </div>
@@ -198,21 +198,21 @@ function ListCard({ list, onTap, onDeleteClick }: CardProps) {
         onClick={onTap}
         className="flex-1 min-w-0 text-left active:opacity-70 transition-opacity"
       >
-        <p className="text-sm font-semibold text-neutral-900 font-sans truncate">{list.name}</p>
+        <p className="text-body-sm font-semibold text-neutral-900 font-sans truncate">{list.name}</p>
         <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-          <span className="text-xs text-neutral-400 font-sans">
+          <span className="text-badge text-neutral-400 font-sans">
             {list.item_count} item{list.item_count !== 1 ? 's' : ''}
           </span>
           {list.role === 'editor' && ownerMember && (
             <>
-              <span className="text-neutral-300 text-xs">·</span>
-              <span className="text-xs text-neutral-400 font-sans">
+              <span className="text-neutral-300 text-badge">·</span>
+              <span className="text-badge text-neutral-400 font-sans">
                 by {ownerMember.display_name ?? 'Unknown'}
               </span>
             </>
           )}
-          <span className="text-neutral-300 text-xs">·</span>
-          <span className="text-xs text-neutral-400 font-sans">{formatDate(list.created_at)}</span>
+          <span className="text-neutral-300 text-badge">·</span>
+          <span className="text-badge text-neutral-400 font-sans">{formatDate(list.created_at)}</span>
         </div>
       </button>
 

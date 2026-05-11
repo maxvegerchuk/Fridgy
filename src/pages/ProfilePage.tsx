@@ -76,7 +76,7 @@ export default function ProfilePage() {
     <div className="flex flex-col h-full pt-safe">
       {/* Header */}
       <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
-        <h1 className="text-2xl font-semibold text-neutral-900 font-display">Profile</h1>
+        <h1 className="text-h1 font-heading text-neutral-900">Profile</h1>
       </div>
 
       <div className="scroll-area">
@@ -85,28 +85,28 @@ export default function ProfilePage() {
           {/* Avatar + name + email */}
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-              <span className="text-2xl font-bold text-green-600 font-display">{initial}</span>
+              <span className="text-2xl font-bold text-green-600 font-heading">{initial}</span>
             </div>
             <div className="min-w-0">
-              <p className="text-base font-semibold text-neutral-900 truncate">{user?.display_name}</p>
-              <p className="text-sm text-neutral-500 truncate">{email}</p>
+              <p className="text-body font-semibold text-neutral-900 font-heading truncate">{user?.display_name}</p>
+              <p className="text-body-sm text-neutral-500 font-sans truncate">{email}</p>
             </div>
           </div>
 
           {/* My ID */}
           <div className="flex flex-col gap-1.5">
-            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 font-sans">My Code</p>
+            <p className="text-badge font-semibold uppercase tracking-wide text-neutral-400 font-sans">My Code</p>
             <button
               type="button"
               onClick={handleCopyId}
               className="flex items-center gap-3 px-4 py-3 bg-white border border-neutral-100 rounded-md active:bg-neutral-50 transition-colors"
             >
-              <span className="flex-1 text-base font-mono font-semibold text-neutral-900 text-left tracking-wider">
+              <span className="flex-1 text-body font-mono font-semibold text-neutral-900 text-left tracking-wider">
                 {user?.short_id ?? '—'}
               </span>
               <Copy size={18} weight="regular" className="text-neutral-400 flex-shrink-0" />
             </button>
-            <p className="text-xs text-neutral-400 font-sans px-1">Share this code so others can find you</p>
+            <p className="text-badge text-neutral-400 font-sans px-1">Share this code so others can find you</p>
           </div>
 
           <div className="border-t border-neutral-100" />
@@ -114,7 +114,7 @@ export default function ProfilePage() {
           {/* Friends */}
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 font-sans">Friends</p>
+              <p className="text-badge font-semibold uppercase tracking-wide text-neutral-400 font-sans">Friends</p>
               <button
                 type="button"
                 onClick={() => setAddFriendOpen(true)}
@@ -126,7 +126,7 @@ export default function ProfilePage() {
             </div>
 
             {friends.length === 0 ? (
-              <p className="text-sm text-neutral-400 font-sans text-center py-4">
+              <p className="text-body-sm text-neutral-400 font-sans text-center py-4">
                 No friends yet. Share your ID to get started.
               </p>
             ) : (
@@ -138,7 +138,7 @@ export default function ProfilePage() {
                         {f.display_name?.charAt(0).toUpperCase() ?? '?'}
                       </span>
                     </div>
-                    <p className="flex-1 text-sm font-semibold text-neutral-900 font-sans truncate">{f.display_name}</p>
+                    <p className="flex-1 text-body-sm font-semibold text-neutral-900 font-sans truncate">{f.display_name}</p>
                     <button
                       type="button"
                       onClick={() => handleRemoveFriend(f.id, f.display_name)}
@@ -192,7 +192,7 @@ export default function ProfilePage() {
                   {foundProfile.display_name?.charAt(0).toUpperCase() ?? '?'}
                 </span>
               </div>
-              <p className="flex-1 text-sm font-semibold text-neutral-900 font-sans">{foundProfile.display_name}</p>
+              <p className="flex-1 text-body-sm font-semibold text-neutral-900 font-sans">{foundProfile.display_name}</p>
             </div>
           )}
 

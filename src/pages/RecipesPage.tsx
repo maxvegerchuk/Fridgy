@@ -68,7 +68,7 @@ function RecipeCard({
       <div className="px-4 pt-3 pb-4">
         <div className="flex items-start justify-between gap-2">
           <p
-            className="text-base font-semibold text-neutral-900 font-sans leading-snug flex-1 cursor-pointer"
+            className="text-body-lg font-heading text-neutral-900 leading-snug flex-1 cursor-pointer"
             onClick={onClick}
           >
             {recipe.title}
@@ -78,11 +78,11 @@ function RecipeCard({
 
         <div className="flex items-center gap-2 mt-1.5 flex-wrap">
           {badge && (
-            <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${badge.cls}`}>
+            <span className={`text-badge font-medium font-sans px-2 py-0.5 rounded-full ${badge.cls}`}>
               {badge.label}
             </span>
           )}
-          <div className="flex items-center gap-2 text-xs text-neutral-400 font-sans">
+          <div className="flex items-center gap-2 text-badge text-neutral-400 font-sans">
             {withAvail && (
               <span>{withAvail.available_count}/{withAvail.total_count} ingredients</span>
             )}
@@ -97,7 +97,7 @@ function RecipeCard({
             type="button"
             onClick={onAddAll}
             disabled={loadingMode !== null}
-            className="flex-1 h-[40px] border border-neutral-200 rounded-md text-sm font-medium font-sans text-neutral-700 active:bg-neutral-50 transition-colors disabled:opacity-50"
+            className="flex-1 h-[40px] border border-neutral-200 rounded-md text-body-sm font-medium font-sans text-neutral-700 active:bg-neutral-50 transition-colors disabled:opacity-50"
           >
             {loadingMode === 'all' ? '…' : 'Add All'}
           </button>
@@ -106,7 +106,7 @@ function RecipeCard({
               type="button"
               onClick={onAddMissing}
               disabled={loadingMode !== null}
-              className="flex-1 h-[40px] bg-green-500 text-white rounded-md text-sm font-medium font-sans active:bg-green-600 transition-colors disabled:opacity-50"
+              className="flex-1 h-[40px] bg-green-500 text-white rounded-md text-body-sm font-medium font-sans active:bg-green-600 transition-colors disabled:opacity-50"
             >
               {loadingMode === 'missing' ? '…' : 'Add Missing'}
             </button>
@@ -221,7 +221,7 @@ export default function RecipesPage() {
       {/* Header */}
       <div className="px-4 pb-2 border-b border-neutral-100 flex flex-col gap-2 bg-white flex-shrink-0">
         <div className="flex items-center h-[56px]">
-          <h1 className="text-2xl font-semibold text-neutral-900 font-display">Recipes</h1>
+          <h1 className="text-h1 font-heading text-neutral-900">Recipes</h1>
         </div>
         <SegmentControl
           options={[
@@ -245,7 +245,7 @@ export default function RecipesPage() {
             onChange={e => setSearch(e.target.value)}
             placeholder="Search recipes…"
             style={{ fontSize: '16px' }}
-            className="w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
+            className="w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
           />
         )}
       </div>
@@ -353,7 +353,7 @@ export default function RecipesPage() {
       >
         {pendingAdd && sheetStep === 'ingredients' && (
           <div className="flex flex-col gap-4">
-            <p className="text-sm text-neutral-500 font-sans -mt-1">
+            <p className="text-body-sm text-neutral-500 font-sans -mt-1">
               {pendingAdd.ingredients.length} ingredient{pendingAdd.ingredients.length !== 1 ? 's' : ''} from "{pendingAdd.recipeName}"
             </p>
 
@@ -361,9 +361,9 @@ export default function RecipesPage() {
               {pendingAdd.ingredients.map(ing => (
                 <div key={ing.id} className="flex items-center gap-3 px-4 py-3 bg-neutral-50 rounded-md">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-neutral-900 font-sans truncate">{ing.name}</p>
+                    <p className="text-body-sm font-semibold text-neutral-900 font-sans truncate">{ing.name}</p>
                     {(ing.quantity || ing.unit) && (
-                      <p className="text-xs text-neutral-400 font-sans mt-0.5">
+                      <p className="text-badge text-neutral-400 font-sans mt-0.5">
                         {[ing.quantity, ing.unit].filter(Boolean).join(' ')}
                       </p>
                     )}
@@ -385,10 +385,10 @@ export default function RecipesPage() {
 
         {pendingAdd && sheetStep === 'select-list' && (
           <div className="flex flex-col gap-3">
-            <p className="text-sm text-neutral-500 font-sans -mt-1">Choose a shopping list:</p>
+            <p className="text-body-sm text-neutral-500 font-sans -mt-1">Choose a shopping list:</p>
 
             {myLists.length === 0 && (
-              <p className="text-sm text-neutral-400 text-center py-4 font-sans">
+              <p className="text-body-sm text-neutral-400 text-center py-4 font-sans">
                 No lists yet. Create one first.
               </p>
             )}
@@ -401,8 +401,8 @@ export default function RecipesPage() {
                 disabled={addingToListId !== null}
                 className="flex items-center justify-between h-[52px] px-4 bg-white border border-neutral-100 rounded-md active:bg-neutral-50 transition-colors disabled:opacity-50"
               >
-                <span className="text-sm font-semibold text-neutral-900 font-sans">{list.name}</span>
-                <span className="text-xs text-neutral-400 font-sans">
+                <span className="text-body-sm font-semibold text-neutral-900 font-sans">{list.name}</span>
+                <span className="text-badge text-neutral-400 font-sans">
                   {addingToListId === list.id ? 'Adding…' : `${list.item_count} items`}
                 </span>
               </button>

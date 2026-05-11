@@ -20,8 +20,8 @@ type Props = {
 
 const UNITS = ['pcs', 'g', 'kg', 'ml', 'l'] as const;
 
-const INPUT_CLS = 'w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400';
-const LABEL_CLS = 'text-sm font-medium text-neutral-700';
+const INPUT_CLS = 'w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400';
+const LABEL_CLS = 'text-caption font-medium text-neutral-700 font-sans';
 
 export default function AddItemSheet({ isOpen, onClose, onAddItem, listId }: Props) {
   const [tab, setTab] = useState<'new' | 'recent'>('new');
@@ -153,7 +153,7 @@ export default function AddItemSheet({ isOpen, onClose, onAddItem, listId }: Pro
                   type="button"
                   onClick={listening ? stopVoice : handleVoiceStart}
                   className={[
-                    'flex items-center gap-1.5 h-7 px-2.5 rounded-full text-xs font-medium font-sans',
+                    'flex items-center gap-1.5 h-7 px-2.5 rounded-full text-badge font-medium font-sans',
                     'active:scale-95 transition-all',
                     listening
                       ? 'bg-green-500 text-white'
@@ -202,7 +202,7 @@ export default function AddItemSheet({ isOpen, onClose, onAddItem, listId }: Pro
                 id={unitId}
                 value={unit}
                 onChange={(e) => setUnit(e.target.value)}
-                className="h-[44px] w-full px-3 border border-neutral-200 rounded-lg bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="h-[44px] w-full px-3 border border-neutral-200 rounded-lg bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               >
                 {UNITS.map(u => (
                   <option key={u} value={u}>{u}</option>
@@ -225,7 +225,7 @@ export default function AddItemSheet({ isOpen, onClose, onAddItem, listId }: Pro
             </div>
           )}
           {!historyLoading && history.length === 0 && (
-            <p className="text-center text-neutral-400 text-sm py-8 font-sans">
+            <p className="text-center text-neutral-400 text-body-sm py-8 font-sans">
               No purchase history yet
             </p>
           )}
@@ -237,14 +237,14 @@ export default function AddItemSheet({ isOpen, onClose, onAddItem, listId }: Pro
               className="flex items-center justify-between h-[56px] px-1 border-b border-neutral-100 last:border-0 active:scale-95 active:bg-neutral-50 transition-all rounded-md"
             >
               <div className="min-w-0 text-left">
-                <p className="text-sm font-medium text-neutral-900 truncate">{item.name}</p>
+                <p className="text-body-sm font-medium text-neutral-900 font-sans truncate">{item.name}</p>
                 {(item.quantity || item.unit) && (
-                  <p className="text-xs text-neutral-400">
+                  <p className="text-badge text-neutral-400 font-sans">
                     {[item.quantity, item.unit].filter(Boolean).join(' ')}
                   </p>
                 )}
               </div>
-              <span className="text-xs text-neutral-400 flex-shrink-0 ml-3">
+              <span className="text-badge text-neutral-400 font-sans flex-shrink-0 ml-3">
                 ×{item.purchase_count}
               </span>
             </button>

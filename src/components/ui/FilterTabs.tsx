@@ -22,7 +22,7 @@ export default function FilterTabs({ tabs, value, onChange, className }: Props) 
           type="button"
           onClick={() => onChange(tab.value)}
           className={[
-            'flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium',
+            'flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-body-sm font-medium font-sans',
             'active:scale-95 transition-all whitespace-nowrap min-h-[36px]',
             value === tab.value
               ? 'bg-green-500 text-white'
@@ -31,7 +31,7 @@ export default function FilterTabs({ tabs, value, onChange, className }: Props) 
         >
           {tab.label}
           {tab.count !== undefined && (
-            <span className={['text-xs', value === tab.value ? 'text-green-100' : 'text-neutral-400'].join(' ')}>
+            <span className={['text-badge', value === tab.value ? 'text-green-100' : 'text-neutral-400'].join(' ')}>
               {tab.count}
             </span>
           )}

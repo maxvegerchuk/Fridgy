@@ -17,8 +17,20 @@ export default {
         warning: { 50: '#FFFBEB', 400: '#FBBF24', 600: '#D97706' },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Fraunces', 'serif'],
+        heading: ['DM Sans', 'system-ui', 'sans-serif'],
+        sans:    ['Inter',   'system-ui', 'sans-serif'],
+      },
+      fontSize: {
+        'display': ['32px', { lineHeight: '1.2',  fontWeight: '800', letterSpacing: '-0.02em' }],
+        'h1':      ['26px', { lineHeight: '1.25', fontWeight: '800', letterSpacing: '-0.01em' }],
+        'h2':      ['22px', { lineHeight: '1.3',  fontWeight: '700' }],
+        'h3':      ['18px', { lineHeight: '1.3',  fontWeight: '700' }],
+        'body-lg': ['17px', { lineHeight: '1.5',  fontWeight: '600' }],
+        'body':    ['16px', { lineHeight: '1.6',  fontWeight: '400' }],
+        'body-sm': ['15px', { lineHeight: '1.5',  fontWeight: '400' }],
+        'caption': ['14px', { lineHeight: '1.4',  fontWeight: '600' }],
+        'badge':   ['13px', { lineHeight: '1',    fontWeight: '700' }],
+        'btn':     ['17px', { lineHeight: '1',    fontWeight: '700' }],
       },
       borderRadius: { sm: '8px', md: '12px', lg: '16px', xl: '20px' },
       boxShadow: {

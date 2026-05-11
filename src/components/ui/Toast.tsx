@@ -39,7 +39,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map(t => (
           <div
             key={t.id}
-            className={['rounded-lg px-4 py-3 text-sm font-medium shadow-md pointer-events-auto', variantCls[t.variant]].join(' ')}
+            className={['rounded-lg px-4 py-3 text-body-sm font-medium font-sans shadow-md pointer-events-auto', variantCls[t.variant]].join(' ')}
           >
             {t.message}
           </div>

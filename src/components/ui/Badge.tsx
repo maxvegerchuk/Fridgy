@@ -17,7 +17,7 @@ type Props = {
 
 export default function Badge({ variant = 'neutral', children, className }: Props) {
   const cls = [
-    'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium',
+    'inline-flex items-center px-2 py-0.5 rounded-full text-badge font-medium font-sans',
     variantClasses[variant],
     className,
   ].filter(Boolean).join(' ');

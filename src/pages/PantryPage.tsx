@@ -106,7 +106,7 @@ export default function PantryPage() {
     <div className="flex flex-col h-full relative">
       {/* Header */}
       <div className="flex items-center justify-between h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
-        <h1 className="text-2xl font-semibold text-neutral-900 font-display">Pantry</h1>
+        <h1 className="text-h1 font-heading text-neutral-900">Pantry</h1>
         <button
           type="button"
           onClick={openAddMember}
@@ -179,16 +179,16 @@ export default function PantryPage() {
           <div className="pb-4">
             {/* Section header */}
             <div className="flex items-center justify-between px-4 pt-4 pb-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-neutral-400 font-sans">
+              <span className="text-badge font-semibold uppercase tracking-wide text-neutral-400 font-sans">
                 All Ingredients
               </span>
-              <span className="text-xs text-neutral-400 font-sans">
+              <span className="text-badge text-neutral-400 font-sans">
                 {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'}
               </span>
             </div>
 
             {filteredItems.length === 0 && (
-              <p className="text-sm text-neutral-400 text-center py-8 font-sans">No results</p>
+              <p className="text-body-sm text-neutral-400 text-center py-8 font-sans">No results</p>
             )}
 
             {view === 'all' && (
@@ -207,7 +207,7 @@ export default function PantryPage() {
             {view === 'categories' && groups.map(([cat, catItems]) => (
               <div key={cat}>
                 <div className="flex items-center gap-2 px-4 pt-3 pb-1">
-                  <span className="text-[11px] font-medium uppercase tracking-wider text-neutral-300 font-sans">
+                  <span className="text-badge font-medium uppercase tracking-wider text-neutral-300 font-sans">
                     {CATEGORIES[cat].label}
                   </span>
                 </div>
@@ -269,7 +269,7 @@ export default function PantryPage() {
           {/* Friends quick-add */}
           {friends.length > 0 && (
             <div className="flex flex-col gap-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400 font-sans">Friends</p>
+              <p className="text-badge font-semibold uppercase tracking-wide text-neutral-400 font-sans">Friends</p>
               {friends.map(f => {
                 const isMember = memberUserIds.has(f.id);
                 return (
@@ -301,7 +301,7 @@ export default function PantryPage() {
                         {f.display_name?.charAt(0).toUpperCase() ?? '?'}
                       </span>
                     </div>
-                    <p className="flex-1 text-sm font-semibold text-neutral-900 font-sans text-left truncate">{f.display_name}</p>
+                    <p className="flex-1 text-body-sm font-semibold text-neutral-900 font-sans text-left truncate">{f.display_name}</p>
                     {isMember
                       ? <Check size={18} weight="bold" className="text-green-500 flex-shrink-0" />
                       : <UserPlus size={18} className="text-neutral-400 flex-shrink-0" />
@@ -340,7 +340,7 @@ export default function PantryPage() {
                   {foundProfile.display_name?.charAt(0).toUpperCase() ?? '?'}
                 </span>
               </div>
-              <p className="flex-1 text-sm font-semibold text-neutral-900 font-sans">{foundProfile.display_name}</p>
+              <p className="flex-1 text-body-sm font-semibold text-neutral-900 font-sans">{foundProfile.display_name}</p>
             </div>
           )}
 
@@ -370,9 +370,9 @@ function PantryItemRow({ item, onAddToList, onDelete }: ItemRowProps) {
 
       {/* Name + qty */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-neutral-900 font-sans truncate">{item.name}</p>
+        <p className="text-body-sm font-semibold text-neutral-900 font-sans truncate">{item.name}</p>
         {(item.quantity || item.unit) && (
-          <p className="text-xs text-neutral-400 font-sans mt-0.5">
+          <p className="text-badge text-neutral-400 font-sans mt-0.5">
             {[item.quantity, item.unit].filter(Boolean).join(' ')}
           </p>
         )}

@@ -9,8 +9,8 @@ import type { ProductSuggestion } from '../lib/productSuggestions';
 
 const UNITS = ['pcs', 'g', 'kg', 'ml', 'l'] as const;
 
-const INPUT_CLS = 'w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400';
-const LABEL_CLS = 'text-sm font-medium text-neutral-700';
+const INPUT_CLS = 'w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400';
+const LABEL_CLS = 'text-caption font-medium text-neutral-700 font-sans';
 
 type IngredientDraft = {
   key: string;
@@ -242,7 +242,7 @@ export default function CreateRecipePage() {
         <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-700">
           <ArrowLeft size={24} />
         </button>
-        <h1 className="ml-3 text-lg font-semibold text-neutral-900">
+        <h1 className="ml-3 text-h3 font-heading text-neutral-900">
           {isEdit ? 'Edit Recipe' : 'New Recipe'}
         </h1>
       </div>
@@ -290,7 +290,7 @@ export default function CreateRecipePage() {
               ) : (
                 <div className="flex flex-col items-center justify-center h-full gap-2 text-neutral-400">
                   <Camera size={32} weight="light" />
-                  <span className="text-sm font-medium font-sans">Add cover photo</span>
+                  <span className="text-body-sm font-medium font-sans">Add cover photo</span>
                 </div>
               )}
             </button>
@@ -355,13 +355,13 @@ export default function CreateRecipePage() {
                 className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${isPublic ? 'translate-x-5' : 'translate-x-0'}`}
               />
             </div>
-            <span className="text-sm font-medium text-neutral-700">Share publicly</span>
+            <span className="text-body-sm font-medium text-neutral-700 font-sans">Share publicly</span>
           </label>
 
           {/* Ingredients */}
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold text-neutral-900">Ingredients</h2>
+              <h2 className="text-h3 font-heading text-neutral-900">Ingredients</h2>
               <Button
                 type="button"
                 size="sm"
@@ -399,16 +399,16 @@ export default function CreateRecipePage() {
                     placeholder="Qty"
                     onFocus={e => e.target.select()}
                     style={{ fontSize: '16px' }}
-                    className="h-[36px] w-16 px-3 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
+                    className="h-[36px] w-16 px-3 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
                   />
                   <select
                     value={ing.unit}
                     onChange={e => updateIngredient(ing.key, { unit: e.target.value })}
-                    className="h-[36px] w-20 px-2 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="h-[36px] w-20 px-2 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   >
                     {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
                   </select>
-                  <label className="flex items-center gap-1.5 text-sm text-neutral-500 font-sans cursor-pointer select-none">
+                  <label className="flex items-center gap-1.5 text-body-sm text-neutral-500 font-sans cursor-pointer select-none">
                     <input
                       type="checkbox"
                       checked={ing.optional}
@@ -434,7 +434,7 @@ export default function CreateRecipePage() {
           {/* Steps */}
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold text-neutral-900">Instructions</h2>
+              <h2 className="text-h3 font-heading text-neutral-900">Instructions</h2>
               <Button
                 type="button"
                 size="sm"
@@ -451,10 +451,10 @@ export default function CreateRecipePage() {
               <div key={step.key} className="flex flex-col gap-2 p-3 border border-neutral-200 rounded-xl">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-green-500 text-white text-xs font-semibold flex items-center justify-center flex-shrink-0 font-sans">
+                    <span className="w-6 h-6 rounded-full bg-green-500 text-white text-badge font-semibold flex items-center justify-center flex-shrink-0 font-sans">
                       {idx + 1}
                     </span>
-                    <span className="text-sm font-medium text-neutral-600 font-sans">Step {idx + 1}</span>
+                    <span className="text-body-sm font-medium text-neutral-600 font-sans">Step {idx + 1}</span>
                   </div>
                   {steps.length > 1 && (
                     <button
@@ -473,7 +473,7 @@ export default function CreateRecipePage() {
                   onChange={e => updateStep(step.key, { instruction: e.target.value })}
                   placeholder="Describe this step…"
                   rows={3}
-                  className="w-full px-3 py-2.5 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400 resize-none"
+                  className="w-full px-3 py-2.5 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400 resize-none"
                 />
 
                 {/* Step photo */}
@@ -504,7 +504,7 @@ export default function CreateRecipePage() {
                   <button
                     type="button"
                     onClick={() => stepFileInputRefs.current.get(step.key)?.click()}
-                    className="self-start flex items-center gap-1.5 h-[34px] px-3 text-sm text-neutral-400 hover:text-neutral-600 active:bg-neutral-50 rounded-md transition-colors font-sans"
+                    className="self-start flex items-center gap-1.5 h-[34px] px-3 text-body-sm text-neutral-400 hover:text-neutral-600 active:bg-neutral-50 rounded-md transition-colors font-sans"
                   >
                     <Camera size={17} />
                     Add photo
