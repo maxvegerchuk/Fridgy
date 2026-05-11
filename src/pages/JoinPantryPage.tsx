@@ -63,13 +63,13 @@ export default function JoinPantryPage() {
   if (state === 'error') {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-4 px-6">
-        <p className="text-base font-semibold text-neutral-900 font-sans text-center">
+        <p className="text-body font-semibold text-neutral-900 font-sans text-center">
           Invalid or expired invite link
         </p>
         <button
           type="button"
           onClick={() => navigate('/pantry', { replace: true })}
-          className="text-green-500 font-semibold text-sm active:opacity-70"
+          className="text-green-500 font-semibold text-body-sm font-sans active:opacity-70"
         >
           Go to Pantry
         </button>
@@ -81,7 +81,7 @@ export default function JoinPantryPage() {
     <div className="flex items-center justify-center h-full">
       <div className="flex flex-col items-center gap-3">
         <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-sm text-neutral-500 font-sans">Joining pantry…</p>
+        <p className="text-body-sm text-neutral-600 font-sans">Joining pantry…</p>
       </div>
     </div>
   );

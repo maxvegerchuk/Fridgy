@@ -105,7 +105,7 @@ export default function ShoppingListDetailPage() {
         <button
           type="button"
           onClick={() => navigate('/')}
-          className="text-neutral-700 active:scale-95 transition-transform flex-shrink-0"
+          className="text-neutral-800 active:scale-95 transition-transform flex-shrink-0"
           aria-label="Back to lists"
         >
           <ArrowLeft size={24} />
@@ -118,7 +118,7 @@ export default function ShoppingListDetailPage() {
         <button
           type="button"
           onClick={openAddMember}
-          className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-500 active:scale-95 active:bg-neutral-100 transition-all"
+          className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition-all"
           aria-label="Add member"
         >
           <UserPlus size={22} weight="regular" />
@@ -246,7 +246,7 @@ export default function ShoppingListDetailPage() {
                     ].join(' ')}
                   >
                     <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                      <span className="text-sm font-bold text-green-600 font-sans">
+                      <span className="text-body-sm font-bold text-green-700 font-sans">
                         {f.display_name?.charAt(0).toUpperCase() ?? '?'}
                       </span>
                     </div>
@@ -271,7 +271,7 @@ export default function ShoppingListDetailPage() {
               onKeyDown={e => { if (e.key === 'Enter') handleLookupUser(); }}
               placeholder="Enter 6-character code"
               style={{ fontSize: '16px' }}
-              className="flex-1 h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-sm font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
+              className="flex-1 h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
             />
             <Button size="md" variant="secondary" loading={lookingUp} onClick={handleLookupUser}>
               Find
@@ -279,13 +279,13 @@ export default function ShoppingListDetailPage() {
           </div>
 
           {memberNotFound && (
-            <p className="text-sm text-red-500 font-sans">User not found</p>
+            <p className="text-body-sm text-red-500 font-sans">User not found</p>
           )}
 
           {foundProfile && (
             <div className="flex items-center gap-3 px-4 py-3 bg-neutral-50 rounded-md">
               <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                <span className="text-sm font-bold text-green-600 font-sans">
+                <span className="text-body-sm font-bold text-green-700 font-sans">
                   {foundProfile.display_name?.charAt(0).toUpperCase() ?? '?'}
                 </span>
               </div>
@@ -363,7 +363,7 @@ function ItemRow({ item, onCheck, onDelete, onChecked, dimmed }: ItemRowProps) {
       <button
         type="button"
         onClick={() => onDelete(item.id)}
-        className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-danger-600 active:bg-danger-50 transition-all flex-shrink-0"
+        className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-red-700 active:bg-red-50 transition-all flex-shrink-0"
         aria-label="Delete item"
       >
         <Trash size={20} weight="regular" />

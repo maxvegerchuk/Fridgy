@@ -180,7 +180,7 @@ export default function RecipeDetailPage() {
     return (
       <div className="flex flex-col h-full pt-safe">
         <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 bg-white">
-          <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-700">
+          <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-800">
             <ArrowLeft size={24} />
           </button>
         </div>
@@ -195,7 +195,7 @@ export default function RecipeDetailPage() {
     return (
       <div className="flex flex-col h-full pt-safe">
         <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 bg-white">
-          <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-700">
+          <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-800">
             <ArrowLeft size={24} />
           </button>
         </div>
@@ -217,7 +217,7 @@ export default function RecipeDetailPage() {
     <div className="flex flex-col h-full pt-safe">
       {/* Sticky header */}
       <div className="flex items-center justify-between h-[56px] px-4 border-b border-neutral-100 sticky top-0 bg-white z-10">
-        <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-700">
+        <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-800">
           <ArrowLeft size={24} />
         </button>
         <div className="flex items-center gap-1">
@@ -234,7 +234,7 @@ export default function RecipeDetailPage() {
               <button
                 type="button"
                 onClick={() => navigate(`/recipe/${recipe.id}/edit`)}
-                className="p-2 text-neutral-500 rounded-full active:bg-neutral-100 transition-colors"
+                className="p-2 text-neutral-600 rounded-full active:bg-neutral-100 transition-colors"
                 aria-label="Edit recipe"
               >
                 <PencilSimple size={22} />
@@ -243,7 +243,7 @@ export default function RecipeDetailPage() {
                 type="button"
                 onClick={handleDelete}
                 disabled={savingOrDeleting}
-                className="p-2 text-danger-600 rounded-full active:bg-red-50 disabled:opacity-50"
+                className="p-2 text-red-700 rounded-full active:bg-red-50 disabled:opacity-50"
                 aria-label="Delete recipe"
               >
                 <Trash size={22} />
@@ -258,8 +258,8 @@ export default function RecipeDetailPage() {
               className={[
                 'flex items-center gap-1.5 px-3 h-[36px] rounded-full text-body-sm font-medium font-sans transition-colors disabled:opacity-50',
                 isSaved
-                  ? 'bg-green-500 text-white active:bg-green-600'
-                  : 'bg-neutral-100 text-neutral-700 active:bg-neutral-200',
+                  ? 'bg-green-500 text-white active:bg-green-700'
+                  : 'bg-neutral-100 text-neutral-800 active:bg-neutral-200',
               ].join(' ')}
             >
               {isSaved ? 'Saved' : 'Save'}
@@ -287,7 +287,7 @@ export default function RecipeDetailPage() {
               <p className="text-body-sm text-neutral-400 font-sans">by {recipe.author.display_name}</p>
             )}
             {(recipe.cook_time_minutes || recipe.servings > 0) && (
-              <div className="flex items-center gap-4 text-body-sm text-neutral-500 font-sans mt-0.5">
+              <div className="flex items-center gap-4 text-body-sm text-neutral-600 font-sans mt-0.5">
                 {recipe.cook_time_minutes && <span>{recipe.cook_time_minutes} min</span>}
                 {recipe.servings > 0 && <span>{recipe.servings} servings</span>}
               </div>
@@ -320,7 +320,7 @@ export default function RecipeDetailPage() {
                             </p>
                           )}
                         </div>
-                        <div className={`w-2 h-2 rounded-full flex-shrink-0 ${inPantry ? 'bg-green-500' : 'bg-neutral-300'}`} />
+                        <div className={`w-2 h-2 rounded-full flex-shrink-0 ${inPantry ? 'bg-green-500' : 'bg-neutral-200'}`} />
                       </div>
                     );
                   })}

@@ -28,8 +28,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const variantCls: Record<ToastVariant, string> = {
     success: 'bg-green-500 text-white',
-    error:   'bg-danger-600 text-white',
-    info:    'bg-neutral-700 text-white',
+    error:   'bg-red-500 text-white',
+    info:    'bg-neutral-800 text-white',
   };
 
   return (

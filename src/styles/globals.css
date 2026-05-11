@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,7 +8,7 @@
     overflow: hidden;
     overscroll-behavior: none;
     -webkit-font-smoothing: antialiased;
-    background-color: #F4F5F7;
+    background-color: #F8FAF4;
   }
   #root {
     height: 100dvh;

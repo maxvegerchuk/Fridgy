@@ -18,7 +18,7 @@ type Props = {
 const UNITS = ['pcs', 'g', 'kg', 'ml', 'l'] as const;
 
 const INPUT_CLS = 'w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400';
-const LABEL_CLS = 'text-caption font-medium text-neutral-700 font-sans';
+const LABEL_CLS = 'text-caption font-medium text-neutral-800 font-sans';
 
 export default function AddPantrySheet({ isOpen, onClose, onAddItem }: Props) {
   const [name, setName] = useState('');
@@ -129,7 +129,7 @@ export default function AddPantrySheet({ isOpen, onClose, onAddItem }: Props) {
                   'active:scale-95 transition-all',
                   listening
                     ? 'bg-green-500 text-white'
-                    : 'bg-neutral-100 text-neutral-500 active:bg-neutral-200',
+                    : 'bg-neutral-100 text-neutral-600 active:bg-neutral-200',
                 ].join(' ')}
                 aria-label={listening ? 'Stop recording' : 'Voice input'}
               >

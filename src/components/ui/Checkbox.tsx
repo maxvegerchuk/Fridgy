@@ -25,7 +25,7 @@ export default function Checkbox({ checked, onChange, label, className }: Props)
       <div
         className={[
           'w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors',
-          checked ? 'bg-green-500 border-green-500' : 'bg-neutral-0 border-neutral-300',
+          checked ? 'bg-green-500 border-green-500' : 'bg-neutral-0 border-neutral-200',
         ].join(' ')}
       >
         {checked && (
@@ -34,7 +34,7 @@ export default function Checkbox({ checked, onChange, label, className }: Props)
           </svg>
         )}
       </div>
-      {label && <span className="text-neutral-900 text-base">{label}</span>}
+      {label && <span className="text-neutral-900 text-body font-sans">{label}</span>}
     </label>
   );
 }

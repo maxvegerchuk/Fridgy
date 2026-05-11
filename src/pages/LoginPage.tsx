@@ -77,7 +77,7 @@ export default function LoginPage() {
               />
 
               {error && (
-                <p className="text-body-sm text-danger-600 text-center bg-danger-50 rounded-md px-3 py-2 font-sans">
+                <p className="text-body-sm text-red-700 text-center bg-red-50 rounded-md px-3 py-2 font-sans">
                   {error}
                 </p>
               )}
@@ -93,7 +93,7 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <p className="text-center text-body-sm text-neutral-500 mt-6 font-sans">
+            <p className="text-center text-body-sm text-neutral-600 mt-6 font-sans">
               Don't have an account?{' '}
               <Link to="/register" className="text-green-500 font-semibold active:opacity-70">
                 Create one

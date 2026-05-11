@@ -67,7 +67,7 @@ export default function ListPage() {
 
         {isEmpty && (
           <div className="flex flex-col items-center justify-center py-20 gap-3 px-6 text-center">
-            <ShoppingCart size={56} weight="light" className="text-neutral-300" />
+            <ShoppingCart size={56} weight="light" className="text-neutral-200" />
             <p className="text-body font-semibold text-neutral-900 font-heading">No lists yet</p>
             <p className="text-body-sm text-neutral-400 font-sans leading-relaxed">
               Create your first shopping list to get started.
@@ -148,7 +148,7 @@ export default function ListPage() {
             <h3 className="text-h3 font-heading text-neutral-900 mb-1">
               Delete list?
             </h3>
-            <p className="text-body-sm text-neutral-500 font-sans mb-6">
+            <p className="text-body-sm text-neutral-600 font-sans mb-6">
               "{listToDelete?.name}" will be permanently deleted.
             </p>
             <div className="flex gap-3">
@@ -205,13 +205,13 @@ function ListCard({ list, onTap, onDeleteClick }: CardProps) {
           </span>
           {list.role === 'editor' && ownerMember && (
             <>
-              <span className="text-neutral-300 text-badge">·</span>
+              <span className="text-neutral-200 text-badge">·</span>
               <span className="text-badge text-neutral-400 font-sans">
                 by {ownerMember.display_name ?? 'Unknown'}
               </span>
             </>
           )}
-          <span className="text-neutral-300 text-badge">·</span>
+          <span className="text-neutral-200 text-badge">·</span>
           <span className="text-badge text-neutral-400 font-sans">{formatDate(list.created_at)}</span>
         </div>
       </button>
@@ -229,7 +229,7 @@ function ListCard({ list, onTap, onDeleteClick }: CardProps) {
             </div>
           ))}
           {list.members.length > 3 && (
-            <div className="relative -ml-2 w-7 h-7 rounded-full border-2 border-neutral-0 bg-neutral-200 flex items-center justify-center text-neutral-500 text-[10px] font-semibold font-sans flex-shrink-0">
+            <div className="relative -ml-2 w-7 h-7 rounded-full border-2 border-neutral-0 bg-neutral-200 flex items-center justify-center text-neutral-600 text-[10px] font-semibold font-sans flex-shrink-0">
               +{list.members.length - 3}
             </div>
           )}
@@ -241,7 +241,7 @@ function ListCard({ list, onTap, onDeleteClick }: CardProps) {
         <button
           type="button"
           onClick={onDeleteClick}
-          className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-danger-600 active:bg-danger-50 transition-all flex-shrink-0"
+          className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-red-700 active:bg-red-50 transition-all flex-shrink-0"
           aria-label="Delete list"
         >
           <Trash size={20} weight="regular" />

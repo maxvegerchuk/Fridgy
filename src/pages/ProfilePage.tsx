@@ -85,11 +85,11 @@ export default function ProfilePage() {
           {/* Avatar + name + email */}
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-              <span className="text-2xl font-bold text-green-600 font-heading">{initial}</span>
+              <span className="text-2xl font-bold text-green-700 font-heading">{initial}</span>
             </div>
             <div className="min-w-0">
               <p className="text-body font-semibold text-neutral-900 font-heading truncate">{user?.display_name}</p>
-              <p className="text-body-sm text-neutral-500 font-sans truncate">{email}</p>
+              <p className="text-body-sm text-neutral-600 font-sans truncate">{email}</p>
             </div>
           </div>
 
@@ -118,7 +118,7 @@ export default function ProfilePage() {
               <button
                 type="button"
                 onClick={() => setAddFriendOpen(true)}
-                className="w-8 h-8 flex items-center justify-center rounded-md text-neutral-500 active:scale-95 active:bg-neutral-100 transition-all"
+                className="w-8 h-8 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition-all"
                 aria-label="Add friend"
               >
                 <UserPlus size={18} weight="regular" />
@@ -134,7 +134,7 @@ export default function ProfilePage() {
                 {friends.map(f => (
                   <div key={f.id} className="flex items-center gap-3 px-4 py-3 bg-white border border-neutral-100 rounded-md">
                     <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                      <span className="text-sm font-bold text-green-600 font-sans">
+                      <span className="text-body-sm font-bold text-green-700 font-sans">
                         {f.display_name?.charAt(0).toUpperCase() ?? '?'}
                       </span>
                     </div>
@@ -142,7 +142,7 @@ export default function ProfilePage() {
                     <button
                       type="button"
                       onClick={() => handleRemoveFriend(f.id, f.display_name)}
-                      className="w-8 h-8 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-danger-600 active:bg-danger-50 transition-all flex-shrink-0"
+                      className="w-8 h-8 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-red-700 active:bg-red-50 transition-all flex-shrink-0"
                       aria-label={`Remove ${f.display_name}`}
                     >
                       <Trash size={16} weight="regular" />
@@ -174,7 +174,7 @@ export default function ProfilePage() {
               onKeyDown={e => { if (e.key === 'Enter') handleLookupFriend(); }}
               placeholder="Enter 6-character code"
               style={{ fontSize: '16px' }}
-              className="flex-1 h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-sm font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
+              className="flex-1 h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
             />
             <Button size="md" variant="secondary" loading={lookingUp} onClick={handleLookupFriend}>
               Find
@@ -182,13 +182,13 @@ export default function ProfilePage() {
           </div>
 
           {friendNotFound && (
-            <p className="text-sm text-red-500 font-sans">User not found</p>
+            <p className="text-body-sm text-red-500 font-sans">User not found</p>
           )}
 
           {foundProfile && (
             <div className="flex items-center gap-3 px-4 py-3 bg-neutral-50 rounded-md">
               <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                <span className="text-sm font-bold text-green-600 font-sans">
+                <span className="text-body-sm font-bold text-green-700 font-sans">
                   {foundProfile.display_name?.charAt(0).toUpperCase() ?? '?'}
                 </span>
               </div>

@@ -10,7 +10,7 @@ import type { ProductSuggestion } from '../lib/productSuggestions';
 const UNITS = ['pcs', 'g', 'kg', 'ml', 'l'] as const;
 
 const INPUT_CLS = 'w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400';
-const LABEL_CLS = 'text-caption font-medium text-neutral-700 font-sans';
+const LABEL_CLS = 'text-caption font-medium text-neutral-800 font-sans';
 
 type IngredientDraft = {
   key: string;
@@ -224,7 +224,7 @@ export default function CreateRecipePage() {
     return (
       <div className="flex flex-col h-full bg-neutral-0 pt-safe">
         <div className="flex items-center h-[56px] px-4 border-b border-neutral-100">
-          <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-700">
+          <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-800">
             <ArrowLeft size={24} />
           </button>
         </div>
@@ -239,7 +239,7 @@ export default function CreateRecipePage() {
     <div className="flex flex-col h-full bg-neutral-0 pt-safe">
       {/* Header */}
       <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 sticky top-0 bg-neutral-0 z-10">
-        <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-700">
+        <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-800">
           <ArrowLeft size={24} />
         </button>
         <h1 className="ml-3 text-h3 font-heading text-neutral-900">
@@ -275,7 +275,7 @@ export default function CreateRecipePage() {
                 <>
                   <img src={coverPreview} alt="Cover" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-                  <span className="absolute bottom-2 right-2 text-xs text-white/80 font-sans">
+                  <span className="absolute bottom-2 right-2 text-badge text-white/80 font-sans">
                     Tap to change
                   </span>
                   <button
@@ -349,13 +349,13 @@ export default function CreateRecipePage() {
               role="switch"
               aria-checked={isPublic}
               onClick={() => setIsPublic(v => !v)}
-              className={`relative w-11 h-6 rounded-full transition-colors ${isPublic ? 'bg-green-500' : 'bg-neutral-300'}`}
+              className={`relative w-11 h-6 rounded-full transition-colors ${isPublic ? 'bg-green-500' : 'bg-neutral-200'}`}
             >
               <span
                 className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${isPublic ? 'translate-x-5' : 'translate-x-0'}`}
               />
             </div>
-            <span className="text-body-sm font-medium text-neutral-700 font-sans">Share publicly</span>
+            <span className="text-body-sm font-medium text-neutral-800 font-sans">Share publicly</span>
           </label>
 
           {/* Ingredients */}
@@ -408,7 +408,7 @@ export default function CreateRecipePage() {
                   >
                     {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
                   </select>
-                  <label className="flex items-center gap-1.5 text-body-sm text-neutral-500 font-sans cursor-pointer select-none">
+                  <label className="flex items-center gap-1.5 text-body-sm text-neutral-600 font-sans cursor-pointer select-none">
                     <input
                       type="checkbox"
                       checked={ing.optional}

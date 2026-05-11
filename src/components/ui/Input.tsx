@@ -22,19 +22,19 @@ export default function Input({ label, error, className, inputSize = 'md', style
     'focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent',
     'placeholder:text-neutral-400 text-neutral-900',
     sizeCls[inputSize],
-    error ? 'border-danger-600' : 'border-neutral-200',
+    error ? 'border-red-500' : 'border-neutral-200',
     className,
   ].filter(Boolean).join(' ');
 
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
-        <label htmlFor={id} className="text-caption font-medium text-neutral-700 font-sans">
+        <label htmlFor={id} className="text-caption font-medium text-neutral-800 font-sans">
           {label}
         </label>
       )}
       <input id={id} className={inputCls} style={{ fontSize: '16px', ...style }} {...props} />
-      {error && <p className="text-badge text-danger-600 font-sans">{error}</p>}
+      {error && <p className="text-badge text-red-500 font-sans">{error}</p>}
     </div>
   );
 }

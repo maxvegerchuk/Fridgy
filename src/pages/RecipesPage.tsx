@@ -17,8 +17,8 @@ type SheetStep = 'ingredients' | 'select-list';
 
 const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
   ready:        { label: 'Available',  cls: 'bg-green-100 text-green-700' },
-  need_few:     { label: 'Need 1–3',   cls: 'bg-amber-100 text-amber-700' },
-  missing_many: { label: 'Missing',    cls: 'bg-neutral-100 text-neutral-500' },
+  need_few:     { label: 'Need 1–3',   cls: 'bg-yellow-50 text-yellow-700' },
+  missing_many: { label: 'Missing',    cls: 'bg-neutral-100 text-neutral-600' },
 };
 
 type PendingAdd = {
@@ -59,7 +59,7 @@ function RecipeCard({
           <img src={recipe.image_url} alt={recipe.title} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full bg-neutral-100 flex items-center justify-center">
-            <BookOpen size={40} weight="light" className="text-neutral-300" />
+            <BookOpen size={40} weight="light" className="text-neutral-200" />
           </div>
         )}
       </div>
@@ -97,7 +97,7 @@ function RecipeCard({
             type="button"
             onClick={onAddAll}
             disabled={loadingMode !== null}
-            className="flex-1 h-[40px] border border-neutral-200 rounded-md text-body-sm font-medium font-sans text-neutral-700 active:bg-neutral-50 transition-colors disabled:opacity-50"
+            className="flex-1 h-[40px] border border-neutral-200 rounded-md text-body-sm font-medium font-sans text-neutral-800 active:bg-neutral-50 transition-colors disabled:opacity-50"
           >
             {loadingMode === 'all' ? '…' : 'Add All'}
           </button>
@@ -106,7 +106,7 @@ function RecipeCard({
               type="button"
               onClick={onAddMissing}
               disabled={loadingMode !== null}
-              className="flex-1 h-[40px] bg-green-500 text-white rounded-md text-body-sm font-medium font-sans active:bg-green-600 transition-colors disabled:opacity-50"
+              className="flex-1 h-[40px] bg-green-500 text-white rounded-md text-body-sm font-medium font-sans active:bg-green-700 transition-colors disabled:opacity-50"
             >
               {loadingMode === 'missing' ? '…' : 'Add Missing'}
             </button>
@@ -353,7 +353,7 @@ export default function RecipesPage() {
       >
         {pendingAdd && sheetStep === 'ingredients' && (
           <div className="flex flex-col gap-4">
-            <p className="text-body-sm text-neutral-500 font-sans -mt-1">
+            <p className="text-body-sm text-neutral-600 font-sans -mt-1">
               {pendingAdd.ingredients.length} ingredient{pendingAdd.ingredients.length !== 1 ? 's' : ''} from "{pendingAdd.recipeName}"
             </p>
 
@@ -385,7 +385,7 @@ export default function RecipesPage() {
 
         {pendingAdd && sheetStep === 'select-list' && (
           <div className="flex flex-col gap-3">
-            <p className="text-body-sm text-neutral-500 font-sans -mt-1">Choose a shopping list:</p>
+            <p className="text-body-sm text-neutral-600 font-sans -mt-1">Choose a shopping list:</p>
 
             {myLists.length === 0 && (
               <p className="text-body-sm text-neutral-400 text-center py-4 font-sans">

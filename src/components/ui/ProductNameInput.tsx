@@ -35,7 +35,7 @@ export default function ProductNameInput({
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
-        <label htmlFor={id} className="text-sm font-medium text-neutral-700">{label}</label>
+        <label htmlFor={id} className="text-caption font-medium text-neutral-800 font-sans">{label}</label>
       )}
       <input
         id={id}
@@ -52,7 +52,7 @@ export default function ProductNameInput({
             onCommit?.();
           }
         }}
-        className="w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
+        className="w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
       />
 
       {showSuggestions && (
@@ -69,9 +69,9 @@ export default function ProductNameInput({
                 className="w-full flex items-center gap-3 h-[44px] px-3 text-left active:bg-neutral-100 border-b border-neutral-100 last:border-0 transition-colors"
               >
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm font-medium text-neutral-900 font-sans">{s.name}</span>
+                  <span className="text-body-sm font-medium text-neutral-900 font-sans">{s.name}</span>
                 </div>
-                <span className="text-xs text-neutral-400 font-sans flex-shrink-0">
+                <span className="text-badge text-neutral-400 font-sans flex-shrink-0">
                   {s.defaultUnit}
                 </span>
               </button>

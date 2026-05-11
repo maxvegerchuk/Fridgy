@@ -3,10 +3,10 @@ import type { ReactNode } from 'react';
 type Variant = 'green' | 'warning' | 'danger' | 'neutral';
 
 const variantClasses: Record<Variant, string> = {
-  green:   'bg-green-100 text-green-600',
-  warning: 'bg-warning-50 text-warning-600',
-  danger:  'bg-danger-50 text-danger-600',
-  neutral: 'bg-neutral-100 text-neutral-500',
+  green:   'bg-green-100 text-green-700',
+  warning: 'bg-yellow-50 text-yellow-700',
+  danger:  'bg-red-50 text-red-700',
+  neutral: 'bg-neutral-100 text-neutral-600',
 };
 
 type Props = {

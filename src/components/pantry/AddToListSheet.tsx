@@ -48,9 +48,9 @@ export default function AddToListSheet({ item, onClose, onConfirm }: Props) {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Name — readonly */}
           <div className="flex flex-col gap-1.5">
-            <span className="text-sm font-medium text-neutral-700">Item</span>
+            <span className="text-caption font-medium text-neutral-800 font-sans">Item</span>
             <div className="h-[44px] px-4 flex items-center bg-neutral-100 rounded-md">
-              <span className="text-base text-neutral-500 font-sans truncate">{item.name}</span>
+              <span className="text-body text-neutral-600 font-sans truncate">{item.name}</span>
             </div>
           </div>
 
@@ -69,12 +69,12 @@ export default function AddToListSheet({ item, onClose, onConfirm }: Props) {
               />
             </div>
             <div className="flex flex-col gap-1.5 w-24">
-              <label htmlFor={unitId} className="text-sm font-medium text-neutral-700">Unit</label>
+              <label htmlFor={unitId} className="text-caption font-medium text-neutral-800 font-sans">Unit</label>
               <select
                 id={unitId}
                 value={unit}
                 onChange={(e) => setUnit(e.target.value)}
-                className="h-[44px] w-full px-3 border border-neutral-200 rounded-md bg-neutral-0 text-base font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="h-[44px] w-full px-3 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               >
                 {UNITS.map(u => (
                   <option key={u} value={u}>{u}</option>

@@ -11,7 +11,7 @@ type Props = {
 };
 
 export default function SegmentControl({ options, value, onChange, className }: Props) {
-  const cls = ['flex p-1 bg-[#F4F5F7] rounded-md', className].filter(Boolean).join(' ');
+  const cls = ['flex p-1 bg-neutral-100 rounded-md', className].filter(Boolean).join(' ');
 
   return (
     <div className={cls}>
@@ -24,7 +24,7 @@ export default function SegmentControl({ options, value, onChange, className }: 
             'flex-1 py-2 px-4 text-body-sm font-medium font-sans rounded-[10px] transition-all active:scale-95',
             value === opt.value
               ? 'bg-neutral-0 text-neutral-900 shadow-xs'
-              : 'text-neutral-500',
+              : 'text-neutral-600',
           ].join(' ')}
         >
           {opt.label}
