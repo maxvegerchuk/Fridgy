@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingBagOpen, ShoppingCart, Plus, Trash, MagnifyingGlass, UsersThree } from 'phosphor-react';
+import { ShoppingBagOpen, ShoppingCart, Plus, Trash, MagnifyingGlass, Users } from 'phosphor-react';
 import { EmptyState, Button, Skeleton } from '../components/ui';
 import { useToast } from '../components/ui';
 import AddPantrySheet from '../components/pantry/AddPantrySheet';
@@ -59,7 +59,7 @@ export default function PantryPage() {
           className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition-all"
           aria-label="Pantry members"
         >
-          <UsersThree size={22} weight="regular" />
+          <Users size={22} weight="regular" />
         </button>
       </div>
 

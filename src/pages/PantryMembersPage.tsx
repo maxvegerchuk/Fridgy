@@ -7,7 +7,6 @@ import { supabase } from '../lib/supabase';
 import { usePantryMembers } from '../hooks/usePantryMembers';
 import { useFriendsStore } from '../store/friendsStore';
 import { useAuthStore } from '../store/authStore';
-import type { Profile } from '../types';
 
 export default function PantryMembersPage() {
   const navigate = useNavigate();
@@ -36,20 +35,14 @@ export default function PantryMembersPage() {
   const [addOpen, setAddOpen] = useState(false);
   const [selectedFriendIds, setSelectedFriendIds] = useState<Set<string>>(new Set());
   const [addingMembers, setAddingMembers] = useState(false);
-  const [codeInput, setCodeInput] = useState('');
-  const [foundProfile, setFoundProfile] = useState<Profile | null>(null);
-  const [codeNotFound, setCodeNotFound] = useState(false);
-  const [lookingUp, setLookingUp] = useState(false);
 
   const memberUserIds = new Set(members.map(m => m.user_id));
   const isOwner = members.find(m => m.user_id === user?.id)?.role === 'owner';
+  const availableFriends = friends.filter(f => !memberUserIds.has(f.id));
 
   const closeAddSheet = () => {
     setAddOpen(false);
     setSelectedFriendIds(new Set());
-    setCodeInput('');
-    setFoundProfile(null);
-    setCodeNotFound(false);
   };
 
   const toggleFriend = (friendId: string) => {
@@ -60,35 +53,12 @@ export default function PantryMembersPage() {
     });
   };
 
-  const handleLookupCode = async () => {
-    const raw = codeInput.trim();
-    if (!raw) return;
-    setLookingUp(true);
-    setFoundProfile(null);
-    setCodeNotFound(false);
-    const { data } = await supabase.rpc('find_user_by_short_id', { p_prefix: raw });
-    const profile = (Array.isArray(data) ? data[0] : data) as Profile | null;
-    setLookingUp(false);
-    if (!profile || profile.id === user?.id) { setCodeNotFound(true); return; }
-    setFoundProfile(profile);
-  };
-
-  const foundIsExtra =
-    foundProfile !== null &&
-    !memberUserIds.has(foundProfile.id) &&
-    !selectedFriendIds.has(foundProfile.id);
-
-  const totalSelected = selectedFriendIds.size + (foundIsExtra ? 1 : 0);
-
   const handleAddSelected = async () => {
-    if (!pantryId || totalSelected === 0) return;
+    if (!pantryId || selectedFriendIds.size === 0) return;
     setAddingMembers(true);
 
-    const toAdd = [...selectedFriendIds];
-    if (foundIsExtra) toAdd.push(foundProfile!.id);
-
     let errorMsg: string | null = null;
-    for (const uid of toAdd) {
+    for (const uid of [...selectedFriendIds]) {
       const err = await addMemberByUserId(uid);
       if (err) { errorMsg = err; break; }
     }
@@ -98,7 +68,7 @@ export default function PantryMembersPage() {
       toast(errorMsg, 'error');
     } else {
       await fetchMembers();
-      toast(`${toAdd.length} member${toAdd.length !== 1 ? 's' : ''} added`, 'success');
+      toast(`${selectedFriendIds.size} member${selectedFriendIds.size !== 1 ? 's' : ''} added`, 'success');
       closeAddSheet();
     }
   };
@@ -171,30 +141,27 @@ export default function PantryMembersPage() {
             <div className="flex justify-center py-8">
               <div className="w-6 h-6 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
             </div>
-          ) : friends.length === 0 ? (
-            <p className="text-body-sm text-neutral-400 text-center py-4 font-sans">
-              No friends yet — add them in Profile
+          ) : availableFriends.length === 0 ? (
+            <p className="text-body-sm text-neutral-400 text-center py-8 font-sans">
+              {friends.length === 0
+                ? 'No friends yet — add them in Profile'
+                : 'All friends are already members'}
             </p>
           ) : (
-            friends.map(f => {
-              const isMember = memberUserIds.has(f.id);
+            availableFriends.map(f => {
               const selected = selectedFriendIds.has(f.id);
               return (
                 <button
                   key={f.id}
                   type="button"
-                  disabled={isMember}
-                  onClick={() => !isMember && toggleFriend(f.id)}
-                  className={[
-                    'flex items-center gap-3 px-4 py-3 bg-white border border-neutral-100 rounded-md transition-all',
-                    isMember ? 'opacity-50' : 'active:bg-neutral-50 active:scale-[0.99]',
-                  ].join(' ')}
+                  onClick={() => toggleFriend(f.id)}
+                  className="flex items-center gap-3 px-4 py-3 bg-white border border-neutral-100 rounded-md active:bg-neutral-50 active:scale-[0.99] transition-all"
                 >
                   <div className={[
                     'w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors',
-                    isMember || selected ? 'bg-green-500 border-green-500' : 'bg-white border-neutral-200',
+                    selected ? 'bg-green-500 border-green-500' : 'bg-white border-neutral-200',
                   ].join(' ')}>
-                    {(isMember || selected) && <Check size={12} weight="bold" className="text-white" />}
+                    {selected && <Check size={12} weight="bold" className="text-white" />}
                   </div>
                   <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
                     <span className="text-body-sm font-bold text-green-700 font-sans">
@@ -204,67 +171,20 @@ export default function PantryMembersPage() {
                   <p className="flex-1 text-body-sm font-semibold text-neutral-900 font-sans text-left truncate">
                     {f.display_name}
                   </p>
-                  {isMember && (
-                    <span className="text-badge text-neutral-400 font-sans">Added</span>
-                  )}
                 </button>
               );
             })
           )}
-
-          {/* Manual code input */}
-          <div className="flex gap-2 pt-2 mt-1 border-t border-neutral-100">
-            <input
-              type="text"
-              value={codeInput}
-              onChange={e => { setCodeInput(e.target.value); setFoundProfile(null); setCodeNotFound(false); }}
-              onKeyDown={e => { if (e.key === 'Enter') handleLookupCode(); }}
-              placeholder="Enter 6-character code"
-              style={{ fontSize: '16px' }}
-              className="flex-1 h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
-            />
-            <Button
-              size="md"
-              variant={codeInput.trim() ? 'primary' : 'secondary'}
-              disabled={!codeInput.trim()}
-              loading={lookingUp}
-              onClick={handleLookupCode}
-            >
-              Find
-            </Button>
-          </div>
-
-          {codeNotFound && (
-            <p className="text-body-sm text-red-500 font-sans">User not found</p>
-          )}
-
-          {foundProfile && (() => {
-            const isMember = memberUserIds.has(foundProfile.id);
-            const alreadySelected = selectedFriendIds.has(foundProfile.id);
-            return (
-              <div className="flex items-center gap-3 px-4 py-3 bg-neutral-50 rounded-md">
-                <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                  <span className="text-body-sm font-bold text-green-700 font-sans">
-                    {foundProfile.display_name?.charAt(0).toUpperCase() ?? '?'}
-                  </span>
-                </div>
-                <p className="flex-1 text-body-sm font-semibold text-neutral-900 font-sans">{foundProfile.display_name}</p>
-                {isMember && <span className="text-badge text-neutral-400 font-sans">Already a member</span>}
-                {alreadySelected && !isMember && <span className="text-badge text-neutral-400 font-sans">Selected above</span>}
-              </div>
-            );
-          })()}
-
           <div className="flex gap-3 pt-1 mt-1 border-t border-neutral-100">
             <Button variant="secondary" size="md" fullWidth onClick={closeAddSheet}>Cancel</Button>
             <Button
               size="md"
               fullWidth
-              disabled={totalSelected === 0}
+              disabled={selectedFriendIds.size === 0}
               loading={addingMembers}
               onClick={handleAddSelected}
             >
-              {totalSelected > 0 ? `Add (${totalSelected})` : 'Add'}
+              {selectedFriendIds.size > 0 ? `Add (${selectedFriendIds.size})` : 'Add'}
             </Button>
           </div>
         </div>
