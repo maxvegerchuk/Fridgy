@@ -11,15 +11,6 @@ function memberColor(uid: string): string {
   return `hsl(${Math.abs(h) % 360}, 60%, 55%)`;
 }
 
-function formatDate(iso: string): string {
-  const d = new Date(iso);
-  const diff = Date.now() - d.getTime();
-  const days = Math.floor(diff / 86400000);
-  if (days === 0) return 'Today';
-  if (days === 1) return 'Yesterday';
-  if (days < 7) return `${days}d ago`;
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
 
 export default function ListPage() {
   const navigate = useNavigate();
@@ -214,8 +205,14 @@ function ListCard({ list, onTap, onDeleteClick }: CardProps) {
               </span>
             </>
           )}
-          <span className="text-neutral-200 text-badge">·</span>
-          <span className="text-badge text-neutral-400 font-sans">{formatDate(list.created_at)}</span>
+          {list.members.length >= 2 && (
+            <>
+              <span className="text-neutral-200 text-badge">·</span>
+              <span className="text-badge text-neutral-400 font-sans">
+                {list.members.length} members
+              </span>
+            </>
+          )}
         </div>
       </button>
 

@@ -1,16 +1,12 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Trash, Check, ArrowCounterClockwise, Plus, ArrowLeft, UserPlus } from 'phosphor-react';
-import { EmptyState, Button, Skeleton, BottomSheet } from '../components/ui';
-import { useToast } from '../components/ui';
+import { EmptyState, Button, Skeleton } from '../components/ui';
 import AddItemSheet from '../components/list/AddItemSheet';
 import { useShoppingList } from '../hooks/useShoppingList';
 import { usePantry } from '../hooks/usePantry';
-import { useFriends } from '../hooks/useFriends';
-import { supabase } from '../lib/supabase';
-import { randomUUID } from '../lib/uuid';
 import { CATEGORIES } from '../types';
-import type { ItemCategory, ListItem, Profile } from '../types';
+import type { ItemCategory, ListItem } from '../types';
 
 const CATEGORY_ORDER: ItemCategory[] = [
   'vegetables', 'fruits', 'dairy', 'meat', 'fish',
@@ -35,64 +31,7 @@ export default function ShoppingListDetailPage() {
 
   const { list, items, loading, addItem, checkItem, deleteItem } = useShoppingList(id);
   const { refetch: refetchPantry } = usePantry();
-  const { friends } = useFriends();
   const [addOpen, setAddOpen] = useState(false);
-
-  const [addMemberOpen, setAddMemberOpen] = useState(false);
-  const [memberUserIds, setMemberUserIds] = useState<Set<string>>(new Set());
-  const [memberIdInput, setMemberIdInput] = useState('');
-  const [foundProfile, setFoundProfile] = useState<Profile | null>(null);
-  const [memberNotFound, setMemberNotFound] = useState(false);
-  const [lookingUp, setLookingUp] = useState(false);
-  const [addingMember, setAddingMember] = useState(false);
-  const toast = useToast();
-
-  const openAddMember = async () => {
-    setAddMemberOpen(true);
-    if (!list?.id) return;
-    const { data } = await supabase.from('list_members').select('user_id').eq('list_id', list.id);
-    if (data) setMemberUserIds(new Set((data as { user_id: string }[]).map(m => m.user_id)));
-  };
-
-  const handleLookupUser = async () => {
-    const raw = memberIdInput.trim();
-    if (!raw) return;
-    setLookingUp(true);
-    setFoundProfile(null);
-    setMemberNotFound(false);
-    const { data } = await supabase.rpc('find_user_by_short_id', { p_prefix: raw });
-    const profile = (Array.isArray(data) ? data[0] : data) as Profile | null;
-    setLookingUp(false);
-    if (profile) setFoundProfile(profile);
-    else setMemberNotFound(true);
-  };
-
-  const handleAddMember = async () => {
-    if (!foundProfile || !list) return;
-    setAddingMember(true);
-    const { error } = await supabase.from('list_members').insert({
-      id: randomUUID(),
-      list_id: list.id,
-      user_id: foundProfile.id,
-      role: 'editor',
-    });
-    setAddingMember(false);
-    if (error) {
-      toast(error.message, 'error');
-    } else {
-      setMemberUserIds(prev => new Set([...prev, foundProfile.id]));
-      toast(`${foundProfile.display_name} added to list`, 'success');
-      closeAddMember();
-    }
-  };
-
-  const closeAddMember = () => {
-    setAddMemberOpen(false);
-    setMemberIdInput('');
-    setFoundProfile(null);
-    setMemberNotFound(false);
-    setMemberUserIds(new Set());
-  };
 
   const unchecked = items.filter(i => !i.is_checked);
   const checked = items.filter(i => i.is_checked);
@@ -111,15 +50,15 @@ export default function ShoppingListDetailPage() {
           <ArrowLeft size={24} />
         </button>
 
-        <h1 className="ml-6 flex-1 min-w-0 text-h3 font-heading text-neutral-900 truncate">
+        <h1 className="ml-3 flex-1 min-w-0 text-h3 font-heading text-neutral-900 truncate">
           {list?.name ?? 'Shopping List'}
         </h1>
 
         <button
           type="button"
-          onClick={openAddMember}
+          onClick={() => navigate(`/list/${id}/members`)}
           className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition-all"
-          aria-label="Add member"
+          aria-label="Members"
         >
           <UserPlus size={22} weight="regular" />
         </button>
@@ -211,96 +150,6 @@ export default function ShoppingListDetailPage() {
         onAddItem={addItem}
         listId={id ?? null}
       />
-
-      {/* Add member sheet */}
-      <BottomSheet isOpen={addMemberOpen} onClose={closeAddMember} title="Add Member">
-        <div className="flex flex-col gap-4">
-          {/* Friends quick-add */}
-          {friends.length > 0 && (
-            <div className="flex flex-col gap-2">
-              <p className="text-badge font-semibold uppercase tracking-wide text-neutral-400 font-sans">Friends</p>
-              {friends.map(f => {
-                const isMember = memberUserIds.has(f.id);
-                return (
-                  <button
-                    key={f.id}
-                    type="button"
-                    disabled={isMember}
-                    onClick={isMember ? undefined : async () => {
-                      if (!list) return;
-                      const { error } = await supabase.from('list_members').insert({
-                        id: randomUUID(),
-                        list_id: list.id,
-                        user_id: f.id,
-                        role: 'editor',
-                      });
-                      if (error) toast(error.message, 'error');
-                      else {
-                        setMemberUserIds(prev => new Set([...prev, f.id]));
-                        toast(`${f.display_name} added to list`, 'success');
-                      }
-                    }}
-                    className={[
-                      'flex items-center gap-3 px-4 py-3 bg-white border border-neutral-100 rounded-md transition-all',
-                      isMember ? 'opacity-60' : 'active:bg-neutral-50 active:scale-[0.99]',
-                    ].join(' ')}
-                  >
-                    <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                      <span className="text-body-sm font-bold text-green-700 font-sans">
-                        {f.display_name?.charAt(0).toUpperCase() ?? '?'}
-                      </span>
-                    </div>
-                    <p className="flex-1 text-body-sm font-semibold text-neutral-900 font-sans text-left truncate">{f.display_name}</p>
-                    {isMember
-                      ? <Check size={18} weight="bold" className="text-green-500 flex-shrink-0" />
-                      : <UserPlus size={18} className="text-neutral-400 flex-shrink-0" />
-                    }
-                  </button>
-                );
-              })}
-              <div className="border-t border-neutral-100 mt-1" />
-            </div>
-          )}
-
-          {/* Manual ID lookup */}
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={memberIdInput}
-              onChange={e => { setMemberIdInput(e.target.value); setFoundProfile(null); setMemberNotFound(false); }}
-              onKeyDown={e => { if (e.key === 'Enter') handleLookupUser(); }}
-              placeholder="Enter 6-character code"
-              style={{ fontSize: '16px' }}
-              className="flex-1 h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
-            />
-            <Button size="md" variant="secondary" loading={lookingUp} onClick={handleLookupUser}>
-              Find
-            </Button>
-          </div>
-
-          {memberNotFound && (
-            <p className="text-body-sm text-red-500 font-sans">User not found</p>
-          )}
-
-          {foundProfile && (
-            <div className="flex items-center gap-3 px-4 py-3 bg-neutral-50 rounded-md">
-              <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                <span className="text-body-sm font-bold text-green-700 font-sans">
-                  {foundProfile.display_name?.charAt(0).toUpperCase() ?? '?'}
-                </span>
-              </div>
-              <p className="flex-1 text-body-sm font-semibold text-neutral-900 font-sans">{foundProfile.display_name}</p>
-            </div>
-          )}
-
-          <div className="flex gap-3">
-            <Button variant="secondary" size="md" fullWidth onClick={closeAddMember}>Cancel</Button>
-            <Button size="md" fullWidth disabled={!foundProfile} loading={addingMember} onClick={handleAddMember}>
-              Add to List
-            </Button>
-          </div>
-        </div>
-      </BottomSheet>
     </div>
   );
 }
