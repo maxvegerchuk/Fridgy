@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { ShoppingBagOpen, ShoppingCart, Plus, Trash, MagnifyingGlass, UserPlus, Check } from 'phosphor-react';
 import { EmptyState, Button, Skeleton, BottomSheet } from '../components/ui';
 import { useToast } from '../components/ui';
@@ -32,8 +32,12 @@ type ViewMode = 'all' | 'categories';
 
 export default function PantryPage() {
   const { pantry, items, loading, addItem, deleteItem, addToShoppingList } = usePantry();
-  const { friends } = useFriendsStore();
+  const { friends, initialized: friendsReady, fetchFriends } = useFriendsStore();
   const [addOpen, setAddOpen] = useState(false);
+
+  useEffect(() => {
+    if (!friendsReady) fetchFriends();
+  }, [friendsReady, fetchFriends]);
   const [addToListItem, setAddToListItem] = useState<PantryItem | null>(null);
   const [search, setSearch] = useState('');
   const [view, setView] = useState<ViewMode>('all');

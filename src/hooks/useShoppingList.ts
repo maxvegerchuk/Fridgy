@@ -265,6 +265,29 @@ export function useShoppingLists() {
     fetchLists();
   }, [fetchLists]);
 
+  // Realtime: refetch when memberships or list metadata change
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel(`lists-overview-${user.id}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'list_members', filter: `user_id=eq.${user.id}` },
+        () => { fetchLists(); },
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'shopping_lists', filter: `owner_id=eq.${user.id}` },
+        () => { fetchLists(); },
+      )
+      .subscribe((status, err) => {
+        if (err) console.warn('[realtime] lists-overview error', status, err);
+      });
+
+    return () => { supabase.removeChannel(channel); };
+  }, [user?.id, fetchLists]);
+
   const createList = useCallback(async (name: string): Promise<string | null> => {
     if (!user) return null;
     const id = randomUUID();

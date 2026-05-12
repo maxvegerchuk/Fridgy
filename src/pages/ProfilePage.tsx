@@ -181,7 +181,13 @@ export default function ProfilePage() {
               style={{ fontSize: '16px' }}
               className="flex-1 h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
             />
-            <Button size="md" variant="secondary" loading={lookingUp} onClick={handleLookupFriend}>
+            <Button
+              size="md"
+              variant={friendIdInput.trim() ? 'primary' : 'secondary'}
+              disabled={!friendIdInput.trim()}
+              loading={lookingUp}
+              onClick={handleLookupFriend}
+            >
               Find
             </Button>
           </div>
