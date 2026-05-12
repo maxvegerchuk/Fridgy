@@ -27,6 +27,7 @@ export const useFriendsStore = create<FriendsState>((set) => ({
 
   fetchFriends: async () => {
     const { user } = useAuthStore.getState();
+    console.log('[friendsStore] fetchFriends called, user:', user?.id ?? 'null');
     if (!user) return;
     set({ loading: true });
 
@@ -34,6 +35,8 @@ export const useFriendsStore = create<FriendsState>((set) => ({
       .from('user_friends')
       .select('id, profiles!friend_id(id, short_id, display_name, avatar_url, created_at)')
       .eq('user_id', user.id);
+
+    console.log('[friendsStore] query result — data:', data, 'error:', error);
 
     if (!error && data) {
       const friends = (data as unknown as RawFriendRow[])
@@ -43,6 +46,7 @@ export const useFriendsStore = create<FriendsState>((set) => ({
           return { ...p, friendship_id: row.id } as Friend;
         })
         .filter((f): f is Friend => !!f);
+      console.log('[friendsStore] friends loaded:', friends);
       set({ friends, loading: false, initialized: true });
     } else {
       set({ loading: false, initialized: true });
@@ -102,6 +106,7 @@ export const useFriendsStore = create<FriendsState>((set) => ({
 // ── Auto-sync with auth state ────────────────────────────────────────────────
 // Fetch friends when user logs in; clear when they log out.
 useAuthStore.subscribe((state, prevState) => {
+  console.log('[friendsStore] auth changed — user:', state.user?.id ?? 'null', '| prev:', prevState.user?.id ?? 'null');
   if (state.user && !prevState.user) {
     useFriendsStore.getState().fetchFriends();
   }
@@ -111,6 +116,8 @@ useAuthStore.subscribe((state, prevState) => {
 });
 
 // If the user was already logged in before this module loaded, fetch now.
-if (useAuthStore.getState().user) {
+const _earlyUser = useAuthStore.getState().user;
+console.log('[friendsStore] module loaded, early user:', _earlyUser?.id ?? 'null');
+if (_earlyUser) {
   useFriendsStore.getState().fetchFriends();
 }

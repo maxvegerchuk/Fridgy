@@ -130,7 +130,10 @@ export default function ListMembersPage() {
         <h1 className="ml-3 flex-1 min-w-0 text-h3 font-heading text-neutral-900">Members</h1>
         <button
           type="button"
-          onClick={() => setAddOpen(true)}
+          onClick={() => {
+            console.log('[ListMembersPage] Add Member sheet opening — friends:', friends, '| friendsReady:', friendsReady);
+            setAddOpen(true);
+          }}
           className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition-all"
           aria-label="Add member"
         >
