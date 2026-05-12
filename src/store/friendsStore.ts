@@ -6,13 +6,9 @@ import type { Profile } from '../types';
 
 export type Friend = Profile & { friendship_id: string };
 
-type RawFriendRow = {
-  id: string;
-  profiles: Profile | Profile[];
-};
 
 type FriendsState = {
-  friends: Friend[];
+  friends: Profile[];
   loading: boolean;
   initialized: boolean;
   fetchFriends: () => Promise<void>;
@@ -26,32 +22,35 @@ export const useFriendsStore = create<FriendsState>((set) => ({
   initialized: false,
 
   fetchFriends: async () => {
-    const { user } = useAuthStore.getState();
-    const { loading: alreadyLoading } = useFriendsStore.getState();
-    console.log('[friendsStore] fetchFriends called — user:', user?.id ?? 'null', '| alreadyLoading:', alreadyLoading);
-    if (!user || alreadyLoading) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
     set({ loading: true });
 
     const { data, error } = await supabase
       .from('user_friends')
-      .select('id, profiles!friend_id(id, short_id, display_name, avatar_url, created_at)')
+      .select(`
+        friend_id,
+        profiles!friend_id (
+          id,
+          display_name,
+          avatar_url,
+          short_id
+        )
+      `)
       .eq('user_id', user.id);
 
-    console.log('[friendsStore] query result — data:', data, 'error:', error);
-
-    if (!error && data) {
-      const friends = (data as unknown as RawFriendRow[])
-        .map(row => {
-          const p = Array.isArray(row.profiles) ? row.profiles[0] : row.profiles;
-          if (!p) return null;
-          return { ...p, friendship_id: row.id } as Friend;
-        })
-        .filter((f): f is Friend => !!f);
-      console.log('[friendsStore] friends loaded:', friends);
-      set({ friends, loading: false, initialized: true });
-    } else {
-      set({ loading: false, initialized: true });
+    if (error) {
+      console.error('[friendsStore] fetch error:', error);
+      set({ loading: false });
+      return;
     }
+
+    const friends = ((data ?? []) as unknown as { profiles: Profile | null }[])
+      .map(row => row.profiles)
+      .filter((p): p is Profile => !!p);
+
+    set({ friends, initialized: true, loading: false });
   },
 
   addFriend: async (profile: Profile) => {
@@ -84,7 +83,7 @@ export const useFriendsStore = create<FriendsState>((set) => ({
     set(state => ({
       friends: state.friends.find(f => f.id === profile.id)
         ? state.friends
-        : [...state.friends, { ...profile, friendship_id }],
+        : [...state.friends, profile],
     }));
     return null;
   },

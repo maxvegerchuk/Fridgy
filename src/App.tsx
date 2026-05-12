@@ -18,14 +18,14 @@ import ListMembersPage from './pages/ListMembersPage';
 
 function ProtectedRoute() {
   const { user, loading } = useAuthStore();
-  const { fetchFriends, initialized } = useFriendsStore();
   const location = useLocation();
 
   useEffect(() => {
-    if (user && !initialized) {
+    const { initialized, fetchFriends } = useFriendsStore.getState();
+    if (!initialized) {
       fetchFriends();
     }
-  }, [user, initialized, fetchFriends]);
+  }, []);
 
   if (loading) {
     return (
