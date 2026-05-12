@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Trash, UserPlus, Check } from 'phosphor-react';
-import { BottomSheet, Skeleton, Button } from '../components/ui';
+import { BottomSheet, Skeleton, Button, Badge } from '../components/ui';
 import { useToast } from '../components/ui';
 import { supabase } from '../lib/supabase';
 import { randomUUID } from '../lib/uuid';
@@ -232,15 +232,18 @@ type MemberRowProps = {
 
 function MemberRow({ member, canRemove, onRemove }: MemberRowProps) {
   return (
-    <div className="flex items-center gap-3 px-4">
-      <div className="flex-1 min-w-0 py-4">
-        <p className="text-body-sm font-semibold text-neutral-900 font-sans truncate">
-          {member.display_name ?? 'Unknown'}
-        </p>
-        <p className="text-badge text-neutral-400 font-sans mt-0.5">
-          {member.role === 'owner' ? 'Owner' : 'Editor'}
-        </p>
+    <div className="flex items-center gap-3 px-4 py-3">
+      <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+        <span className="text-body-sm font-bold text-green-700 font-sans">
+          {member.display_name?.charAt(0).toUpperCase() ?? '?'}
+        </span>
       </div>
+      <p className="flex-1 text-body-sm font-semibold text-neutral-900 font-sans truncate">
+        {member.display_name ?? 'Unknown'}
+      </p>
+      {member.role === 'owner' && (
+        <Badge variant="green">Owner</Badge>
+      )}
       {canRemove && (
         <button
           type="button"
