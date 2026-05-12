@@ -55,7 +55,7 @@ export default {
         'h3':      ['18px', { lineHeight: '1.3',  fontWeight: '700' }],
         'body-lg': ['17px', { lineHeight: '1.5',  fontWeight: '600' }],
         'body':    ['16px', { lineHeight: '1.6',  fontWeight: '400' }],
-        'body-sm': ['15px', { lineHeight: '1.5',  fontWeight: '400' }],
+        'body-sm': ['15px', { lineHeight: '23px', fontWeight: '400' }],
         'caption': ['14px', { lineHeight: '1.4',  fontWeight: '600' }],
         'badge':   ['13px', { lineHeight: '1',    fontWeight: '700' }],
         'btn':     ['17px', { lineHeight: '1',    fontWeight: '700' }],

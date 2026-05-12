@@ -77,7 +77,7 @@ function RecipeCard({
         </div>
 
         {/* Meta row */}
-        <div className="flex items-center gap-1.5 mt-1 text-badge text-neutral-400 font-sans">
+        <div className="flex items-center gap-1.5 mt-1 text-body-sm text-neutral-400 font-sans">
           {recipe.servings > 0 && <span>{recipe.servings} servings</span>}
           {recipe.servings > 0 && withAvail && withAvail.total_count > 0 && <span>·</span>}
           {withAvail && withAvail.total_count > 0 && <span>{withAvail.total_count} ingredients</span>}
@@ -88,7 +88,7 @@ function RecipeCard({
         {/* Status badge */}
         {badge && (
           <div className="mt-2">
-            <span className={`inline-flex items-center h-5 px-[10px] rounded-full text-badge font-medium font-sans ${badge.cls}`}>
+            <span className={`inline-flex items-center h-5 px-[10px] rounded-full text-badge font-sans ${badge.cls}`}>
               {badge.label}
             </span>
           </div>
