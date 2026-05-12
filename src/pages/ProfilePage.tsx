@@ -37,8 +37,8 @@ export default function ProfilePage() {
     const { data } = await supabase.rpc('find_user_by_short_id', { p_prefix: raw });
     const profile = (Array.isArray(data) ? data[0] : data) as Profile | null;
     setLookingUp(false);
-    if (profile) setFoundProfile(profile);
-    else setFriendNotFound(true);
+    if (!profile || profile.id === user?.id) { setFriendNotFound(true); return; }
+    setFoundProfile(profile);
   };
 
   const handleAddFriend = async () => {
@@ -188,20 +188,32 @@ export default function ProfilePage() {
             <p className="text-body-sm text-red-500 font-sans">User not found</p>
           )}
 
-          {foundProfile && (
-            <div className="flex items-center gap-3 px-4 py-3 bg-neutral-50 rounded-md">
-              <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                <span className="text-body-sm font-bold text-green-700 font-sans">
-                  {foundProfile.display_name?.charAt(0).toUpperCase() ?? '?'}
-                </span>
+          {foundProfile && (() => {
+            const alreadyFriend = friends.some(f => f.id === foundProfile.id);
+            return (
+              <div className="flex items-center gap-3 px-4 py-3 bg-neutral-50 rounded-md">
+                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                  <span className="text-body-sm font-bold text-green-700 font-sans">
+                    {foundProfile.display_name?.charAt(0).toUpperCase() ?? '?'}
+                  </span>
+                </div>
+                <p className="flex-1 text-body-sm font-semibold text-neutral-900 font-sans">{foundProfile.display_name}</p>
+                {alreadyFriend && (
+                  <span className="text-badge text-neutral-400 font-sans">Already a friend</span>
+                )}
               </div>
-              <p className="flex-1 text-body-sm font-semibold text-neutral-900 font-sans">{foundProfile.display_name}</p>
-            </div>
-          )}
+            );
+          })()}
 
           <div className="flex gap-3">
             <Button variant="secondary" size="md" fullWidth onClick={closeAddFriend}>Cancel</Button>
-            <Button size="md" fullWidth disabled={!foundProfile} loading={addingFriend} onClick={handleAddFriend}>
+            <Button
+              size="md"
+              fullWidth
+              disabled={!foundProfile || friends.some(f => f.id === foundProfile?.id)}
+              loading={addingFriend}
+              onClick={handleAddFriend}
+            >
               Add Friend
             </Button>
           </div>

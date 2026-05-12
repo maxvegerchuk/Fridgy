@@ -38,16 +38,37 @@ export function useFriends() {
 
   const addFriend = useCallback(async (profile: Profile): Promise<string | null> => {
     if (!user) return 'Not authenticated';
-    const forward = { id: randomUUID(), user_id: user.id, friend_id: profile.id };
-    const reverse = { id: randomUUID(), user_id: profile.id, friend_id: user.id };
 
-    const { error } = await supabase.from('user_friends').insert(forward);
-    if (error) return error.message;
+    // Check if forward row already exists (e.g. created as reverse by the other user's add)
+    const { data: existing } = await supabase
+      .from('user_friends')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('friend_id', profile.id)
+      .maybeSingle();
 
-    // Best-effort reverse row — ignore duplicate errors
-    await supabase.from('user_friends').insert(reverse);
+    const friendship_id = (existing as { id: string } | null)?.id ?? randomUUID();
 
-    setFriends(prev => [...prev, { ...profile, friendship_id: forward.id }]);
+    if (!existing) {
+      const { error } = await supabase.from('user_friends').insert({
+        id: friendship_id,
+        user_id: user.id,
+        friend_id: profile.id,
+      });
+      if (error) return error.message;
+
+      // Best-effort reverse row — ignore if already exists
+      await supabase.from('user_friends').upsert(
+        { id: randomUUID(), user_id: profile.id, friend_id: user.id },
+        { onConflict: 'user_id,friend_id', ignoreDuplicates: true },
+      );
+    }
+
+    setFriends(prev =>
+      prev.find(f => f.id === profile.id)
+        ? prev
+        : [...prev, { ...profile, friendship_id }],
+    );
     return null;
   }, [user?.id]);
 
