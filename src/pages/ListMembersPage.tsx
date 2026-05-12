@@ -188,12 +188,6 @@ export default function ListMembersPage() {
                   onClick={() => toggleFriend(f.id)}
                   className="flex items-center gap-3 px-4 py-3 bg-white border border-neutral-100 rounded-md active:bg-neutral-50 active:scale-[0.99] transition-all"
                 >
-                  <div className={[
-                    'w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors',
-                    selected ? 'bg-green-500 border-green-500' : 'bg-white border-neutral-200',
-                  ].join(' ')}>
-                    {selected && <Check size={12} weight="bold" className="text-white" />}
-                  </div>
                   <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
                     <span className="text-body-sm font-bold text-green-700 font-sans">
                       {f.display_name?.charAt(0).toUpperCase() ?? '?'}
@@ -202,6 +196,12 @@ export default function ListMembersPage() {
                   <p className="flex-1 text-body-sm font-semibold text-neutral-900 font-sans text-left truncate">
                     {f.display_name}
                   </p>
+                  <div className={[
+                    'w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors',
+                    selected ? 'bg-green-500 border-green-500' : 'bg-white border-neutral-200',
+                  ].join(' ')}>
+                    {selected && <Check size={12} weight="bold" className="text-white" />}
+                  </div>
                 </button>
               );
             })
