@@ -16,9 +16,9 @@ type Segment = 'mine' | 'explore';
 type SheetStep = 'ingredients' | 'select-list';
 
 const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
-  ready:        { label: 'Available',  cls: 'bg-green-100 text-green-700' },
-  need_few:     { label: 'Need 1–3',   cls: 'bg-yellow-50 text-yellow-700' },
-  missing_many: { label: 'Missing',    cls: 'bg-neutral-100 text-neutral-600' },
+  ready:        { label: 'Have all ingredients', cls: 'bg-green-50 text-green-700' },
+  need_few:     { label: 'Missing ingredients',  cls: 'bg-yellow-50 text-yellow-700' },
+  missing_many: { label: 'No ingredients',       cls: 'bg-red-50 text-red-700' },
 };
 
 type PendingAdd = {
@@ -76,20 +76,23 @@ function RecipeCard({
           {action && <div className="flex-shrink-0">{action}</div>}
         </div>
 
-        <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-          {badge && (
-            <span className={`text-badge font-medium font-sans px-2 py-0.5 rounded-full ${badge.cls}`}>
+        {/* Meta row */}
+        <div className="flex items-center gap-1.5 mt-1 text-badge text-neutral-400 font-sans">
+          {recipe.servings > 0 && <span>{recipe.servings} servings</span>}
+          {recipe.servings > 0 && withAvail && withAvail.total_count > 0 && <span>·</span>}
+          {withAvail && withAvail.total_count > 0 && <span>{withAvail.total_count} ingredients</span>}
+          {(recipe.servings > 0 || (withAvail?.total_count ?? 0) > 0) && totalTime > 0 && <span>·</span>}
+          {totalTime > 0 && <span>{totalTime} min</span>}
+        </div>
+
+        {/* Status badge */}
+        {badge && (
+          <div className="mt-2">
+            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-badge font-medium font-sans ${badge.cls}`}>
               {badge.label}
             </span>
-          )}
-          <div className="flex items-center gap-2 text-badge text-neutral-400 font-sans">
-            {withAvail && (
-              <span>{withAvail.available_count}/{withAvail.total_count} ingredients</span>
-            )}
-            {totalTime > 0 && <span>{totalTime} min</span>}
-            {recipe.servings > 1 && <span>{recipe.servings} srv</span>}
           </div>
-        </div>
+        )}
 
         {/* Buttons */}
         <div className="flex gap-2 mt-3">

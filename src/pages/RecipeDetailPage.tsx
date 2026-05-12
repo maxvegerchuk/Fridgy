@@ -180,7 +180,11 @@ export default function RecipeDetailPage() {
     return (
       <div className="flex flex-col h-full pt-safe">
         <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 bg-white">
-          <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-800">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform"
+          >
             <ArrowLeft size={24} />
           </button>
         </div>
@@ -195,7 +199,11 @@ export default function RecipeDetailPage() {
     return (
       <div className="flex flex-col h-full pt-safe">
         <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 bg-white">
-          <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-800">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform"
+          >
             <ArrowLeft size={24} />
           </button>
         </div>
@@ -215,18 +223,26 @@ export default function RecipeDetailPage() {
 
   return (
     <div className="flex flex-col h-full pt-safe">
-      {/* Sticky header */}
-      <div className="flex items-center justify-between h-[56px] px-4 border-b border-neutral-100 sticky top-0 bg-white z-10">
-        <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-800">
+      {/* Header */}
+      <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 sticky top-0 bg-white z-10">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform flex-shrink-0"
+          aria-label="Back"
+        >
           <ArrowLeft size={24} />
         </button>
-        <div className="flex items-center gap-1">
+        <h1 className="ml-3 flex-1 min-w-0 text-h3 font-heading text-neutral-900 truncate">
+          {recipe.title}
+        </h1>
+        <div className="flex items-center gap-1 flex-shrink-0">
           {isOwner && (
             <>
               <button
                 type="button"
                 onClick={handleTogglePublic}
-                className={`p-2 rounded-full transition-colors ${recipe.is_public ? 'text-green-500' : 'text-neutral-400'}`}
+                className={`w-10 h-10 flex items-center justify-center rounded-md transition-colors ${recipe.is_public ? 'text-green-500' : 'text-neutral-400'} active:bg-neutral-100`}
                 aria-label={recipe.is_public ? 'Make private' : 'Make public'}
               >
                 {recipe.is_public ? <Globe size={22} weight="fill" /> : <GlobeSimple size={22} />}
@@ -234,7 +250,7 @@ export default function RecipeDetailPage() {
               <button
                 type="button"
                 onClick={() => navigate(`/recipe/${recipe.id}/edit`)}
-                className="p-2 text-neutral-600 rounded-full active:bg-neutral-100 transition-colors"
+                className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:bg-neutral-100 transition-colors"
                 aria-label="Edit recipe"
               >
                 <PencilSimple size={22} />
@@ -243,7 +259,7 @@ export default function RecipeDetailPage() {
                 type="button"
                 onClick={handleDelete}
                 disabled={savingOrDeleting}
-                className="p-2 text-red-700 rounded-full active:bg-red-50 disabled:opacity-50"
+                className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:text-red-700 active:bg-red-50 transition-colors disabled:opacity-50"
                 aria-label="Delete recipe"
               >
                 <Trash size={22} />

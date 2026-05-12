@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Trash, Check, ArrowCounterClockwise, Plus, ArrowLeft, UserPlus } from 'phosphor-react';
+import { ShoppingCart, Trash, Check, ArrowCounterClockwise, Plus, ArrowLeft, Users } from 'phosphor-react';
 import { EmptyState, Button, Skeleton } from '../components/ui';
 import AddItemSheet from '../components/list/AddItemSheet';
 import { useShoppingList } from '../hooks/useShoppingList';
@@ -60,7 +60,7 @@ export default function ShoppingListDetailPage() {
           className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition-all"
           aria-label="Members"
         >
-          <UserPlus size={22} weight="regular" />
+          <Users size={22} weight="regular" />
         </button>
       </div>
 
