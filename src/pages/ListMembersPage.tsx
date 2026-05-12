@@ -131,7 +131,7 @@ export default function ListMembersPage() {
         <button
           type="button"
           onClick={() => {
-            console.log('[ListMembersPage] Add Member sheet opening — friends:', friends, '| friendsReady:', friendsReady);
+            console.log('[ListMembersPage] Add Member sheet opening — friends:', friends, '| initialized:', initialized);
             setAddOpen(true);
           }}
           className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition-all"
