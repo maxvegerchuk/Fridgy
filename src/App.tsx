@@ -21,6 +21,7 @@ function ProtectedRoute() {
   const location = useLocation();
 
   useEffect(() => {
+    console.log('[ProtectedRoute] mount, initialized:', useFriendsStore.getState().initialized);
     const { initialized, fetchFriends } = useFriendsStore.getState();
     if (!initialized) {
       fetchFriends();

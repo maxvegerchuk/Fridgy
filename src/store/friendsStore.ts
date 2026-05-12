@@ -22,34 +22,41 @@ export const useFriendsStore = create<FriendsState>((set) => ({
   initialized: false,
 
   fetchFriends: async () => {
+    console.log('[fetchFriends] called');
     const { data: { user } } = await supabase.auth.getUser();
+    console.log('[fetchFriends] user:', user?.id ?? 'NULL');
     if (!user) return;
 
     set({ loading: true });
 
-    const { data, error } = await supabase
+    const { data: friendLinks, error: linksError } = await supabase
       .from('user_friends')
-      .select(`
-        friend_id,
-        profiles!friend_id (
-          id,
-          display_name,
-          avatar_url,
-          short_id
-        )
-      `)
+      .select('friend_id')
       .eq('user_id', user.id);
 
-    if (error) {
-      console.error('[friendsStore] fetch error:', error);
+    console.log('[fetchFriends] friendLinks:', friendLinks, 'error:', linksError);
+
+    if (linksError || !friendLinks?.length) {
+      set({ friends: [], initialized: true, loading: false });
+      return;
+    }
+
+    const friendIds = friendLinks.map((f: { friend_id: string }) => f.friend_id);
+
+    const { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('id, display_name, avatar_url, short_id')
+      .in('id', friendIds);
+
+    console.log('[fetchFriends] profiles:', profiles, 'error:', profilesError);
+
+    if (profilesError) {
       set({ loading: false });
       return;
     }
 
-    const friends = ((data ?? []) as unknown as { profiles: Profile | null }[])
-      .map(row => row.profiles)
-      .filter((p): p is Profile => !!p);
-
+    const friends = (profiles ?? []) as Profile[];
+    console.log('[fetchFriends] friends set:', friends.length);
     set({ friends, initialized: true, loading: false });
   },
 
