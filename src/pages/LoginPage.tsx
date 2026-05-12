@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { Input, Button } from '../components/ui';
+import logoUrl from '../logo.svg';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -40,24 +41,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-neutral-50">
+    <div className="flex flex-col h-full bg-white">
       <div className="scroll-area">
         <div className="min-h-full flex flex-col justify-center px-5 pt-safe pb-safe">
           <div className="w-full max-w-sm mx-auto py-10 flex flex-col gap-8">
 
-            {/* Brand */}
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-16 h-16 rounded-2xl bg-green-500 flex items-center justify-center shadow-sm">
-                <span className="text-[32px] font-bold italic text-white leading-none font-heading">f</span>
-              </div>
-              <div className="text-center">
-                <h1 className="text-h1 font-bold text-neutral-900 tracking-tight font-heading">fridgy</h1>
-                <p className="text-body-sm text-neutral-400 mt-1 font-sans">Your kitchen, organised</p>
+            {/* Logo */}
+            <div className="flex justify-center">
+              <div className="w-20 h-20 rounded-3xl overflow-hidden shadow-sm">
+                <img src={logoUrl} alt="fridgy" className="w-full h-full object-cover" />
               </div>
             </div>
 
-            {/* Card */}
-            <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm px-5 py-6 flex flex-col gap-5">
+            {/* Form */}
+            <div className="flex flex-col gap-5">
               <h2 className="text-h3 font-heading text-neutral-900">Welcome back</h2>
 
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
