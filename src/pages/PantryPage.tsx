@@ -5,7 +5,7 @@ import { useToast } from '../components/ui';
 import AddPantrySheet from '../components/pantry/AddPantrySheet';
 import AddToListSheet from '../components/pantry/AddToListSheet';
 import { usePantry } from '../hooks/usePantry';
-import { useFriends } from '../hooks/useFriends';
+import { useFriendsStore } from '../store/friendsStore';
 import { supabase } from '../lib/supabase';
 import { randomUUID } from '../lib/uuid';
 import { CATEGORIES } from '../types';
@@ -32,7 +32,7 @@ type ViewMode = 'all' | 'categories';
 
 export default function PantryPage() {
   const { pantry, items, loading, addItem, deleteItem, addToShoppingList } = usePantry();
-  const { friends } = useFriends();
+  const { friends } = useFriendsStore();
   const [addOpen, setAddOpen] = useState(false);
   const [addToListItem, setAddToListItem] = useState<PantryItem | null>(null);
   const [search, setSearch] = useState('');

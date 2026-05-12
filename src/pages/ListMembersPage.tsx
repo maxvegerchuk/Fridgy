@@ -5,7 +5,7 @@ import { BottomSheet, Skeleton, Button } from '../components/ui';
 import { useToast } from '../components/ui';
 import { supabase } from '../lib/supabase';
 import { randomUUID } from '../lib/uuid';
-import { useFriends } from '../hooks/useFriends';
+import { useFriendsStore } from '../store/friendsStore';
 import { useAuthStore } from '../store/authStore';
 
 type Member = {
@@ -22,7 +22,11 @@ export default function ListMembersPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const user = useAuthStore(s => s.user);
-  const { friends } = useFriends();
+  const { friends, initialized: friendsReady, fetchFriends } = useFriendsStore();
+
+  useEffect(() => {
+    if (!friendsReady) fetchFriends();
+  }, [friendsReady, fetchFriends]);
 
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);

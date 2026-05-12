@@ -4,12 +4,12 @@ import { Button, BottomSheet } from '../components/ui';
 import { useToast } from '../components/ui';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
-import { useFriends } from '../hooks/useFriends';
+import { useFriendsStore } from '../store/friendsStore';
 import type { Profile } from '../types';
 
 export default function ProfilePage() {
   const { user, email, signOut } = useAuthStore();
-  const { friends, addFriend, removeFriend } = useFriends();
+  const { friends, addFriend, removeFriend } = useFriendsStore();
   const toast = useToast();
   const [signingOut, setSigningOut] = useState(false);
 

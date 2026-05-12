@@ -1,89 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../lib/supabase';
-import { useAuthStore } from '../store/authStore';
-import { randomUUID } from '../lib/uuid';
-import type { Profile } from '../types';
+export { useFriendsStore, type Friend } from '../store/friendsStore';
 
-export type Friend = Profile & { friendship_id: string };
+// Thin compatibility shim — consumers can also import useFriendsStore directly.
+import { useFriendsStore } from '../store/friendsStore';
 
 export function useFriends() {
-  const { user } = useAuthStore();
-  const [friends, setFriends] = useState<Friend[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchFriends = useCallback(async () => {
-    if (!user) { setLoading(false); return; }
-    setLoading(true);
-
-    const { data, error } = await supabase
-      .from('user_friends')
-      .select('id, user_id, friend_id, profiles!friend_id(id, display_name, avatar_url, created_at)')
-      .eq('user_id', user.id);
-
-    if (!error && data) {
-      setFriends(
-        (data as unknown as Array<{ id: string; friend_id: string; profiles: Profile | Profile[] }>)
-          .map(row => {
-            const p = Array.isArray(row.profiles) ? row.profiles[0] : row.profiles;
-            if (!p) return null;
-            return { ...p, friendship_id: row.id } as Friend;
-          })
-          .filter((f): f is Friend => !!f)
-      );
-    }
-    setLoading(false);
-  }, [user?.id]);
-
-  useEffect(() => { fetchFriends(); }, [fetchFriends]);
-
-  const addFriend = useCallback(async (profile: Profile): Promise<string | null> => {
-    if (!user) return 'Not authenticated';
-
-    // Check if forward row already exists (e.g. created as reverse by the other user's add)
-    const { data: existing } = await supabase
-      .from('user_friends')
-      .select('id')
-      .eq('user_id', user.id)
-      .eq('friend_id', profile.id)
-      .maybeSingle();
-
-    const friendship_id = (existing as { id: string } | null)?.id ?? randomUUID();
-
-    if (!existing) {
-      const { error } = await supabase.from('user_friends').insert({
-        id: friendship_id,
-        user_id: user.id,
-        friend_id: profile.id,
-      });
-      if (error) return error.message;
-
-      // Best-effort reverse row — ignore if already exists
-      await supabase.from('user_friends').upsert(
-        { id: randomUUID(), user_id: profile.id, friend_id: user.id },
-        { onConflict: 'user_id,friend_id', ignoreDuplicates: true },
-      );
-    }
-
-    setFriends(prev =>
-      prev.find(f => f.id === profile.id)
-        ? prev
-        : [...prev, { ...profile, friendship_id }],
-    );
-    return null;
-  }, [user?.id]);
-
-  const removeFriend = useCallback(async (friendId: string): Promise<string | null> => {
-    if (!user) return 'Not authenticated';
-
-    const { error } = await supabase
-      .from('user_friends')
-      .delete()
-      .or(`and(user_id.eq.${user.id},friend_id.eq.${friendId}),and(user_id.eq.${friendId},friend_id.eq.${user.id})`);
-
-    if (error) return error.message;
-    setFriends(prev => prev.filter(f => f.id !== friendId));
-    return null;
-  }, [user?.id]);
-
+  const { friends, loading, fetchFriends, addFriend, removeFriend } = useFriendsStore();
   return { friends, loading, addFriend, removeFriend, refetch: fetchFriends };
 }
