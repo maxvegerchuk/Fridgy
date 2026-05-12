@@ -6,7 +6,6 @@ import AddPantrySheet from '../components/pantry/AddPantrySheet';
 import AddToListSheet from '../components/pantry/AddToListSheet';
 import { usePantry } from '../hooks/usePantry';
 import { useFriendsStore } from '../store/friendsStore';
-import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import { randomUUID } from '../lib/uuid';
 import { CATEGORIES } from '../types';
@@ -33,13 +32,12 @@ type ViewMode = 'all' | 'categories';
 
 export default function PantryPage() {
   const { pantry, items, loading, addItem, deleteItem, addToShoppingList } = usePantry();
-  const { friends, initialized: friendsReady, fetchFriends } = useFriendsStore();
-  const authLoading = useAuthStore(s => s.loading);
+  const { friends, fetchFriends, initialized } = useFriendsStore();
   const [addOpen, setAddOpen] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && !friendsReady) fetchFriends();
-  }, [authLoading, friendsReady, fetchFriends]);
+    if (!initialized) fetchFriends();
+  }, [initialized]);
   const [addToListItem, setAddToListItem] = useState<PantryItem | null>(null);
   const [search, setSearch] = useState('');
   const [view, setView] = useState<ViewMode>('all');
@@ -53,6 +51,7 @@ export default function PantryPage() {
   const availableFriends = friends.filter(f => !memberUserIds.has(f.id));
 
   const openAddMember = async () => {
+    console.log('[PantryPage] openAddMember — friends.length:', friends.length, '| initialized:', initialized);
     setAddMemberOpen(true);
     if (!pantry?.id) return;
     const { data } = await supabase.from('pantry_members').select('user_id').eq('pantry_id', pantry.id);
@@ -268,9 +267,13 @@ export default function PantryPage() {
       {/* Add member sheet */}
       <BottomSheet isOpen={addMemberOpen} onClose={closeAddMember} title="Add Member">
         <div className="flex flex-col gap-3">
-          {availableFriends.length === 0 ? (
+          {!initialized ? (
+            <div className="flex justify-center py-8">
+              <div className="w-6 h-6 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : availableFriends.length === 0 ? (
             <p className="text-body-sm text-neutral-400 text-center py-8 font-sans">
-              {friends.length === 0 ? 'Add friends in your Profile first' : 'All friends are already members'}
+              {friends.length === 0 ? 'No friends yet — add them in Profile' : 'All friends are already members'}
             </p>
           ) : (
             availableFriends.map(f => {

@@ -104,30 +104,9 @@ export const useFriendsStore = create<FriendsState>((set) => ({
   },
 }));
 
-// ── Auto-sync with auth state ────────────────────────────────────────────────
-// Key insight: on page reload authStore starts { user: null, loading: true }.
-// getSession() resolves async → loading becomes false. We must wait for that
-// transition rather than comparing user null→non-null (which can fire twice
-// due to the quickProfile → fullProfile sync in authStore).
+// Clear friends on logout so stale data never leaks between accounts.
 useAuthStore.subscribe((state, prevState) => {
-  const authJustResolved = prevState.loading && !state.loading;
-  const userJustLoggedIn = !prevState.user && !!state.user && !state.loading;
-
-  if ((authJustResolved || userJustLoggedIn) && state.user) {
-    console.log('[friendsStore] auth resolved/login detected, fetching friends for', state.user.id);
-    useFriendsStore.getState().fetchFriends();
-  }
-
   if (prevState.user && !state.user) {
-    console.log('[friendsStore] user logged out, clearing friends');
     useFriendsStore.setState({ friends: [], initialized: false, loading: false });
   }
 });
-
-// If auth already resolved before this module loaded (e.g. HMR / fast replay),
-// fetch immediately.
-const _boot = useAuthStore.getState();
-console.log('[friendsStore] module loaded — loading:', _boot.loading, 'user:', _boot.user?.id ?? 'null');
-if (!_boot.loading && _boot.user) {
-  useFriendsStore.getState().fetchFriends();
-}
