@@ -23,10 +23,11 @@ export default function ListMembersPage() {
   const toast = useToast();
   const user = useAuthStore(s => s.user);
   const { friends, initialized: friendsReady, fetchFriends } = useFriendsStore();
+  const authLoading = useAuthStore(s => s.loading);
 
   useEffect(() => {
-    if (!friendsReady) fetchFriends();
-  }, [friendsReady, fetchFriends]);
+    if (!authLoading && !friendsReady) fetchFriends();
+  }, [authLoading, friendsReady, fetchFriends]);
 
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);

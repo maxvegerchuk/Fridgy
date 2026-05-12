@@ -6,6 +6,7 @@ import AddPantrySheet from '../components/pantry/AddPantrySheet';
 import AddToListSheet from '../components/pantry/AddToListSheet';
 import { usePantry } from '../hooks/usePantry';
 import { useFriendsStore } from '../store/friendsStore';
+import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import { randomUUID } from '../lib/uuid';
 import { CATEGORIES } from '../types';
@@ -33,11 +34,12 @@ type ViewMode = 'all' | 'categories';
 export default function PantryPage() {
   const { pantry, items, loading, addItem, deleteItem, addToShoppingList } = usePantry();
   const { friends, initialized: friendsReady, fetchFriends } = useFriendsStore();
+  const authLoading = useAuthStore(s => s.loading);
   const [addOpen, setAddOpen] = useState(false);
 
   useEffect(() => {
-    if (!friendsReady) fetchFriends();
-  }, [friendsReady, fetchFriends]);
+    if (!authLoading && !friendsReady) fetchFriends();
+  }, [authLoading, friendsReady, fetchFriends]);
   const [addToListItem, setAddToListItem] = useState<PantryItem | null>(null);
   const [search, setSearch] = useState('');
   const [view, setView] = useState<ViewMode>('all');

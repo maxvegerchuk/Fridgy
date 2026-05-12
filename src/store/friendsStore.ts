@@ -27,8 +27,9 @@ export const useFriendsStore = create<FriendsState>((set) => ({
 
   fetchFriends: async () => {
     const { user } = useAuthStore.getState();
-    console.log('[friendsStore] fetchFriends called, user:', user?.id ?? 'null');
-    if (!user) return;
+    const { loading: alreadyLoading } = useFriendsStore.getState();
+    console.log('[friendsStore] fetchFriends called — user:', user?.id ?? 'null', '| alreadyLoading:', alreadyLoading);
+    if (!user || alreadyLoading) return;
     set({ loading: true });
 
     const { data, error } = await supabase
@@ -104,20 +105,29 @@ export const useFriendsStore = create<FriendsState>((set) => ({
 }));
 
 // ── Auto-sync with auth state ────────────────────────────────────────────────
-// Fetch friends when user logs in; clear when they log out.
+// Key insight: on page reload authStore starts { user: null, loading: true }.
+// getSession() resolves async → loading becomes false. We must wait for that
+// transition rather than comparing user null→non-null (which can fire twice
+// due to the quickProfile → fullProfile sync in authStore).
 useAuthStore.subscribe((state, prevState) => {
-  console.log('[friendsStore] auth changed — user:', state.user?.id ?? 'null', '| prev:', prevState.user?.id ?? 'null');
-  if (state.user && !prevState.user) {
+  const authJustResolved = prevState.loading && !state.loading;
+  const userJustLoggedIn = !prevState.user && !!state.user && !state.loading;
+
+  if ((authJustResolved || userJustLoggedIn) && state.user) {
+    console.log('[friendsStore] auth resolved/login detected, fetching friends for', state.user.id);
     useFriendsStore.getState().fetchFriends();
   }
-  if (!state.user && prevState.user) {
+
+  if (prevState.user && !state.user) {
+    console.log('[friendsStore] user logged out, clearing friends');
     useFriendsStore.setState({ friends: [], initialized: false, loading: false });
   }
 });
 
-// If the user was already logged in before this module loaded, fetch now.
-const _earlyUser = useAuthStore.getState().user;
-console.log('[friendsStore] module loaded, early user:', _earlyUser?.id ?? 'null');
-if (_earlyUser) {
+// If auth already resolved before this module loaded (e.g. HMR / fast replay),
+// fetch immediately.
+const _boot = useAuthStore.getState();
+console.log('[friendsStore] module loaded — loading:', _boot.loading, 'user:', _boot.user?.id ?? 'null');
+if (!_boot.loading && _boot.user) {
   useFriendsStore.getState().fetchFriends();
 }
