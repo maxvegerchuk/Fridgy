@@ -1,13 +1,11 @@
-import { useState, useMemo, useEffect } from 'react';
-import { ShoppingBagOpen, ShoppingCart, Plus, Trash, MagnifyingGlass, UserPlus, Check } from 'phosphor-react';
-import { EmptyState, Button, Skeleton, BottomSheet } from '../components/ui';
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ShoppingBagOpen, ShoppingCart, Plus, Trash, MagnifyingGlass, UsersThree } from 'phosphor-react';
+import { EmptyState, Button, Skeleton } from '../components/ui';
 import { useToast } from '../components/ui';
 import AddPantrySheet from '../components/pantry/AddPantrySheet';
 import AddToListSheet from '../components/pantry/AddToListSheet';
 import { usePantry } from '../hooks/usePantry';
-import { useFriendsStore } from '../store/friendsStore';
-import { supabase } from '../lib/supabase';
-import { randomUUID } from '../lib/uuid';
 import { CATEGORIES } from '../types';
 import type { ItemCategory, PantryItem } from '../types';
 
@@ -31,66 +29,13 @@ function groupByCategory(items: PantryItem[]): [ItemCategory, PantryItem[]][] {
 type ViewMode = 'all' | 'categories';
 
 export default function PantryPage() {
-  const { pantry, items, loading, addItem, deleteItem, addToShoppingList } = usePantry();
-  const { friends, fetchFriends, initialized } = useFriendsStore();
+  const navigate = useNavigate();
+  const { items, loading, addItem, deleteItem, addToShoppingList } = usePantry();
   const [addOpen, setAddOpen] = useState(false);
-
-  useEffect(() => {
-    if (!initialized) fetchFriends();
-  }, [initialized]);
   const [addToListItem, setAddToListItem] = useState<PantryItem | null>(null);
   const [search, setSearch] = useState('');
   const [view, setView] = useState<ViewMode>('all');
   const toast = useToast();
-
-  const [addMemberOpen, setAddMemberOpen] = useState(false);
-  const [memberUserIds, setMemberUserIds] = useState<Set<string>>(new Set());
-  const [selectedFriendIds, setSelectedFriendIds] = useState<Set<string>>(new Set());
-  const [addingMembers, setAddingMembers] = useState(false);
-
-  const availableFriends = friends.filter(f => !memberUserIds.has(f.id));
-
-  const openAddMember = async () => {
-    console.log('[PantryPage] openAddMember — friends.length:', friends.length, '| initialized:', initialized);
-    setAddMemberOpen(true);
-    if (!pantry?.id) return;
-    const { data } = await supabase.from('pantry_members').select('user_id').eq('pantry_id', pantry.id);
-    if (data) setMemberUserIds(new Set((data as { user_id: string }[]).map(m => m.user_id)));
-  };
-
-  const closeAddMember = () => {
-    setAddMemberOpen(false);
-    setSelectedFriendIds(new Set());
-    setMemberUserIds(new Set());
-  };
-
-  const toggleFriend = (id: string) => {
-    setSelectedFriendIds(prev => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  };
-
-  const handleAddSelected = async () => {
-    if (!pantry || selectedFriendIds.size === 0) return;
-    setAddingMembers(true);
-    const rows = [...selectedFriendIds].map(uid => ({
-      id: randomUUID(),
-      pantry_id: pantry.id,
-      user_id: uid,
-      role: 'editor',
-    }));
-    const { error } = await supabase.from('pantry_members').insert(rows);
-    setAddingMembers(false);
-    if (error) {
-      toast(error.message, 'error');
-    } else {
-      setMemberUserIds(prev => new Set([...prev, ...selectedFriendIds]));
-      toast(`${selectedFriendIds.size} member${selectedFriendIds.size !== 1 ? 's' : ''} added`, 'success');
-      closeAddMember();
-    }
-  };
 
   const filteredItems = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -110,11 +55,11 @@ export default function PantryPage() {
         </div>
         <button
           type="button"
-          onClick={openAddMember}
+          onClick={() => navigate('/pantry/members')}
           className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition-all"
-          aria-label="Add member"
+          aria-label="Pantry members"
         >
-          <UserPlus size={22} weight="regular" />
+          <UsersThree size={22} weight="regular" />
         </button>
       </div>
 
@@ -264,59 +209,6 @@ export default function PantryPage() {
         }}
       />
 
-      {/* Add member sheet */}
-      <BottomSheet isOpen={addMemberOpen} onClose={closeAddMember} title="Add Member">
-        <div className="flex flex-col gap-3">
-          {!initialized ? (
-            <div className="flex justify-center py-8">
-              <div className="w-6 h-6 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
-            </div>
-          ) : availableFriends.length === 0 ? (
-            <p className="text-body-sm text-neutral-400 text-center py-8 font-sans">
-              {friends.length === 0 ? 'No friends yet — add them in Profile' : 'All friends are already members'}
-            </p>
-          ) : (
-            availableFriends.map(f => {
-              const selected = selectedFriendIds.has(f.id);
-              return (
-                <button
-                  key={f.id}
-                  type="button"
-                  onClick={() => toggleFriend(f.id)}
-                  className="flex items-center gap-3 px-4 py-3 bg-white border border-neutral-100 rounded-md active:bg-neutral-50 active:scale-[0.99] transition-all"
-                >
-                  <div className={[
-                    'w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors',
-                    selected ? 'bg-green-500 border-green-500' : 'bg-white border-neutral-200',
-                  ].join(' ')}>
-                    {selected && <Check size={12} weight="bold" className="text-white" />}
-                  </div>
-                  <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                    <span className="text-body-sm font-bold text-green-700 font-sans">
-                      {f.display_name?.charAt(0).toUpperCase() ?? '?'}
-                    </span>
-                  </div>
-                  <p className="flex-1 text-body-sm font-semibold text-neutral-900 font-sans text-left truncate">
-                    {f.display_name}
-                  </p>
-                </button>
-              );
-            })
-          )}
-          <div className="flex gap-3 pt-1 mt-1 border-t border-neutral-100">
-            <Button variant="secondary" size="md" fullWidth onClick={closeAddMember}>Cancel</Button>
-            <Button
-              size="md"
-              fullWidth
-              disabled={selectedFriendIds.size === 0}
-              loading={addingMembers}
-              onClick={handleAddSelected}
-            >
-              {selectedFriendIds.size > 0 ? `Add (${selectedFriendIds.size})` : 'Add'}
-            </Button>
-          </div>
-        </div>
-      </BottomSheet>
     </div>
   );
 }

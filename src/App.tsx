@@ -15,6 +15,7 @@ import RecipeDetailPage from './pages/RecipeDetailPage';
 import CreateRecipePage from './pages/CreateRecipePage';
 import ProfilePage from './pages/ProfilePage';
 import ListMembersPage from './pages/ListMembersPage';
+import PantryMembersPage from './pages/PantryMembersPage';
 
 function ProtectedRoute() {
   const { user, loading } = useAuthStore();
@@ -62,6 +63,7 @@ export default function App() {
           {/* Full-screen flows — protected but no tab bar */}
           <Route path="/list/:id" element={<ShoppingListDetailPage />} />
           <Route path="/list/:id/members" element={<ListMembersPage />} />
+          <Route path="/pantry/members" element={<PantryMembersPage />} />
           <Route path="/list/join/:token" element={<JoinListPage />} />
           <Route path="/pantry/join/:token" element={<JoinPantryPage />} />
           <Route path="/recipe/new" element={<CreateRecipePage />} />
