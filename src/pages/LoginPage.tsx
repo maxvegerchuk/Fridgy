@@ -48,7 +48,7 @@ export default function LoginPage() {
 
             {/* Logo */}
             <div className="flex justify-center">
-              <div className="w-40 h-40 rounded-2xl overflow-hidden shadow-sm">
+              <div className="w-28 h-28 rounded-2xl overflow-hidden shadow-sm">
                 <img src={logoUrl} alt="fridgy" className="w-full h-full object-cover" />
               </div>
             </div>
