@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trash, UserPlus } from 'phosphor-react';
-import { BottomSheet, Skeleton } from '../components/ui';
+import { ArrowLeft, Trash, UserPlus, Check } from 'phosphor-react';
+import { BottomSheet, Skeleton, Button } from '../components/ui';
 import { useToast } from '../components/ui';
 import { supabase } from '../lib/supabase';
 import { randomUUID } from '../lib/uuid';
@@ -27,11 +27,25 @@ export default function ListMembersPage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [addOpen, setAddOpen] = useState(false);
-  const [adding, setAdding] = useState<string | null>(null);
+  const [selectedFriendIds, setSelectedFriendIds] = useState<Set<string>>(new Set());
+  const [addingMembers, setAddingMembers] = useState(false);
 
   const memberUserIds = new Set(members.map(m => m.user_id));
   const isOwner = members.find(m => m.user_id === user?.id)?.role === 'owner';
   const availableFriends = friends.filter(f => !memberUserIds.has(f.id));
+
+  const closeAddSheet = () => {
+    setAddOpen(false);
+    setSelectedFriendIds(new Set());
+  };
+
+  const toggleFriend = (friendId: string) => {
+    setSelectedFriendIds(prev => {
+      const next = new Set(prev);
+      next.has(friendId) ? next.delete(friendId) : next.add(friendId);
+      return next;
+    });
+  };
 
   const fetchMembers = useCallback(async () => {
     if (!id) return;
@@ -73,21 +87,27 @@ export default function ListMembersPage() {
     }
   };
 
-  const handleAddFriend = async (friendId: string, friendName: string | null) => {
-    if (!id) return;
-    setAdding(friendId);
-    const { error } = await supabase.from('list_members').insert({
+  const handleAddSelected = async () => {
+    if (!id || selectedFriendIds.size === 0) return;
+    setAddingMembers(true);
+    const rows = [...selectedFriendIds].map(uid => ({
       id: randomUUID(),
       list_id: id,
-      user_id: friendId,
+      user_id: uid,
       role: 'editor',
-    });
-    setAdding(null);
+    }));
+    const { error } = await supabase.from('list_members').insert(rows);
+    setAddingMembers(false);
     if (error) {
       toast(error.message, 'error');
     } else {
-      setMembers(prev => [...prev, { user_id: friendId, display_name: friendName, role: 'editor' }]);
-      toast(`${friendName ?? 'User'} added`, 'success');
+      const newMembers = [...selectedFriendIds].map(uid => {
+        const f = friends.find(x => x.id === uid);
+        return { user_id: uid, display_name: f?.display_name ?? null, role: 'editor' as const };
+      });
+      setMembers(prev => [...prev, ...newMembers]);
+      toast(`${selectedFriendIds.size} member${selectedFriendIds.size !== 1 ? 's' : ''} added`, 'success');
+      closeAddSheet();
     }
   };
 
@@ -139,8 +159,8 @@ export default function ListMembersPage() {
       </div>
 
       {/* Add member sheet */}
-      <BottomSheet isOpen={addOpen} onClose={() => setAddOpen(false)} title="Add Member">
-        <div className="flex flex-col gap-2">
+      <BottomSheet isOpen={addOpen} onClose={closeAddSheet} title="Add Member">
+        <div className="flex flex-col gap-3">
           {availableFriends.length === 0 ? (
             <p className="text-body-sm text-neutral-400 text-center py-8 font-sans">
               {friends.length === 0
@@ -148,28 +168,45 @@ export default function ListMembersPage() {
                 : 'All friends are already members'}
             </p>
           ) : (
-            availableFriends.map(f => (
-              <button
-                key={f.id}
-                type="button"
-                disabled={adding === f.id}
-                onClick={() => handleAddFriend(f.id, f.display_name)}
-                className="flex items-center gap-3 px-4 py-3 bg-white border border-neutral-100 rounded-md active:bg-neutral-50 active:scale-[0.99] transition-all disabled:opacity-50"
-              >
-                <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                  <span className="text-body-sm font-bold text-green-700 font-sans">
-                    {f.display_name?.charAt(0).toUpperCase() ?? '?'}
-                  </span>
-                </div>
-                <p className="flex-1 text-body-sm font-semibold text-neutral-900 font-sans text-left truncate">
-                  {f.display_name}
-                </p>
-                {adding === f.id && (
-                  <div className="w-4 h-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin flex-shrink-0" />
-                )}
-              </button>
-            ))
+            availableFriends.map(f => {
+              const selected = selectedFriendIds.has(f.id);
+              return (
+                <button
+                  key={f.id}
+                  type="button"
+                  onClick={() => toggleFriend(f.id)}
+                  className="flex items-center gap-3 px-4 py-3 bg-white border border-neutral-100 rounded-md active:bg-neutral-50 active:scale-[0.99] transition-all"
+                >
+                  <div className={[
+                    'w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors',
+                    selected ? 'bg-green-500 border-green-500' : 'bg-white border-neutral-200',
+                  ].join(' ')}>
+                    {selected && <Check size={12} weight="bold" className="text-white" />}
+                  </div>
+                  <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                    <span className="text-body-sm font-bold text-green-700 font-sans">
+                      {f.display_name?.charAt(0).toUpperCase() ?? '?'}
+                    </span>
+                  </div>
+                  <p className="flex-1 text-body-sm font-semibold text-neutral-900 font-sans text-left truncate">
+                    {f.display_name}
+                  </p>
+                </button>
+              );
+            })
           )}
+          <div className="flex gap-3 pt-1 mt-1 border-t border-neutral-100">
+            <Button variant="secondary" size="md" fullWidth onClick={closeAddSheet}>Cancel</Button>
+            <Button
+              size="md"
+              fullWidth
+              disabled={selectedFriendIds.size === 0}
+              loading={addingMembers}
+              onClick={handleAddSelected}
+            >
+              {selectedFriendIds.size > 0 ? `Add (${selectedFriendIds.size})` : 'Add'}
+            </Button>
+          </div>
         </div>
       </BottomSheet>
     </div>

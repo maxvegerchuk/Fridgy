@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trash, Globe, GlobeSimple, PencilSimple } from 'phosphor-react';
+import { ArrowLeft, Trash, Eye, EyeSlash, PencilSimple } from 'phosphor-react';
 import { Button } from '../components/ui';
 import { useToast } from '../components/ui';
 import { useAuthStore } from '../store/authStore';
@@ -234,7 +234,7 @@ export default function RecipeDetailPage() {
           <ArrowLeft size={24} />
         </button>
         <h1 className="ml-3 flex-1 min-w-0 text-h3 font-heading text-neutral-900 truncate">
-          {recipe.title}
+          Recipe
         </h1>
         <div className="flex items-center gap-1 flex-shrink-0">
           {isOwner && (
@@ -245,7 +245,7 @@ export default function RecipeDetailPage() {
                 className={`w-10 h-10 flex items-center justify-center rounded-md transition-colors ${recipe.is_public ? 'text-green-500' : 'text-neutral-400'} active:bg-neutral-100`}
                 aria-label={recipe.is_public ? 'Make private' : 'Make public'}
               >
-                {recipe.is_public ? <Globe size={22} weight="fill" /> : <GlobeSimple size={22} />}
+                {recipe.is_public ? <Eye size={22} weight="fill" /> : <EyeSlash size={22} />}
               </button>
               <button
                 type="button"
