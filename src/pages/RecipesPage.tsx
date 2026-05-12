@@ -88,7 +88,7 @@ function RecipeCard({
         {/* Status badge */}
         {badge && (
           <div className="mt-2">
-            <span className={`inline-flex items-center h-5 px-[10px] rounded-full text-badge font-sans ${badge.cls}`}>
+            <span className={`inline-flex items-center h-6 px-[10px] rounded-full text-badge font-sans ${badge.cls}`}>
               {badge.label}
             </span>
           </div>
