@@ -220,8 +220,11 @@ export default function RecipesPage() {
     <div className="flex flex-col h-full pt-safe relative">
       {/* Header */}
       <div className="px-4 pb-2 border-b border-neutral-100 flex flex-col gap-2 bg-white flex-shrink-0">
-        <div className="flex items-center h-[56px]">
-          <h1 className="text-h1 font-heading text-neutral-900">Recipes</h1>
+        <div className="flex items-center h-[80px]">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-h2 font-heading text-neutral-900">Recipes</h1>
+            <p className="text-body text-neutral-600 font-sans">Cook what you have</p>
+          </div>
         </div>
         <SegmentControl
           options={[
