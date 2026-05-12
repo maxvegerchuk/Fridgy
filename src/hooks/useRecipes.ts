@@ -94,14 +94,28 @@ export function useRecipes() {
         ]);
         if (cancelled) return;
         if (recipesRes.error) console.error('[useRecipes]', recipesRes.error);
-        setMyRecipes((recipesRes.data as Recipe[]) ?? []);
-        if (savedRes.data) {
-          setSavedIds(new Set(
-            savedRes.data
-              .map(r => r.original_recipe_id as string | null)
-              .filter((id): id is string => id !== null)
-          ));
+
+        const ownRecipes = (recipesRes.data as Recipe[]) ?? [];
+        const savedOriginalIds = (savedRes.data ?? [])
+          .map(r => r.original_recipe_id as string | null)
+          .filter((id): id is string => id !== null);
+
+        setSavedIds(new Set(savedOriginalIds));
+
+        // Fetch saved recipes from the originals table and merge into My Recipes
+        let savedRecipes: Recipe[] = [];
+        if (savedOriginalIds.length > 0) {
+          const { data: savedData, error: savedErr } = await supabase
+            .from('recipes')
+            .select(RECIPE_SELECT)
+            .in('id', savedOriginalIds);
+          if (savedErr) console.error('[useRecipes] saved recipes fetch:', savedErr);
+          savedRecipes = (savedData as Recipe[]) ?? [];
         }
+
+        if (cancelled) return;
+        const ownIds = new Set(ownRecipes.map(r => r.id));
+        setMyRecipes([...ownRecipes, ...savedRecipes.filter(r => !ownIds.has(r.id))]);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -213,56 +227,22 @@ export function useRecipes() {
   }, []);
 
   const saveRecipe = useCallback(async (recipe: Recipe): Promise<string | null> => {
+    console.log('[saveRecipe] called, recipe.id:', recipe.id, 'user:', user?.id ?? 'null');
     if (!user) return 'Not logged in';
-    if (savedIds.has(recipe.id)) return null;
+    if (savedIds.has(recipe.id)) { console.log('[saveRecipe] already saved'); return null; }
 
-    // Track as saved (bookmark indicator)
     const { error } = await supabase.from('saved_recipes').insert({
       id: randomUUID(),
       user_id: user.id,
       original_recipe_id: recipe.id,
-      title: recipe.title,
-      cook_time_minutes: recipe.cook_time_minutes ?? null,
-      servings: recipe.servings,
-      is_public: false,
     });
-    if (error) { console.error('[useRecipes] save:', error); return error.message; }
-
-    // Copy recipe into the user's own recipes so it appears in My Recipes
-    const newId = randomUUID();
-    await supabase.from('recipes').insert({
-      id: newId,
-      user_id: user.id,
-      title: recipe.title,
-      image_url: recipe.image_url ?? null,
-      cook_time_minutes: recipe.cook_time_minutes ?? null,
-      servings: recipe.servings,
-      is_public: false,
-    });
-    if (recipe.ingredients.length > 0) {
-      await supabase.from('recipe_ingredients').insert(
-        recipe.ingredients.map((ing, idx) => ({
-          id: randomUUID(),
-          recipe_id: newId,
-          name: ing.name,
-          quantity: ing.quantity ?? null,
-          unit: ing.unit ?? null,
-          optional: ing.optional,
-          sort_order: idx,
-        }))
-      );
-    }
+    console.log('[saveRecipe] insert result — error:', error ?? 'none');
+    if (error) return error.message;
 
     setSavedIds(prev => new Set([...prev, recipe.id]));
-
-    // Refetch so My Recipes list is updated immediately
-    const { data } = await supabase
-      .from('recipes')
-      .select(RECIPE_SELECT)
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
-    if (data) setMyRecipes(data as Recipe[]);
-
+    setMyRecipes(prev =>
+      prev.find(r => r.id === recipe.id) ? prev : [...prev, recipe]
+    );
     return null;
   }, [user, savedIds]);
 

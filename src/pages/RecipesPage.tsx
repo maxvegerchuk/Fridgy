@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Globe, Plus, Bookmark, BookmarkSimple } from 'phosphor-react';
+import { BookOpen, Globe, Plus, BookmarkSimple } from 'phosphor-react';
 import { EmptyState, SegmentControl, FilterTabs, Skeleton, BottomSheet, Button } from '../components/ui';
 import { useToast } from '../components/ui';
 import { useRecipes, fetchRecipeById } from '../hooks/useRecipes';
@@ -34,7 +34,7 @@ function RecipeCard({
   onAddMissing,
   loadingMode,
   showMissing,
-  action,
+  savedAction,
 }: {
   recipe: RecipeWithAvailability | Recipe;
   onClick: () => void;
@@ -42,7 +42,7 @@ function RecipeCard({
   onAddMissing?: () => void;
   loadingMode: 'all' | 'missing' | null;
   showMissing: boolean;
-  action?: React.ReactNode;
+  savedAction?: React.ReactNode;
 }) {
   const withAvail = 'status' in recipe ? recipe as RecipeWithAvailability : null;
   const badge = withAvail ? STATUS_BADGE[withAvail.status] : null;
@@ -52,7 +52,7 @@ function RecipeCard({
     <div className="bg-white border border-neutral-100 rounded-md overflow-hidden">
       {/* Cover image */}
       <div
-        className="w-full h-[200px] cursor-pointer active:opacity-80 transition-opacity"
+        className="relative w-full h-[200px] cursor-pointer active:opacity-80 transition-opacity"
         onClick={onClick}
       >
         {recipe.image_url ? (
@@ -62,19 +62,19 @@ function RecipeCard({
             <BookOpen size={40} weight="light" className="text-neutral-200" />
           </div>
         )}
+        {savedAction && (
+          <div className="absolute top-2 right-2">{savedAction}</div>
+        )}
       </div>
 
       {/* Content */}
       <div className="px-4 pt-3 pb-4">
-        <div className="flex items-start justify-between gap-2">
-          <p
-            className="text-body-lg font-heading text-neutral-900 leading-snug flex-1 cursor-pointer"
-            onClick={onClick}
-          >
-            {recipe.title}
-          </p>
-          {action && <div className="flex-shrink-0">{action}</div>}
-        </div>
+        <p
+          className="text-body-lg font-heading text-neutral-900 leading-snug cursor-pointer"
+          onClick={onClick}
+        >
+          {recipe.title}
+        </p>
 
         {/* Meta row */}
         <div className="flex items-center gap-1.5 mt-1 text-body-sm text-neutral-400 font-sans">
@@ -314,16 +314,16 @@ export default function RecipesPage() {
                     onAddAll={() => handleAddClick(recipe, 'all')}
                     loadingMode={loadingRecipeId === recipe.id ? loadingMode : null}
                     showMissing={false}
-                    action={
+                    savedAction={
                       <button
                         type="button"
-                        onClick={() => handleSave(recipe)}
-                        className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:text-green-500 active:bg-green-50 transition-colors"
+                        onClick={(e) => { e.stopPropagation(); handleSave(recipe); }}
+                        className="w-8 h-8 bg-white rounded-full shadow-sm flex items-center justify-center active:scale-95 transition-transform"
                         aria-label={savedIds.has(recipe.id) ? 'Saved' : 'Save recipe'}
                       >
                         {savedIds.has(recipe.id)
-                          ? <Bookmark size={20} weight="fill" className="text-green-500" />
-                          : <BookmarkSimple size={20} weight="regular" />
+                          ? <BookmarkSimple size={18} weight="fill" className="text-green-500" />
+                          : <BookmarkSimple size={18} weight="regular" className="text-neutral-400" />
                         }
                       </button>
                     }
