@@ -168,10 +168,14 @@ export default function ListMembersPage() {
       {/* Add member sheet */}
       <BottomSheet isOpen={addOpen} onClose={closeAddSheet} title="Add Member">
         <div className="flex flex-col gap-3">
-          {availableFriends.length === 0 ? (
+          {!initialized ? (
+            <div className="flex justify-center py-8">
+              <div className="w-6 h-6 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : availableFriends.length === 0 ? (
             <p className="text-body-sm text-neutral-400 text-center py-8 font-sans">
               {friends.length === 0
-                ? 'Add friends in your Profile first'
+                ? 'No friends yet — add them in Profile'
                 : 'All friends are already members'}
             </p>
           ) : (
