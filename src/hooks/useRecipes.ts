@@ -231,13 +231,34 @@ export function useRecipes() {
     if (!user) return 'Not logged in';
     if (savedIds.has(recipe.id)) { console.log('[saveRecipe] already saved'); return null; }
 
+    const savedId = randomUUID();
     const { error } = await supabase.from('saved_recipes').insert({
-      id: randomUUID(),
+      id: savedId,
       user_id: user.id,
       original_recipe_id: recipe.id,
+      title: recipe.title,
+      image_url: recipe.image_url ?? null,
+      cook_time_minutes: recipe.cook_time_minutes ?? null,
+      servings: recipe.servings,
+      is_public: false,
     });
     console.log('[saveRecipe] insert result — error:', error ?? 'none');
     if (error) return error.message;
+
+    if (recipe.ingredients?.length > 0) {
+      const { error: ingErr } = await supabase.from('saved_recipe_ingredients').insert(
+        recipe.ingredients.map((ing, index) => ({
+          id: randomUUID(),
+          saved_recipe_id: savedId,
+          name: ing.name,
+          quantity: ing.quantity ?? null,
+          unit: ing.unit ?? null,
+          optional: ing.optional,
+          sort_order: index,
+        }))
+      );
+      if (ingErr) console.error('[saveRecipe] ingredients error:', ingErr);
+    }
 
     setSavedIds(prev => new Set([...prev, recipe.id]));
     setMyRecipes(prev =>
