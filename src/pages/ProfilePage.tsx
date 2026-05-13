@@ -9,7 +9,7 @@ import type { Profile } from '../types';
 
 export default function ProfilePage() {
   const { user, email, signOut } = useAuthStore();
-  const { friends, initialized, addFriend, removeFriend } = useFriendsStore();
+  const { friends, addFriend, removeFriend } = useFriendsStore();
   const toast = useToast();
   const [signingOut, setSigningOut] = useState(false);
 
