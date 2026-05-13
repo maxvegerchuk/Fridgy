@@ -64,7 +64,7 @@ export default function RegisterPage() {
         style={{ height: '32vh' }}
       >
         <img
-          src="/signup-bg.png"
+          src="/singup-bg.png"
           alt=""
           style={{
             position: 'absolute',
@@ -74,22 +74,6 @@ export default function RegisterPage() {
             objectPosition: 'center top',
           }}
         />
-        <div style={{
-          position: 'absolute',
-          top: '40%', left: '50%',
-          transform: 'translate(-50%, -50%)',
-          zIndex: 10,
-        }}>
-          <span style={{
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: '48px',
-            fontWeight: '800',
-            color: 'white',
-            whiteSpace: 'nowrap',
-          }}>
-            fridgy
-          </span>
-        </div>
       </div>
 
       {/* Bottom white card */}
