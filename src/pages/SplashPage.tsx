@@ -21,11 +21,17 @@ export default function SplashPage() {
   }, [user, loading, navigate]);
 
   return (
-    <div className="fixed inset-0 w-full h-full">
+    <div className="fixed inset-0 w-full h-full overflow-hidden">
       <img
         src="/splash-screen.svg"
         alt="Fridgy"
-        className="w-full h-full object-cover"
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          objectPosition: 'center',
+          display: 'block',
+        }}
       />
     </div>
   );

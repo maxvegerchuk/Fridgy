@@ -43,11 +43,34 @@ export default function LoginPage() {
     <div className="fixed inset-0 flex flex-col overflow-hidden">
 
       {/* Top green section — 45vh */}
-      <div
-        className="shrink-0 flex items-center justify-center bg-green-500 bg-cover bg-[center_top]"
-        style={{ height: '45vh', backgroundImage: "url('/splash-screen.svg')" }}
-      >
-        <span className="font-heading text-[48px] font-extrabold text-white">fridgy</span>
+      <div style={{ height: '45vh', position: 'relative', overflow: 'hidden' }}>
+        <img
+          src="/splash-screen.svg"
+          alt=""
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'center top',
+            display: 'block',
+          }}
+        />
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <span style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: '48px',
+            fontWeight: '800',
+            color: 'white',
+          }}>
+            fridgy
+          </span>
+        </div>
       </div>
 
       {/* Bottom white card */}
