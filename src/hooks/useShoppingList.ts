@@ -166,7 +166,20 @@ export function useShoppingList(listId: string | undefined) {
     await supabase.from('list_items').delete().eq('id', id);
   }, []);
 
-  return { list, items, loading, addItem, checkItem, deleteItem };
+  const updateItem = useCallback(async (
+    id: string,
+    quantity: number | undefined,
+    unit: string | undefined,
+  ): Promise<void> => {
+    setItems(prev => prev.map(i => i.id === id ? { ...i, quantity, unit } : i));
+    const { error } = await supabase
+      .from('list_items')
+      .update({ quantity: quantity ?? null, unit: unit ?? null })
+      .eq('id', id);
+    if (error) console.error('[useShoppingList] updateItem failed:', error);
+  }, []);
+
+  return { list, items, loading, addItem, checkItem, deleteItem, updateItem };
 }
 
 // ─── Lists overview hook ──────────────────────────────────

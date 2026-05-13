@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useId } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Trash, Check, ArrowCounterClockwise, Plus, ArrowLeft, Users } from 'phosphor-react';
-import { EmptyState, Button, Skeleton } from '../components/ui';
+import { EmptyState, Button, Skeleton, BottomSheet } from '../components/ui';
 import AddItemSheet from '../components/list/AddItemSheet';
 import { useShoppingList } from '../hooks/useShoppingList';
 import { usePantry } from '../hooks/usePantry';
@@ -29,9 +29,10 @@ export default function ShoppingListDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const { list, items, loading, addItem, checkItem, deleteItem } = useShoppingList(id);
+  const { list, items, loading, addItem, checkItem, deleteItem, updateItem } = useShoppingList(id);
   const { refetch: refetchPantry } = usePantry();
   const [addOpen, setAddOpen] = useState(false);
+  const [editItem, setEditItem] = useState<ListItem | null>(null);
 
   const unchecked = items.filter(i => !i.is_checked);
   const checked = items.filter(i => i.is_checked);
@@ -104,6 +105,7 @@ export default function ShoppingListDetailPage() {
                       onCheck={checkItem}
                       onDelete={deleteItem}
                       onChecked={refetchPantry}
+                      onEdit={setEditItem}
                     />
                   ))}
                 </div>
@@ -124,6 +126,7 @@ export default function ShoppingListDetailPage() {
                       item={item}
                       onCheck={checkItem}
                       onDelete={deleteItem}
+                      onEdit={setEditItem}
                       dimmed
                     />
                   ))}
@@ -150,6 +153,12 @@ export default function ShoppingListDetailPage() {
         onAddItem={addItem}
         listId={id ?? null}
       />
+
+      <EditQuantitySheet
+        item={editItem}
+        onClose={() => setEditItem(null)}
+        onSave={updateItem}
+      />
     </div>
   );
 }
@@ -158,11 +167,12 @@ type ItemRowProps = {
   item: ListItem;
   onCheck: (id: string, checked: boolean, onChecked?: () => void) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
+  onEdit: (item: ListItem) => void;
   onChecked?: () => void;
   dimmed?: boolean;
 };
 
-function ItemRow({ item, onCheck, onDelete, onChecked, dimmed }: ItemRowProps) {
+function ItemRow({ item, onCheck, onDelete, onEdit, onChecked, dimmed }: ItemRowProps) {
   return (
     <div
       className={[
@@ -173,8 +183,12 @@ function ItemRow({ item, onCheck, onDelete, onChecked, dimmed }: ItemRowProps) {
       {/* Image placeholder */}
       <div className="w-16 h-16 rounded-md bg-white border border-neutral-100 flex-shrink-0" />
 
-      {/* Name + qty */}
-      <div className="flex-1 min-w-0">
+      {/* Name + qty — tap to edit quantity */}
+      <button
+        type="button"
+        onClick={() => onEdit(item)}
+        className="flex-1 min-w-0 text-left active:opacity-70 transition-opacity"
+      >
         <p
           className={[
             'text-body-sm font-semibold font-sans truncate',
@@ -183,12 +197,12 @@ function ItemRow({ item, onCheck, onDelete, onChecked, dimmed }: ItemRowProps) {
         >
           {item.name}
         </p>
-        {(item.quantity || item.unit) && (
-          <p className="text-badge text-neutral-400 font-sans mt-0.5">
-            {[item.quantity, item.unit].filter(Boolean).join(' ')}
-          </p>
-        )}
-      </div>
+        <p className="text-badge font-sans mt-0.5 text-neutral-400">
+          {(item.quantity || item.unit)
+            ? [item.quantity, item.unit].filter(Boolean).join(' ')
+            : 'Add quantity'}
+        </p>
+      </button>
 
       {/* Check / uncheck */}
       <button
@@ -218,5 +232,73 @@ function ItemRow({ item, onCheck, onDelete, onChecked, dimmed }: ItemRowProps) {
         <Trash size={20} weight="regular" />
       </button>
     </div>
+  );
+}
+
+const UNITS = ['pcs', 'g', 'kg', 'ml', 'l'];
+
+type EditQuantitySheetProps = {
+  item: ListItem | null;
+  onClose: () => void;
+  onSave: (id: string, quantity: number | undefined, unit: string | undefined) => Promise<void>;
+};
+
+function EditQuantitySheet({ item, onClose, onSave }: EditQuantitySheetProps) {
+  const [quantity, setQuantity] = useState('');
+  const [unit, setUnit] = useState('pcs');
+  const unitId = useId();
+
+  // Sync fields when a new item is selected
+  const [prevItemId, setPrevItemId] = useState<string | null>(null);
+  if (item && item.id !== prevItemId) {
+    setPrevItemId(item.id);
+    setQuantity(item.quantity != null ? String(item.quantity) : '');
+    setUnit(item.unit ?? 'pcs');
+  }
+
+  const handleSave = async () => {
+    if (!item) return;
+    await onSave(
+      item.id,
+      quantity ? Number(quantity) : undefined,
+      unit !== 'pcs' || !quantity ? (unit === 'pcs' && !quantity ? undefined : unit) : unit,
+    );
+    onClose();
+  };
+
+  return (
+    <BottomSheet isOpen={!!item} onClose={onClose} title={item?.name ?? ''}>
+      <div className="flex flex-col gap-4">
+        <div className="flex gap-2">
+          <div className="flex flex-col gap-1.5 flex-1">
+            <label className="text-caption font-medium text-neutral-800 font-sans">Qty</label>
+            <input
+              type="number"
+              inputMode="decimal"
+              min="0"
+              step="any"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              placeholder="0"
+              onFocus={(e) => e.target.select()}
+              style={{ fontSize: '16px' }}
+              className="w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5 w-24">
+            <label htmlFor={unitId} className="text-caption font-medium text-neutral-800 font-sans">Unit</label>
+            <select
+              id={unitId}
+              value={unit}
+              onChange={(e) => setUnit(e.target.value)}
+              className="h-[44px] w-full px-3 border border-neutral-200 rounded-lg bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            >
+              {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
+            </select>
+          </div>
+        </div>
+        <Button size="lg" fullWidth onClick={handleSave}>Save</Button>
+      </div>
+    </BottomSheet>
   );
 }
