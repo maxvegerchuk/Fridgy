@@ -60,27 +60,6 @@ export default function LoginPage() {
             objectPosition: 'center top',
           }}
         />
-
-        {/* fridgy logo text on top of SVG */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '35%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            zIndex: 10,
-          }}
-        >
-          <span style={{
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: '48px',
-            fontWeight: '800',
-            color: 'white',
-            whiteSpace: 'nowrap',
-          }}>
-            fridgy
-          </span>
-        </div>
       </div>
 
       {/* Bottom white card */}

@@ -23,7 +23,7 @@ export default function SplashPage() {
   return (
     <div className="fixed inset-0 w-full h-full overflow-hidden">
       <img
-        src="/splash-screen.svg"
+        src="/splash-screen.png"
         alt="Fridgy"
         style={{
           width: '100%',
