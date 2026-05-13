@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from './store/authStore';
 import { useFriendsStore } from './store/friendsStore';
 import AppShell from './components/AppShell';
@@ -16,13 +16,25 @@ import CreateRecipePage from './pages/CreateRecipePage';
 import ProfilePage from './pages/ProfilePage';
 import ListMembersPage from './pages/ListMembersPage';
 import PantryMembersPage from './pages/PantryMembersPage';
+import SplashPage from './pages/SplashPage';
+
+function InitialSplash() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const hasSeenSplash = sessionStorage.getItem('splashShown');
+    if (!hasSeenSplash) {
+      sessionStorage.setItem('splashShown', 'true');
+      navigate('/splash', { replace: true });
+    }
+  }, [navigate]);
+  return null;
+}
 
 function ProtectedRoute() {
   const { user, loading } = useAuthStore();
   const location = useLocation();
 
   useEffect(() => {
-    console.log('[ProtectedRoute] mount, initialized:', useFriendsStore.getState().initialized);
     const { initialized, fetchFriends } = useFriendsStore.getState();
     if (!initialized) {
       fetchFriends();
@@ -50,7 +62,9 @@ function ProtectedRoute() {
 export default function App() {
   return (
     <BrowserRouter>
+      <InitialSplash />
       <Routes>
+        <Route path="/splash" element={<SplashPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route element={<ProtectedRoute />}>

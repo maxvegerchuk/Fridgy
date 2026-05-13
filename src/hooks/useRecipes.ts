@@ -227,9 +227,8 @@ export function useRecipes() {
   }, []);
 
   const saveRecipe = useCallback(async (recipe: Recipe): Promise<string | null> => {
-    console.log('[saveRecipe] called, recipe.id:', recipe.id, 'user:', user?.id ?? 'null');
     if (!user) return 'Not logged in';
-    if (savedIds.has(recipe.id)) { console.log('[saveRecipe] already saved'); return null; }
+    if (savedIds.has(recipe.id)) return null;
 
     const savedId = randomUUID();
     const { error } = await supabase.from('saved_recipes').insert({
@@ -242,7 +241,6 @@ export function useRecipes() {
       servings: recipe.servings,
       is_public: false,
     });
-    console.log('[saveRecipe] insert result — error:', error ?? 'none');
     if (error) return error.message;
 
     if (recipe.ingredients?.length > 0) {

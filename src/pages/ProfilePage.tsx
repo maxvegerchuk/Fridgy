@@ -13,8 +13,6 @@ export default function ProfilePage() {
   const toast = useToast();
   const [signingOut, setSigningOut] = useState(false);
 
-  console.log('[ProfilePage] render, friends:', friends.length, 'initialized:', initialized);
-
   const [addFriendOpen, setAddFriendOpen] = useState(false);
   const [friendIdInput, setFriendIdInput] = useState('');
   const [foundProfile, setFoundProfile] = useState<Profile | null>(null);

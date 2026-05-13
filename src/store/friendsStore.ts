@@ -22,9 +22,7 @@ export const useFriendsStore = create<FriendsState>((set) => ({
   initialized: false,
 
   fetchFriends: async () => {
-    console.log('[fetchFriends] called');
     const { data: { user } } = await supabase.auth.getUser();
-    console.log('[fetchFriends] user:', user?.id ?? 'NULL');
     if (!user) return;
 
     set({ loading: true });
@@ -33,8 +31,6 @@ export const useFriendsStore = create<FriendsState>((set) => ({
       .from('user_friends')
       .select('friend_id')
       .eq('user_id', user.id);
-
-    console.log('[fetchFriends] friendLinks:', friendLinks, 'error:', linksError);
 
     if (linksError || !friendLinks?.length) {
       set({ friends: [], initialized: true, loading: false });
@@ -48,15 +44,12 @@ export const useFriendsStore = create<FriendsState>((set) => ({
       .select('id, display_name, avatar_url, short_id')
       .in('id', friendIds);
 
-    console.log('[fetchFriends] profiles:', profiles, 'error:', profilesError);
-
     if (profilesError) {
       set({ loading: false });
       return;
     }
 
     const friends = (profiles ?? []) as Profile[];
-    console.log('[fetchFriends] friends set:', friends.length);
     set({ friends, initialized: true, loading: false });
   },
 
