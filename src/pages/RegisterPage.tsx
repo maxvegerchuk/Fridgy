@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { Input, Button, useToast } from '../components/ui';
-import logoUrl from '../logo.svg';
 
 export default function RegisterPage() {
   const [displayName, setDisplayName] = useState('');
@@ -28,13 +27,23 @@ export default function RegisterPage() {
     );
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+
+    if (!displayName || !email || !password || !confirmPassword) {
+      setError('This field is required');
+      return;
+    }
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters');
+      return;
+    }
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
+
     setSubmitting(true);
     const err = await signUp(email, password, displayName);
     if (err) {
@@ -47,88 +56,133 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white">
-      <div className="scroll-area">
-        <div className="min-h-full flex flex-col justify-center px-5 pt-safe pb-safe">
-          <div className="w-full max-w-sm mx-auto py-10 flex flex-col gap-8">
+    <div className="fixed inset-0 flex flex-col overflow-hidden">
 
-            {/* Logo */}
-            <div className="flex justify-center">
-              <div className="w-28 h-28 rounded-2xl overflow-hidden shadow-sm">
-                <img src={logoUrl} alt="fridgy" className="w-full h-full object-cover" />
-              </div>
-            </div>
-
-            {/* Form */}
-            <div className="flex flex-col gap-5">
-              <h2 className="text-h3 font-heading text-neutral-900">Create account</h2>
-
-              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                <Input
-                  label="Your name"
-                  type="text"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Jane Smith"
-                  autoComplete="name"
-                  required
-                  inputSize="lg"
-                />
-                <Input
-                  label="Email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  autoComplete="email"
-                  required
-                  inputSize="lg"
-                />
-                <Input
-                  label="Password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Min. 8 characters"
-                  autoComplete="new-password"
-                  minLength={8}
-                  required
-                  inputSize="lg"
-                />
-                <Input
-                  label="Confirm password"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Repeat your password"
-                  autoComplete="new-password"
-                  required
-                  inputSize="lg"
-                />
-
-                {error && (
-                  <p className="text-body-sm text-red-700 bg-red-50 rounded-md px-3 py-2 font-sans">
-                    {error}
-                  </p>
-                )}
-
-                <Button type="submit" size="lg" fullWidth loading={submitting} className="mt-1">
-                  Create Account
-                </Button>
-              </form>
-
-              <p className="text-center text-body-sm text-neutral-500 font-sans">
-                Already have an account?{' '}
-                <Link to="/login" className="text-green-600 font-semibold active:opacity-70">
-                  Sign in
-                </Link>
-              </p>
-            </div>
-
-          </div>
+      {/* Top section — 32vh */}
+      <div
+        className="relative overflow-hidden flex-shrink-0"
+        style={{ height: '32vh' }}
+      >
+        <img
+          src="/signup-bg.png"
+          alt=""
+          style={{
+            position: 'absolute',
+            top: 0, left: 0,
+            width: '100%', height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'center top',
+          }}
+        />
+        <div style={{
+          position: 'absolute',
+          top: '40%', left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 10,
+        }}>
+          <span style={{
+            fontFamily: "'DM Sans', sans-serif",
+            fontSize: '48px',
+            fontWeight: '800',
+            color: 'white',
+            whiteSpace: 'nowrap',
+          }}>
+            fridgy
+          </span>
         </div>
       </div>
+
+      {/* Bottom white card */}
+      <div
+        className="relative z-10 flex flex-col flex-1 bg-white overflow-y-auto"
+        style={{ marginTop: '-20px', borderRadius: '20px 20px 0 0', padding: '32px 24px 40px' }}
+      >
+        <h1 className="font-heading text-[28px] font-extrabold text-neutral-900 mb-6">
+          Sign Up
+        </h1>
+
+        <form onSubmit={handleSubmit} className="flex flex-col">
+          <div className="mb-4">
+            <label className="block font-sans text-[15px] font-medium text-neutral-600 mb-1.5">
+              Your name
+            </label>
+            <Input
+              type="text"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              placeholder="Jane Smith"
+              autoComplete="name"
+              inputSize="lg"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block font-sans text-[15px] font-medium text-neutral-600 mb-1.5">
+              Email
+            </label>
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@mail.com"
+              autoComplete="email"
+              inputSize="lg"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block font-sans text-[15px] font-medium text-neutral-600 mb-1.5">
+              Password
+            </label>
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Min. 8 characters"
+              autoComplete="new-password"
+              inputSize="lg"
+            />
+          </div>
+
+          <div className="mb-6">
+            <label className="block font-sans text-[15px] font-medium text-neutral-600 mb-1.5">
+              Confirm Password
+            </label>
+            <Input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Repeat your password"
+              autoComplete="new-password"
+              inputSize="lg"
+            />
+            {error && (
+              <p className="font-sans text-[14px] mt-2" style={{ color: '#E03B36' }}>
+                {error}
+              </p>
+            )}
+          </div>
+
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            fullWidth
+            loading={submitting}
+            className="!h-[54px] !font-bold mb-5"
+          >
+            Create Account
+          </Button>
+        </form>
+
+        <p className="text-center font-sans text-[15px]">
+          <span className="text-neutral-400">Already have an account? </span>
+          <Link to="/login" className="text-green-500 font-bold active:opacity-70">
+            Sign In
+          </Link>
+        </p>
+      </div>
+
     </div>
   );
 }
-
