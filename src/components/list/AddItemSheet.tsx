@@ -147,34 +147,38 @@ export default function AddItemSheet({ isOpen, onClose, onAddItem, listId }: Pro
           {/* Name field + mic button */}
           <div className="flex flex-col gap-1.5">
             <span className={LABEL_CLS}>Item name</span>
-            <ProductNameInput
-              value={name}
-              onChange={setName}
-              onSelect={handleSuggestion}
-              onCommit={focusQuantity}
-              label=""
-              placeholder="e.g. Milk"
-              required
-              rightAddon={voiceSupported ? (
+            <div className="flex items-center gap-2">
+              <div className="flex-1 min-w-0">
+                <ProductNameInput
+                  value={name}
+                  onChange={setName}
+                  onSelect={handleSuggestion}
+                  onCommit={focusQuantity}
+                  label=""
+                  placeholder="e.g. Milk"
+                  required
+                />
+              </div>
+              {voiceSupported && (
                 <button
                   type="button"
                   onClick={listening ? stopVoice : handleVoiceStart}
                   className={[
-                    'w-8 h-8 flex items-center justify-center rounded-full',
+                    'w-[44px] h-[44px] flex-shrink-0 flex items-center justify-center rounded-md',
                     'active:scale-95 transition-all',
                     listening
                       ? 'bg-green-500 text-white'
-                      : 'text-neutral-400 active:bg-neutral-100',
+                      : 'bg-neutral-100 text-neutral-600 active:bg-neutral-200',
                   ].join(' ')}
                   aria-label={listening ? 'Stop recording' : 'Voice input'}
                 >
                   {listening
-                    ? <X size={16} weight="bold" className="animate-pulse" />
-                    : <Microphone size={18} />
+                    ? <X size={18} weight="bold" className="animate-pulse" />
+                    : <Microphone size={20} />
                   }
                 </button>
-              ) : undefined}
-            />
+              )}
+            </div>
           </div>
 
           <div className="flex gap-2">
