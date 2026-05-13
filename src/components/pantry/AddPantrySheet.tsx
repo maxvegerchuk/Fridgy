@@ -174,7 +174,7 @@ export default function AddPantrySheet({ isOpen, onClose, onAddItem }: Props) {
               id={unitId}
               value={unit}
               onChange={(e) => setUnit(e.target.value)}
-              className="h-[44px] w-full px-3 border border-neutral-200 rounded-lg bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="h-[44px] w-full px-3 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             >
               {UNITS.map(u => (
                 <option key={u} value={u}>{u}</option>
