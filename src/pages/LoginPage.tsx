@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { Input, Button } from '../components/ui';
-import logoUrl from '../logo.svg';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -27,7 +26,7 @@ export default function LoginPage() {
     );
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
@@ -41,66 +40,84 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white">
-      <div className="scroll-area">
-        <div className="min-h-full flex flex-col justify-center px-5 pt-safe pb-safe">
-          <div className="w-full max-w-sm mx-auto py-10 flex flex-col gap-8">
+    <div className="fixed inset-0 flex flex-col overflow-hidden">
 
-            {/* Logo */}
-            <div className="flex justify-center">
-              <div className="w-28 h-28 rounded-2xl overflow-hidden shadow-sm">
-                <img src={logoUrl} alt="fridgy" className="w-full h-full object-cover" />
-              </div>
-            </div>
-
-            {/* Form */}
-            <div className="flex flex-col gap-5">
-              <h2 className="text-h3 font-heading text-neutral-900">Welcome back</h2>
-
-              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                <Input
-                  label="Email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  autoComplete="email"
-                  required
-                  inputSize="lg"
-                />
-                <Input
-                  label="Password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                  required
-                  inputSize="lg"
-                />
-
-                {error && (
-                  <p className="text-body-sm text-red-700 bg-red-50 rounded-md px-3 py-2 font-sans">
-                    {error}
-                  </p>
-                )}
-
-                <Button type="submit" size="lg" fullWidth loading={submitting} className="mt-1">
-                  Sign In
-                </Button>
-              </form>
-
-              <p className="text-center text-body-sm text-neutral-500 font-sans">
-                No account?{' '}
-                <Link to="/register" className="text-green-600 font-semibold active:opacity-70">
-                  Create one
-                </Link>
-              </p>
-            </div>
-
-          </div>
-        </div>
+      {/* Top green section — 45vh */}
+      <div
+        className="shrink-0 flex items-center justify-center bg-green-500 bg-cover bg-[center_top]"
+        style={{ height: '45vh', backgroundImage: "url('/splash-screen.svg')" }}
+      >
+        <span className="font-heading text-[48px] font-extrabold text-white">fridgy</span>
       </div>
+
+      {/* Bottom white card */}
+      <div
+        className="relative z-10 flex flex-col flex-1 bg-white overflow-y-auto"
+        style={{ marginTop: '-20px', borderRadius: '20px 20px 0 0', padding: '32px 24px 40px' }}
+      >
+        <h1 className="font-heading text-[28px] font-extrabold text-neutral-900 mb-7">
+          Welcome back
+        </h1>
+
+        <form onSubmit={handleSubmit} className="flex flex-col">
+          {/* Email */}
+          <div className="mb-5">
+            <label className="block font-sans text-[15px] font-medium text-neutral-600 mb-1.5">
+              Email
+            </label>
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              autoComplete="email"
+              required
+              inputSize="lg"
+            />
+          </div>
+
+          {/* Password */}
+          <div className="mb-7">
+            <label className="block font-sans text-[15px] font-medium text-neutral-600 mb-1.5">
+              Password
+            </label>
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              autoComplete="current-password"
+              required
+              inputSize="lg"
+            />
+          </div>
+
+          {error && (
+            <p className="font-sans text-[15px] text-red-500 bg-red-50 rounded-md px-3 py-2 mb-5">
+              {error}
+            </p>
+          )}
+
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            fullWidth
+            loading={submitting}
+            className="!h-[54px] !font-bold mb-5"
+          >
+            Sign In
+          </Button>
+        </form>
+
+        <p className="text-center font-sans text-[15px]">
+          <span className="text-neutral-400">No account? </span>
+          <Link to="/register" className="text-green-500 font-bold active:opacity-70">
+            Create One
+          </Link>
+        </p>
+      </div>
+
     </div>
   );
 }
