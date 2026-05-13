@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash, Camera, X } from 'phosphor-react';
+import { CaretLeft, Plus, Trash, Camera, X } from 'phosphor-react';
 import { Button, ProductNameInput } from '../components/ui';
 import { useToast } from '../components/ui';
 import { useRecipes, fetchRecipeById } from '../hooks/useRecipes';
@@ -223,9 +223,9 @@ export default function CreateRecipePage() {
   if (loading) {
     return (
       <div className="flex flex-col h-full bg-neutral-0 pt-safe">
-        <div className="flex items-center h-[56px] px-4 border-b border-neutral-100">
-          <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-800">
-            <ArrowLeft size={24} />
+        <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
+          <button type="button" onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform flex-shrink-0">
+            <CaretLeft size={24} />
           </button>
         </div>
         <div className="flex items-center justify-center flex-1">
@@ -238,9 +238,9 @@ export default function CreateRecipePage() {
   return (
     <div className="flex flex-col h-full bg-neutral-0 pt-safe">
       {/* Header */}
-      <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 sticky top-0 bg-neutral-0 z-10">
-        <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-800">
-          <ArrowLeft size={24} />
+      <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
+        <button type="button" onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform flex-shrink-0">
+          <CaretLeft size={24} />
         </button>
         <h1 className="ml-3 text-h3 font-heading text-neutral-900">
           {isEdit ? 'Edit Recipe' : 'New Recipe'}

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trash, Eye, EyeSlash, PencilSimple } from 'phosphor-react';
+import { CaretLeft, Trash, Eye, EyeSlash, PencilSimple } from 'phosphor-react';
 import { Button } from '../components/ui';
 import { useToast } from '../components/ui';
 import { useAuthStore } from '../store/authStore';
@@ -179,13 +179,13 @@ export default function RecipeDetailPage() {
   if (loading) {
     return (
       <div className="flex flex-col h-full pt-safe">
-        <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 bg-white">
+        <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform"
+            className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform flex-shrink-0"
           >
-            <ArrowLeft size={24} />
+            <CaretLeft size={24} />
           </button>
         </div>
         <div className="flex items-center justify-center flex-1">
@@ -198,13 +198,13 @@ export default function RecipeDetailPage() {
   if (!recipe) {
     return (
       <div className="flex flex-col h-full pt-safe">
-        <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 bg-white">
+        <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform"
+            className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform flex-shrink-0"
           >
-            <ArrowLeft size={24} />
+            <CaretLeft size={24} />
           </button>
         </div>
         <div className="flex flex-col items-center justify-center flex-1 gap-3 px-6">
@@ -224,14 +224,14 @@ export default function RecipeDetailPage() {
   return (
     <div className="flex flex-col h-full pt-safe">
       {/* Header */}
-      <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 sticky top-0 bg-white z-10">
+      <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
         <button
           type="button"
           onClick={() => navigate(-1)}
           className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform flex-shrink-0"
           aria-label="Back"
         >
-          <ArrowLeft size={24} />
+          <CaretLeft size={24} />
         </button>
         <h1 className="ml-3 flex-1 min-w-0 text-h3 font-heading text-neutral-900 truncate">
           Recipe

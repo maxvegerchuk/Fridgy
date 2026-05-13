@@ -1,6 +1,6 @@
 import { useState, useId } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Trash, Check, ArrowCounterClockwise, Plus, ArrowLeft, Users } from 'phosphor-react';
+import { ShoppingCart, Trash, Check, ArrowCounterClockwise, Plus, CaretLeft, Users } from 'phosphor-react';
 import { EmptyState, Button, Skeleton, BottomSheet } from '../components/ui';
 import AddItemSheet from '../components/list/AddItemSheet';
 import { useShoppingList } from '../hooks/useShoppingList';
@@ -45,10 +45,10 @@ export default function ShoppingListDetailPage() {
         <button
           type="button"
           onClick={() => navigate('/')}
-          className="text-neutral-800 active:scale-95 transition-transform flex-shrink-0"
+          className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform flex-shrink-0"
           aria-label="Back to lists"
         >
-          <ArrowLeft size={24} />
+          <CaretLeft size={24} />
         </button>
 
         <h1 className="ml-3 flex-1 min-w-0 text-h3 font-heading text-neutral-900 truncate">

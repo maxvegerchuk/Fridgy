@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trash, UserPlus, Check } from 'phosphor-react';
+import { CaretLeft, Trash, UserPlus, Check } from 'phosphor-react';
 import { BottomSheet, Skeleton, Button, Badge } from '../components/ui';
 import { useToast } from '../components/ui';
 import { supabase } from '../lib/supabase';
@@ -125,7 +125,7 @@ export default function ListMembersPage() {
           className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform flex-shrink-0"
           aria-label="Back"
         >
-          <ArrowLeft size={24} />
+          <CaretLeft size={24} />
         </button>
         <h1 className="ml-3 flex-1 min-w-0 text-h3 font-heading text-neutral-900">Members</h1>
         <button
