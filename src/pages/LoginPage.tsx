@@ -47,9 +47,8 @@ export default function LoginPage() {
         className="relative overflow-hidden flex-shrink-0"
         style={{ height: '45vh' }}
       >
-        {/* SVG as full background */}
         <img
-          src="/splash-screen.svg"
+          src="/login-background.png"
           alt=""
           style={{
             position: 'absolute',
