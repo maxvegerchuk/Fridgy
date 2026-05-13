@@ -146,28 +146,7 @@ export default function AddItemSheet({ isOpen, onClose, onAddItem, listId }: Pro
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Name field + mic button */}
           <div className="flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <span className={LABEL_CLS}>Item name</span>
-              {voiceSupported && (
-                <button
-                  type="button"
-                  onClick={listening ? stopVoice : handleVoiceStart}
-                  className={[
-                    'flex items-center gap-1.5 h-7 px-2.5 rounded-full text-badge font-medium font-sans',
-                    'active:scale-95 transition-all',
-                    listening
-                      ? 'bg-green-500 text-white'
-                      : 'bg-neutral-100 text-neutral-600 active:bg-neutral-200',
-                  ].join(' ')}
-                  aria-label={listening ? 'Stop recording' : 'Voice input'}
-                >
-                  {listening
-                    ? <><X size={13} weight="bold" className="animate-pulse" /> Stop</>
-                    : <><Microphone size={13} /> Voice</>
-                  }
-                </button>
-              )}
-            </div>
+            <span className={LABEL_CLS}>Item name</span>
             <ProductNameInput
               value={name}
               onChange={setName}
@@ -176,10 +155,29 @@ export default function AddItemSheet({ isOpen, onClose, onAddItem, listId }: Pro
               label=""
               placeholder="e.g. Milk"
               required
+              rightAddon={voiceSupported ? (
+                <button
+                  type="button"
+                  onClick={listening ? stopVoice : handleVoiceStart}
+                  className={[
+                    'w-8 h-8 flex items-center justify-center rounded-full',
+                    'active:scale-95 transition-all',
+                    listening
+                      ? 'bg-green-500 text-white'
+                      : 'text-neutral-400 active:bg-neutral-100',
+                  ].join(' ')}
+                  aria-label={listening ? 'Stop recording' : 'Voice input'}
+                >
+                  {listening
+                    ? <X size={16} weight="bold" className="animate-pulse" />
+                    : <Microphone size={18} />
+                  }
+                </button>
+              ) : undefined}
             />
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex gap-2">
             <div className="flex flex-col gap-1.5 flex-1">
               <label className={LABEL_CLS}>Qty</label>
               <input

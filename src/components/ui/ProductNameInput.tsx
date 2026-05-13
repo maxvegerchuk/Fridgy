@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import { searchProducts } from '../../lib/productSuggestions';
 import type { ProductSuggestion } from '../../lib/productSuggestions';
 
@@ -11,6 +11,7 @@ type Props = {
   label?: string;
   placeholder?: string;
   required?: boolean;
+  rightAddon?: ReactNode;
 };
 
 export default function ProductNameInput({
@@ -21,6 +22,7 @@ export default function ProductNameInput({
   label = 'Item name',
   placeholder = 'e.g. Milk',
   required,
+  rightAddon,
 }: Props) {
   const id = useId();
   const [dismissed, setDismissed] = useState(() => value.trim().length > 0);
@@ -37,23 +39,34 @@ export default function ProductNameInput({
       {label && (
         <label htmlFor={id} className="text-caption font-medium text-neutral-800 font-sans">{label}</label>
       )}
-      <input
-        id={id}
-        type="text"
-        value={value}
-        onChange={handleChange}
-        placeholder={placeholder}
-        autoComplete="off"
-        required={required}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault(); // don't submit form yet — move to quantity
-            setDismissed(true);
-            onCommit?.();
-          }
-        }}
-        className="w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400"
-      />
+      <div className="relative">
+        <input
+          id={id}
+          type="text"
+          value={value}
+          onChange={handleChange}
+          placeholder={placeholder}
+          autoComplete="off"
+          required={required}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              setDismissed(true);
+              onCommit?.();
+            }
+          }}
+          className={[
+            'w-full h-[44px] px-4 border border-neutral-200 rounded-md bg-neutral-0 text-body font-sans text-neutral-900',
+            'focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-neutral-400',
+            rightAddon ? 'pr-12' : '',
+          ].join(' ')}
+        />
+        {rightAddon && (
+          <div className="absolute inset-y-0 right-0 flex items-center pr-2">
+            {rightAddon}
+          </div>
+        )}
+      </div>
 
       {showSuggestions && (
         <ul className="flex flex-col border border-neutral-200 rounded-md overflow-hidden bg-neutral-0 shadow-sm">
