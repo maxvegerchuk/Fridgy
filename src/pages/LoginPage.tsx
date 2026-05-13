@@ -43,30 +43,41 @@ export default function LoginPage() {
     <div className="fixed inset-0 flex flex-col overflow-hidden">
 
       {/* Top green section — 45vh */}
-      <div style={{ height: '45vh', position: 'relative', overflow: 'hidden' }}>
+      <div
+        className="relative overflow-hidden flex-shrink-0"
+        style={{ height: '45vh' }}
+      >
+        {/* SVG as full background */}
         <img
           src="/splash-screen.svg"
           alt=""
           style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
             width: '100%',
             height: '100%',
             objectFit: 'cover',
             objectPosition: 'center top',
-            display: 'block',
           }}
         />
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
+
+        {/* fridgy logo text on top of SVG */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '35%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 10,
+          }}
+        >
           <span style={{
-            fontFamily: 'DM Sans, sans-serif',
+            fontFamily: "'DM Sans', sans-serif",
             fontSize: '48px',
             fontWeight: '800',
             color: 'white',
+            whiteSpace: 'nowrap',
           }}>
             fridgy
           </span>
