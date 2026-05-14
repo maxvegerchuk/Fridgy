@@ -48,19 +48,21 @@ export default function PantryPage() {
   return (
     <div className="flex flex-col h-full relative">
       {/* Header */}
-      <div className="flex items-center h-[80px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
-        <div className="flex-1 min-w-0">
-          <h1 className="text-h2 font-heading text-neutral-900">Pantry</h1>
-          <p className="text-body text-neutral-600 font-sans">Your home ingredients</p>
+      <div className="flex-shrink-0 bg-white border-b border-neutral-100" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <div className="flex items-center h-[80px] px-4">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-h2 font-heading text-neutral-900">Pantry</h1>
+            <p className="text-body text-neutral-600 font-sans">Your home ingredients</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate('/pantry/members')}
+            className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition-all"
+            aria-label="Pantry members"
+          >
+            <Users size={22} weight="regular" />
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={() => navigate('/pantry/members')}
-          className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition-all"
-          aria-label="Pantry members"
-        >
-          <Users size={22} weight="regular" />
-        </button>
       </div>
 
       {/* Search + filter */}

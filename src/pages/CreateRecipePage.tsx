@@ -222,11 +222,13 @@ export default function CreateRecipePage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col h-full bg-neutral-0 pt-safe">
-        <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
-          <button type="button" onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform flex-shrink-0">
-            <CaretLeft size={24} />
-          </button>
+      <div className="flex flex-col h-full bg-neutral-0">
+        <div className="flex-shrink-0 bg-white border-b border-neutral-100" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+          <div className="flex items-center h-[56px] px-4">
+            <button type="button" onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform flex-shrink-0">
+              <CaretLeft size={24} />
+            </button>
+          </div>
         </div>
         <div className="flex items-center justify-center flex-1">
           <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
@@ -236,15 +238,17 @@ export default function CreateRecipePage() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-neutral-0 pt-safe">
+    <div className="flex flex-col h-full bg-neutral-0">
       {/* Header */}
-      <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
-        <button type="button" onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform flex-shrink-0">
-          <CaretLeft size={24} />
-        </button>
-        <h1 className="ml-3 text-h3 font-heading text-neutral-900">
-          {isEdit ? 'Edit Recipe' : 'New Recipe'}
-        </h1>
+      <div className="flex-shrink-0 bg-white border-b border-neutral-100" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <div className="flex items-center h-[56px] px-4">
+          <button type="button" onClick={() => navigate(-1)} className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform flex-shrink-0">
+            <CaretLeft size={24} />
+          </button>
+          <h1 className="ml-3 text-h3 font-heading text-neutral-900">
+            {isEdit ? 'Edit Recipe' : 'New Recipe'}
+          </h1>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">

@@ -75,10 +75,12 @@ export default function ProfilePage() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center h-[80px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
-        <div className="flex-1 min-w-0">
-          <h1 className="text-h2 font-heading text-neutral-900">Profile</h1>
-          <p className="text-body text-neutral-600 font-sans">Account & preferences</p>
+      <div className="flex-shrink-0 bg-white border-b border-neutral-100" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <div className="flex items-center h-[80px] px-4">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-h2 font-heading text-neutral-900">Profile</h1>
+            <p className="text-body text-neutral-600 font-sans">Account & preferences</p>
+          </div>
         </div>
       </div>
 

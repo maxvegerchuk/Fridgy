@@ -116,28 +116,30 @@ export default function ListMembersPage() {
   };
 
   return (
-    <div className="flex flex-col h-full pt-safe">
+    <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform flex-shrink-0"
-          aria-label="Back"
-        >
-          <CaretLeft size={24} />
-        </button>
-        <h1 className="ml-3 flex-1 min-w-0 text-h3 font-heading text-neutral-900">Members</h1>
-        <button
-          type="button"
-          onClick={() => {
-            setAddOpen(true);
-          }}
-          className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition-all"
-          aria-label="Add member"
-        >
-          <UserPlus size={22} weight="regular" />
-        </button>
+      <div className="flex-shrink-0 bg-white border-b border-neutral-100" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <div className="flex items-center h-[56px] px-4">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform flex-shrink-0"
+            aria-label="Back"
+          >
+            <CaretLeft size={24} />
+          </button>
+          <h1 className="ml-3 flex-1 min-w-0 text-h3 font-heading text-neutral-900">Members</h1>
+          <button
+            type="button"
+            onClick={() => {
+              setAddOpen(true);
+            }}
+            className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition-all"
+            aria-label="Add member"
+          >
+            <UserPlus size={22} weight="regular" />
+          </button>
+        </div>
       </div>
 
       {/* Body */}

@@ -222,7 +222,7 @@ export default function RecipesPage() {
   return (
     <div className="flex flex-col h-full relative">
       {/* Header */}
-      <div className="px-4 pb-2 border-b border-neutral-100 flex flex-col gap-2 bg-white flex-shrink-0">
+      <div className="px-4 pb-2 border-b border-neutral-100 flex flex-col gap-2 bg-white flex-shrink-0" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="flex items-center h-[80px]">
           <div className="flex-1 min-w-0">
             <h1 className="text-h2 font-heading text-neutral-900">Recipes</h1>

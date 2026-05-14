@@ -39,9 +39,10 @@ export default function ShoppingListDetailPage() {
   const groups = groupByCategory(unchecked);
 
   return (
-    <div className="flex flex-col h-full pt-safe relative">
+    <div className="flex flex-col h-full relative">
       {/* Header */}
-      <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
+      <div className="flex-shrink-0 bg-white border-b border-neutral-100" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+      <div className="flex items-center h-[56px] px-4">
         <button
           type="button"
           onClick={() => navigate('/')}
@@ -63,6 +64,7 @@ export default function ShoppingListDetailPage() {
         >
           <Users size={22} weight="regular" />
         </button>
+      </div>
       </div>
 
       {/* Body */}

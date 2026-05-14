@@ -178,15 +178,17 @@ export default function RecipeDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col h-full pt-safe">
-        <div className="flex items-center h-[80px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform flex-shrink-0"
-          >
-            <CaretLeft size={24} />
-          </button>
+      <div className="flex flex-col h-full">
+        <div className="flex-shrink-0 bg-white border-b border-neutral-100" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+          <div className="flex items-center h-[80px] px-4">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform flex-shrink-0"
+            >
+              <CaretLeft size={24} />
+            </button>
+          </div>
         </div>
         <div className="flex items-center justify-center flex-1">
           <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
@@ -197,15 +199,17 @@ export default function RecipeDetailPage() {
 
   if (!recipe) {
     return (
-      <div className="flex flex-col h-full pt-safe">
-        <div className="flex items-center h-[80px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform flex-shrink-0"
-          >
-            <CaretLeft size={24} />
-          </button>
+      <div className="flex flex-col h-full">
+        <div className="flex-shrink-0 bg-white border-b border-neutral-100" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+          <div className="flex items-center h-[80px] px-4">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="p-1 -ml-1 text-neutral-800 active:scale-95 transition-transform flex-shrink-0"
+            >
+              <CaretLeft size={24} />
+            </button>
+          </div>
         </div>
         <div className="flex flex-col items-center justify-center flex-1 gap-3 px-6">
           <p className="text-body font-semibold text-neutral-900 font-heading text-center">Recipe not found</p>
@@ -222,9 +226,10 @@ export default function RecipeDetailPage() {
   const pantrySet = new Set(pantryItems.map(p => p.name.toLowerCase().trim().replace(/s$/, '').replace(/\s+/g, ' ')));
 
   return (
-    <div className="flex flex-col h-full pt-safe">
+    <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center h-[80px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
+      <div className="flex-shrink-0 bg-white border-b border-neutral-100" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+      <div className="flex items-center h-[80px] px-4">
         <button
           type="button"
           onClick={() => navigate(-1)}
@@ -282,6 +287,7 @@ export default function RecipeDetailPage() {
             </button>
           )}
         </div>
+      </div>
       </div>
 
       <div className="flex-1 overflow-y-auto">
