@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Plus, Trash } from 'phosphor-react';
-import { Button, BottomSheet, Skeleton } from '../components/ui';
+import { Button, BottomSheet, Skeleton, EmptyState } from '../components/ui';
 import { useShoppingLists } from '../hooks/useShoppingList';
 import type { ListSummary } from '../hooks/useShoppingList';
 
@@ -10,7 +10,6 @@ function memberColor(uid: string): string {
   for (let i = 0; i < uid.length; i++) h = ((h << 5) - h + uid.charCodeAt(i)) | 0;
   return `hsl(${Math.abs(h) % 360}, 60%, 55%)`;
 }
-
 
 export default function ListPage() {
   const navigate = useNavigate();
@@ -62,14 +61,12 @@ export default function ListPage() {
         )}
 
         {isEmpty && (
-          <div className="flex flex-col items-center justify-center py-20 gap-3 px-6 text-center">
-            <ShoppingCart size={56} weight="light" className="text-neutral-200" />
-            <p className="text-body font-semibold text-neutral-900 font-heading">No lists yet</p>
-            <p className="text-body-sm text-neutral-400 font-sans leading-relaxed">
-              Create your first shopping list to get started.
-            </p>
-            <Button size="md" onClick={() => setCreateOpen(true)}>New List</Button>
-          </div>
+          <EmptyState
+            icon={<ShoppingCart size={56} weight="light" />}
+            title="No lists yet"
+            description="Create your first shopping list to get started"
+            action={<Button size="md" onClick={() => setCreateOpen(true)}>New List</Button>}
+          />
         )}
 
         {!loading && !isEmpty && (

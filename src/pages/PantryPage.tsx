@@ -283,6 +283,7 @@ type EditQuantitySheetProps = {
 function EditQuantitySheet({ item, onClose, onSave }: EditQuantitySheetProps) {
   const [quantity, setQuantity] = useState('');
   const [unit, setUnit] = useState('pcs');
+  const qtyId = useId();
   const unitId = useId();
 
   const [prevItemId, setPrevItemId] = useState<string | null>(null);
@@ -307,8 +308,9 @@ function EditQuantitySheet({ item, onClose, onSave }: EditQuantitySheetProps) {
       <div className="flex flex-col gap-4">
         <div className="flex gap-2">
           <div className="flex flex-col gap-1.5 flex-1">
-            <label className="text-caption font-medium text-neutral-800 font-sans">Qty</label>
+            <label htmlFor={qtyId} className="text-caption font-medium text-neutral-800 font-sans">Qty</label>
             <input
+              id={qtyId}
               type="number"
               inputMode="decimal"
               min="0"

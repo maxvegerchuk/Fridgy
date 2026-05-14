@@ -223,12 +223,11 @@ function ItemRow({ item, onCheck, onDelete, onEdit, onChecked, dimmed }: ItemRow
         }
       </button>
 
-      {/* Delete */}
       <button
         type="button"
         onClick={() => onDelete(item.id)}
         className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-red-700 active:bg-red-50 transition flex-shrink-0"
-        aria-label="Delete item"
+        aria-label={`Delete ${item.name}`}
       >
         <Trash size={20} weight="regular" />
       </button>
@@ -247,9 +246,9 @@ type EditQuantitySheetProps = {
 function EditQuantitySheet({ item, onClose, onSave }: EditQuantitySheetProps) {
   const [quantity, setQuantity] = useState('');
   const [unit, setUnit] = useState('pcs');
+  const qtyId = useId();
   const unitId = useId();
 
-  // Sync fields when a new item is selected
   const [prevItemId, setPrevItemId] = useState<string | null>(null);
   if (item && item.id !== prevItemId) {
     setPrevItemId(item.id);
@@ -272,8 +271,9 @@ function EditQuantitySheet({ item, onClose, onSave }: EditQuantitySheetProps) {
       <div className="flex flex-col gap-4">
         <div className="flex gap-2">
           <div className="flex flex-col gap-1.5 flex-1">
-            <label className="text-caption font-medium text-neutral-800 font-sans">Qty</label>
+            <label htmlFor={qtyId} className="text-caption font-medium text-neutral-800 font-sans">Qty</label>
             <input
+              id={qtyId}
               type="number"
               inputMode="decimal"
               min="0"
