@@ -46,7 +46,7 @@ export default function PantryPage() {
   const groups = groupByCategory(filteredItems);
 
   return (
-    <div className="flex flex-col h-full relative">
+    <div className="flex flex-col h-full pt-safe relative">
       {/* Header */}
       <div className="flex items-center h-[80px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
         <div className="flex-1 min-w-0">
