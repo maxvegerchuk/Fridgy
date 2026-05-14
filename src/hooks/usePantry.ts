@@ -101,7 +101,7 @@ export function usePantry() {
           }
         }
       )
-      .subscribe((status, err) => {
+      .subscribe((_status, err) => {
         if (err) console.error('[usePantry] realtime error:', err);
       });
 
