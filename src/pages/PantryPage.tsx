@@ -233,8 +233,7 @@ type ItemRowProps = {
 function PantryItemRow({ item, onAddToList, onDelete, onEdit }: ItemRowProps) {
   return (
     <div className="flex items-center gap-3 px-4">
-      {/* Image placeholder */}
-      <div className="w-16 h-16 rounded-md bg-white border border-neutral-100 flex-shrink-0" />
+      <div className="w-16 h-16 rounded-md bg-neutral-50 flex-shrink-0" aria-hidden="true" />
 
       {/* Name + qty — tap to edit quantity */}
       <button
