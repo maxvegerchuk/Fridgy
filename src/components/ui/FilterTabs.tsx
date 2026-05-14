@@ -31,7 +31,7 @@ export default function FilterTabs({ tabs, value, onChange, className }: Props) 
         >
           {tab.label}
           {tab.count !== undefined && (
-            <span className={['text-badge', value === tab.value ? 'text-green-100' : 'text-neutral-400'].join(' ')}>
+            <span className={['text-badge', value === tab.value ? 'text-white/80' : 'text-neutral-400'].join(' ')}>
               {tab.count}
             </span>
           )}

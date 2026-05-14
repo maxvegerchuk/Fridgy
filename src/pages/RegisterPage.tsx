@@ -141,7 +141,7 @@ export default function RegisterPage() {
               inputSize="lg"
             />
             {error && (
-              <p className="font-sans text-[14px] mt-2" style={{ color: '#E03B36' }}>
+              <p className="font-sans text-[14px] mt-2 text-red-500">
                 {error}
               </p>
             )}

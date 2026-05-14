@@ -13,14 +13,9 @@ export type NewPantryItem = {
 
 async function resolveOrCreatePantryId(userId: string): Promise<string | null> {
   // Try the SECURITY DEFINER RPC first (bypasses RLS)
-  const { data: pantryId, error: rpcErr } = await supabase.rpc('my_pantry_id');
-  console.log('[usePantry] my_pantry_id() =', pantryId, rpcErr ?? 'ok');
+  const { data: pantryId } = await supabase.rpc('my_pantry_id');
 
   if (pantryId) return pantryId as string;
-
-  // Pantry missing — create it manually.
-  // The "System creates pantry (via trigger)" policy allows owner_id = auth.uid().
-  console.warn('[usePantry] pantry not found for user', userId, '— creating now');
   const { error: createErr } = await supabase
     .from('pantries')
     .insert({ owner_id: userId });
@@ -30,9 +25,7 @@ async function resolveOrCreatePantryId(userId: string): Promise<string | null> {
     return null;
   }
 
-  // Re-fetch after creation
-  const { data: newId, error: refetchErr } = await supabase.rpc('my_pantry_id');
-  console.log('[usePantry] re-fetch after create =', newId, refetchErr ?? 'ok');
+  const { data: newId } = await supabase.rpc('my_pantry_id');
   return (newId as string) ?? null;
 }
 
@@ -96,7 +89,6 @@ export function usePantry() {
         'postgres_changes',
         { event: '*', schema: 'public', table: 'pantry_items', filter: `pantry_id=eq.${pantry.id}` },
         (payload) => {
-          console.log('[usePantry] realtime event', payload.eventType, payload.new ?? payload.old);
           if (payload.eventType === 'INSERT') {
             const incoming = payload.new as PantryItem;
             setItems(prev => prev.some(i => i.id === incoming.id) ? prev : [incoming, ...prev]);
@@ -110,7 +102,6 @@ export function usePantry() {
         }
       )
       .subscribe((status, err) => {
-        console.log('[usePantry] realtime status:', status, err ?? 'ok');
         if (err) console.error('[usePantry] realtime error:', err);
       });
 
