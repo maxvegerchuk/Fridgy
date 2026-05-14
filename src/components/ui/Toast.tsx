@@ -36,7 +36,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <ToastContext.Provider value={{ toast }}>
       {children}
       <div className="fixed top-0 left-0 right-0 z-50 flex flex-col gap-2 px-4 pt-safe pointer-events-none" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 16px)' }}>
-        {toasts.map(t => (
+        {toasts.filter(t => t.variant !== 'success').map(t => (
           <div
             key={t.id}
             className={['rounded-lg px-4 py-3 text-body-sm font-medium font-sans shadow-md pointer-events-auto', variantCls[t.variant]].join(' ')}
