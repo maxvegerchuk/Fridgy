@@ -22,7 +22,7 @@ export default function RegisterPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full bg-neutral-50">
-        <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+        <div role="status" aria-label="Loading" className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -81,7 +81,7 @@ export default function RegisterPage() {
         className="relative z-10 flex flex-col flex-1 bg-white overflow-y-auto"
         style={{ marginTop: '-20px', borderRadius: '20px 20px 0 0', padding: '32px 24px 40px' }}
       >
-        <h1 className="font-heading text-[28px] font-extrabold text-neutral-900 mb-6">
+        <h1 className="font-heading text-h1 text-neutral-900 mb-6">
           Sign Up
         </h1>
 
@@ -145,7 +145,7 @@ export default function RegisterPage() {
             size="lg"
             fullWidth
             loading={submitting}
-            className="!h-[54px] !font-bold mb-5"
+            className="mb-5"
           >
             Create Account
           </Button>
