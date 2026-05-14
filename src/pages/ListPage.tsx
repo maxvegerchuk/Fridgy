@@ -42,7 +42,7 @@ export default function ListPage() {
   const isEmpty = !loading && myLists.length === 0 && sharedLists.length === 0;
 
   return (
-    <div className="flex flex-col h-full relative">
+    <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex-shrink-0 bg-white border-b border-neutral-100" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="flex items-center h-[80px] px-4">
@@ -50,6 +50,14 @@ export default function ListPage() {
             <h1 className="text-h2 font-heading text-neutral-900">Shopping Lists</h1>
             <p className="text-body text-neutral-600 font-sans">Manage your groceries</p>
           </div>
+          <button
+            type="button"
+            onClick={() => setCreateOpen(true)}
+            className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition flex-shrink-0"
+            aria-label="New list"
+          >
+            <Plus size={24} weight="bold" />
+          </button>
         </div>
       </div>
 
@@ -99,16 +107,6 @@ export default function ListPage() {
           </div>
         )}
       </div>
-
-      {/* FAB */}
-      <button
-        type="button"
-        onClick={() => setCreateOpen(true)}
-        className="absolute bottom-6 right-4 w-14 h-14 bg-green-500 text-white rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform"
-        aria-label="New list"
-      >
-        <Plus size={24} weight="bold" />
-      </button>
 
       {/* New List sheet */}
       <BottomSheet

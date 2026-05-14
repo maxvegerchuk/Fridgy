@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CaretLeft, Trash, Eye, EyeSlash, PencilSimple, BookmarkSimple } from 'phosphor-react';
-import { Button } from '../components/ui';
+import { Button, BottomSheet } from '../components/ui';
 import { useToast } from '../components/ui';
 import { useAuthStore } from '../store/authStore';
+import { useShoppingLists } from '../hooks/useShoppingList';
 import { supabase } from '../lib/supabase';
 import { randomUUID } from '../lib/uuid';
 import { matchRecipeToPantry } from '../lib/recipeEngine';
@@ -38,7 +39,10 @@ export default function RecipeDetailPage() {
   const [loading, setLoading] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
   const [savingOrDeleting, setSavingOrDeleting] = useState(false);
-  const [addingToList, setAddingToList] = useState(false);
+  const [pendingMissing, setPendingMissing] = useState<RecipeIngredient[] | null>(null);
+  const [addingToListId, setAddingToListId] = useState<string | null>(null);
+
+  const { myLists } = useShoppingLists();
 
   useEffect(() => {
     if (!id) return;
@@ -144,37 +148,30 @@ export default function RecipeDetailPage() {
     toast('Removed from your recipes', 'success');
   }, [recipe, user, toast]);
 
-  const handleAddMissingToList = useCallback(async (missing: RecipeIngredient[]) => {
-    if (!user || missing.length === 0) return;
-    setAddingToList(true);
-    try {
-      const { data: lists, error: listErr } = await supabase
-        .from('shopping_lists')
-        .select('id')
-        .order('created_at', { ascending: true })
-        .limit(1);
-      if (listErr || !lists?.length) {
-        toast('No shopping list found', 'error');
-        return;
-      }
-      const listId = lists[0].id;
-      const { error } = await supabase.from('list_items').insert(
-        missing.map(ing => ({
-          id: randomUUID(),
-          list_id: listId,
-          name: ing.name,
-          quantity: ing.quantity ?? null,
-          unit: ing.unit ?? null,
-          category: 'other',
-          added_by: user.id,
-        }))
-      );
-      if (error) { toast(error.message, 'error'); return; }
-      toast(`Added ${missing.length} item${missing.length > 1 ? 's' : ''} to list`, 'success');
-    } finally {
-      setAddingToList(false);
-    }
-  }, [user, toast]);
+  const handleAddMissingToList = useCallback((missing: RecipeIngredient[]) => {
+    if (missing.length === 0) return;
+    setPendingMissing(missing);
+  }, []);
+
+  const handleAddToList = useCallback(async (listId: string) => {
+    if (!pendingMissing || !user) return;
+    setAddingToListId(listId);
+    const { error } = await supabase.from('list_items').insert(
+      pendingMissing.map(ing => ({
+        id: randomUUID(),
+        list_id: listId,
+        name: ing.name,
+        quantity: ing.quantity ?? null,
+        unit: ing.unit ?? null,
+        category: 'other',
+        added_by: user.id,
+      }))
+    );
+    setAddingToListId(null);
+    if (error) { toast(error.message, 'error'); return; }
+    toast(`Added ${pendingMissing.length} item${pendingMissing.length > 1 ? 's' : ''} to list`, 'success');
+    setPendingMissing(null);
+  }, [pendingMissing, user, toast]);
 
   if (loading) {
     return (
@@ -354,7 +351,6 @@ export default function RecipeDetailPage() {
                   variant="secondary"
                   size="lg"
                   fullWidth
-                  loading={addingToList}
                   onClick={() => handleAddMissingToList(withAvail.missing_ingredients)}
                 >
                   Add {withAvail.missing_ingredients.length} missing to list
@@ -392,6 +388,43 @@ export default function RecipeDetailPage() {
           )}
         </div>
       </div>
+
+      <BottomSheet
+        isOpen={pendingMissing !== null}
+        onClose={() => setPendingMissing(null)}
+        title="Add to list"
+      >
+        <div className="flex flex-col gap-3">
+          <p className="text-body-sm text-neutral-600 font-sans -mt-1">
+            Choose a shopping list:
+          </p>
+
+          {myLists.length === 0 && (
+            <p className="text-body-sm text-neutral-400 font-sans text-center py-4">
+              No lists yet. Create one first.
+            </p>
+          )}
+
+          {myLists.map(list => (
+            <button
+              key={list.id}
+              type="button"
+              onClick={() => handleAddToList(list.id)}
+              disabled={addingToListId !== null}
+              className="flex items-center justify-between h-[52px] px-4 bg-white border border-neutral-100 rounded-md active:bg-neutral-50 transition-colors disabled:opacity-50"
+            >
+              <span className="text-body-sm font-semibold text-neutral-900 font-sans">{list.name}</span>
+              <span className="text-badge text-neutral-400 font-sans">
+                {addingToListId === list.id ? 'Adding…' : `${list.item_count} items`}
+              </span>
+            </button>
+          ))}
+
+          <Button variant="secondary" size="md" fullWidth onClick={() => setPendingMissing(null)}>
+            Cancel
+          </Button>
+        </div>
+      </BottomSheet>
     </div>
   );
 }
