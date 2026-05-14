@@ -134,7 +134,7 @@ export default function ListMembersPage() {
             onClick={() => {
               setAddOpen(true);
             }}
-            className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition-all"
+            className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition"
             aria-label="Add member"
           >
             <UserPlus size={22} weight="regular" />
@@ -187,7 +187,7 @@ export default function ListMembersPage() {
                   key={f.id}
                   type="button"
                   onClick={() => toggleFriend(f.id)}
-                  className="flex items-center gap-3 px-4 py-3 bg-white border border-neutral-100 rounded-md active:bg-neutral-50 active:scale-[0.99] transition-all"
+                  className="flex items-center gap-3 px-4 py-3 bg-white border border-neutral-100 rounded-md active:bg-neutral-50 active:scale-[0.99] transition"
                 >
                   <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
                     <span className="text-body-sm font-bold text-green-700 font-sans">
@@ -249,7 +249,7 @@ function MemberRow({ member, canRemove, onRemove }: MemberRowProps) {
         <button
           type="button"
           onClick={() => onRemove(member.user_id)}
-          className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-red-700 active:bg-red-50 transition-all flex-shrink-0"
+          className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-red-700 active:bg-red-50 transition flex-shrink-0"
           aria-label="Remove member"
         >
           <Trash size={20} weight="regular" />

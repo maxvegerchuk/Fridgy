@@ -23,7 +23,7 @@ export default function FilterTabs({ tabs, value, onChange, className }: Props) 
           onClick={() => onChange(tab.value)}
           className={[
             'flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-body-sm font-medium font-sans',
-            'active:scale-95 transition-all whitespace-nowrap min-h-[36px]',
+            'active:scale-95 transition whitespace-nowrap min-h-[36px]',
             value === tab.value
               ? 'bg-green-500 text-white'
               : 'bg-neutral-100 text-neutral-600',

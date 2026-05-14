@@ -293,7 +293,7 @@ export default function RecipeDetailPage() {
         {/* Cover photo */}
         {recipe.image_url && (
           <div className="relative w-full h-[300px] flex-shrink-0">
-            <img src={recipe.image_url} alt={recipe.title} className="w-full h-full object-cover" />
+            <img src={recipe.image_url} alt={recipe.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
           </div>
         )}
@@ -381,6 +381,8 @@ export default function RecipeDetailPage() {
                     <img
                       src={step.image_url}
                       alt={`Step ${step.step_number}`}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full rounded-xl object-cover max-h-[240px]"
                     />
                   )}

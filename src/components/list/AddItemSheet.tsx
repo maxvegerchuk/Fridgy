@@ -165,7 +165,7 @@ export default function AddItemSheet({ isOpen, onClose, onAddItem, listId }: Pro
                   onClick={listening ? stopVoice : handleVoiceStart}
                   className={[
                     'w-[44px] h-[44px] flex-shrink-0 flex items-center justify-center rounded-md',
-                    'active:scale-95 transition-all',
+                    'active:scale-95 transition',
                     listening
                       ? 'bg-green-500 text-white'
                       : 'bg-neutral-100 text-neutral-600 active:bg-neutral-200',
@@ -236,7 +236,7 @@ export default function AddItemSheet({ isOpen, onClose, onAddItem, listId }: Pro
               key={item.id}
               type="button"
               onClick={() => handleRecentTap(item)}
-              className="flex items-center justify-between h-[56px] px-1 border-b border-neutral-100 last:border-0 active:scale-95 active:bg-neutral-50 transition-all rounded-md"
+              className="flex items-center justify-between h-[56px] px-1 border-b border-neutral-100 last:border-0 active:scale-95 active:bg-neutral-50 transition rounded-md"
             >
               <div className="min-w-0 text-left">
                 <p className="text-body-sm font-medium text-neutral-900 font-sans truncate">{item.name}</p>

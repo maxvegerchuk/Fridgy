@@ -59,7 +59,7 @@ export default function ShoppingListDetailPage() {
         <button
           type="button"
           onClick={() => navigate(`/list/${id}/members`)}
-          className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition-all"
+          className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition"
           aria-label="Members"
         >
           <Users size={22} weight="regular" />
@@ -211,7 +211,7 @@ function ItemRow({ item, onCheck, onDelete, onEdit, onChecked, dimmed }: ItemRow
         type="button"
         onClick={() => onCheck(item.id, !item.is_checked, item.is_checked ? undefined : onChecked)}
         className={[
-          'w-10 h-10 flex items-center justify-center rounded-md transition-all active:scale-95 flex-shrink-0',
+          'w-10 h-10 flex items-center justify-center rounded-md transition active:scale-95 flex-shrink-0',
           item.is_checked
             ? 'text-neutral-400 active:text-neutral-600 active:bg-neutral-100'
             : 'text-neutral-400 active:text-green-500 active:bg-green-50',
@@ -228,7 +228,7 @@ function ItemRow({ item, onCheck, onDelete, onEdit, onChecked, dimmed }: ItemRow
       <button
         type="button"
         onClick={() => onDelete(item.id)}
-        className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-red-700 active:bg-red-50 transition-all flex-shrink-0"
+        className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-red-700 active:bg-red-50 transition flex-shrink-0"
         aria-label="Delete item"
       >
         <Trash size={20} weight="regular" />

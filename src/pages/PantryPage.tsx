@@ -58,7 +58,7 @@ export default function PantryPage() {
           <button
             type="button"
             onClick={() => navigate('/pantry/members')}
-            className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition-all"
+            className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition"
             aria-label="Pantry members"
           >
             <Users size={22} weight="regular" />
@@ -89,7 +89,7 @@ export default function PantryPage() {
               key={v}
               type="button"
               onClick={() => setView(v)}
-              className={`h-[36px] px-4 rounded-full text-body-sm font-medium font-sans transition-all active:scale-95 whitespace-nowrap ${
+              className={`h-[36px] px-4 rounded-full text-body-sm font-medium font-sans transition active:scale-95 whitespace-nowrap ${
                 view === v
                   ? 'bg-green-500 text-white'
                   : 'bg-neutral-100 text-neutral-600 active:bg-neutral-200'
@@ -254,7 +254,7 @@ function PantryItemRow({ item, onAddToList, onDelete, onEdit }: ItemRowProps) {
       <button
         type="button"
         onClick={onAddToList}
-        className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:bg-neutral-100 transition-all flex-shrink-0"
+        className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:bg-neutral-100 transition flex-shrink-0"
         aria-label={`Add ${item.name} to shopping list`}
       >
         <ShoppingCart size={20} weight="regular" />
@@ -264,7 +264,7 @@ function PantryItemRow({ item, onAddToList, onDelete, onEdit }: ItemRowProps) {
       <button
         type="button"
         onClick={() => onDelete(item.id)}
-        className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-red-700 active:bg-red-50 transition-all flex-shrink-0"
+        className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-red-700 active:bg-red-50 transition flex-shrink-0"
         aria-label={`Remove ${item.name} from pantry`}
       >
         <Trash size={20} weight="regular" />

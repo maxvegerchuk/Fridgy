@@ -243,7 +243,7 @@ function ListCard({ list, onTap, onDeleteClick }: CardProps) {
         <button
           type="button"
           onClick={onDeleteClick}
-          className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-red-700 active:bg-red-50 transition-all flex-shrink-0"
+          className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-red-700 active:bg-red-50 transition flex-shrink-0"
           aria-label="Delete list"
         >
           <Trash size={20} weight="regular" />

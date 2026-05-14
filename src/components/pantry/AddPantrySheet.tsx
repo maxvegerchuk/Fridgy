@@ -126,7 +126,7 @@ export default function AddPantrySheet({ isOpen, onClose, onAddItem }: Props) {
                 onClick={listening ? stopVoice : handleVoiceStart}
                 className={[
                   'flex items-center gap-1.5 h-7 px-2.5 rounded-full text-badge font-medium font-sans',
-                  'active:scale-95 transition-all',
+                  'active:scale-95 transition',
                   listening
                     ? 'bg-green-500 text-white'
                     : 'bg-neutral-100 text-neutral-600 active:bg-neutral-200',

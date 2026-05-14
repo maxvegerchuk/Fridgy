@@ -123,7 +123,7 @@ export default function ProfilePage() {
               <button
                 type="button"
                 onClick={() => setAddFriendOpen(true)}
-                className="w-8 h-8 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition-all"
+                className="w-8 h-8 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition"
                 aria-label="Add friend"
               >
                 <UserPlus size={18} weight="regular" />
@@ -147,7 +147,7 @@ export default function ProfilePage() {
                     <button
                       type="button"
                       onClick={() => handleRemoveFriend(f.id, f.display_name)}
-                      className="w-8 h-8 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-red-700 active:bg-red-50 transition-all flex-shrink-0"
+                      className="w-8 h-8 flex items-center justify-center rounded-md text-neutral-400 active:scale-95 active:text-red-700 active:bg-red-50 transition flex-shrink-0"
                       aria-label={`Remove ${f.display_name}`}
                     >
                       <Trash size={16} weight="regular" />

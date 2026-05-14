@@ -56,7 +56,7 @@ function RecipeCard({
         onClick={onClick}
       >
         {recipe.image_url ? (
-          <img src={recipe.image_url} alt={recipe.title} className="w-full h-full object-cover" />
+          <img src={recipe.image_url} alt={recipe.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full bg-neutral-100 flex items-center justify-center">
             <BookOpen size={40} weight="light" className="text-neutral-200" />
@@ -232,7 +232,7 @@ export default function RecipesPage() {
             <button
               type="button"
               onClick={() => navigate('/recipe/new')}
-              className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition-all flex-shrink-0"
+              className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition flex-shrink-0"
               aria-label="Create recipe"
             >
               <Plus size={24} weight="bold" />
