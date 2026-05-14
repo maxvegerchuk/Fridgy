@@ -47,8 +47,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         ))}
       </div>
 
-      {/* Success — bottom, above tab bar */}
-      <div className="fixed left-0 right-0 z-50 flex flex-col gap-2 px-4 pointer-events-none" style={{ bottom: 'calc(56px + env(safe-area-inset-bottom) + 12px)' }}>
+      {/* Success — bottom */}
+      <div className="fixed left-0 right-0 z-50 flex flex-col gap-2 px-4 pointer-events-none" style={{ bottom: 'calc(env(safe-area-inset-bottom) + 12px)' }}>
         {toasts.filter(t => t.variant === 'success').map(t => (
           <div
             key={t.id}
