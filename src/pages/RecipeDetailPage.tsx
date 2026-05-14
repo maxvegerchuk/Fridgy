@@ -235,7 +235,7 @@ export default function RecipeDetailPage() {
         >
           <CaretLeft size={24} />
         </button>
-        <p className="ml-3 flex-1 min-w-0 text-h3 font-heading text-neutral-900 truncate">
+        <p className="ml-3 flex-1 min-w-0 text-h2 font-heading text-neutral-900 truncate">
           Recipe
         </p>
         <div className="flex items-center gap-1 flex-shrink-0">
