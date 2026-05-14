@@ -32,6 +32,10 @@
   }
   .pt-safe { padding-top: env(safe-area-inset-top); }
   .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+  button:focus-visible,
+  [role="switch"]:focus-visible {
+    @apply ring-2 ring-green-500 ring-offset-1 outline-none;
+  }
 }
 
 @layer utilities {

@@ -72,13 +72,10 @@ export default function LoginPage() {
         </h1>
 
         <form onSubmit={handleSubmit} className="flex flex-col">
-          {/* Email */}
           <div className="mb-5">
-            <label className="block font-sans text-[15px] font-medium text-neutral-600 mb-1.5">
-              Email
-            </label>
             <Input
               type="email"
+              label="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
@@ -88,13 +85,10 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* Password */}
           <div className="mb-7">
-            <label className="block font-sans text-[15px] font-medium text-neutral-600 mb-1.5">
-              Password
-            </label>
             <Input
               type="password"
+              label="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
@@ -105,7 +99,7 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <p className="font-sans text-[15px] text-red-500 bg-red-50 rounded-md px-3 py-2 mb-5">
+            <p role="alert" className="font-sans text-[15px] text-red-500 bg-red-50 rounded-md px-3 py-2 mb-5">
               {error}
             </p>
           )}

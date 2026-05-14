@@ -87,11 +87,9 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col">
           <div className="mb-4">
-            <label className="block font-sans text-[15px] font-medium text-neutral-600 mb-1.5">
-              Your name
-            </label>
             <Input
               type="text"
+              label="Your name"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="Jane Smith"
@@ -101,11 +99,9 @@ export default function RegisterPage() {
           </div>
 
           <div className="mb-4">
-            <label className="block font-sans text-[15px] font-medium text-neutral-600 mb-1.5">
-              Email
-            </label>
             <Input
               type="email"
+              label="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@mail.com"
@@ -115,11 +111,9 @@ export default function RegisterPage() {
           </div>
 
           <div className="mb-4">
-            <label className="block font-sans text-[15px] font-medium text-neutral-600 mb-1.5">
-              Password
-            </label>
             <Input
               type="password"
+              label="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Min. 8 characters"
@@ -129,11 +123,9 @@ export default function RegisterPage() {
           </div>
 
           <div className="mb-6">
-            <label className="block font-sans text-[15px] font-medium text-neutral-600 mb-1.5">
-              Confirm Password
-            </label>
             <Input
               type="password"
+              label="Confirm Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Repeat your password"
@@ -141,7 +133,7 @@ export default function RegisterPage() {
               inputSize="lg"
             />
             {error && (
-              <p className="font-sans text-[14px] mt-2 text-red-500">
+              <p role="alert" className="font-sans text-body-sm mt-2 text-red-500">
                 {error}
               </p>
             )}

@@ -37,7 +37,7 @@ export default function Button({
 }: Props) {
   const cls = [
     'inline-flex items-center justify-center font-medium font-sans',
-    'active:scale-95 transition-transform',
+    'active:scale-95 transition-transform focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none',
     'disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100',
     variantClasses[variant],
     sizeClasses[size],

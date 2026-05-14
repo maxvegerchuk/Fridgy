@@ -352,7 +352,9 @@ export default function CreateRecipePage() {
             <div
               role="switch"
               aria-checked={isPublic}
+              tabIndex={0}
               onClick={() => setIsPublic(v => !v)}
+              onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setIsPublic(v => !v); } }}
               className={`relative w-11 h-6 rounded-full transition-colors ${isPublic ? 'bg-green-500' : 'bg-neutral-200'}`}
             >
               <span
