@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { CaretLeft, Trash, Eye, EyeSlash, PencilSimple } from 'phosphor-react';
+import { CaretLeft, Trash, Eye, EyeSlash, PencilSimple, BookmarkSimple } from 'phosphor-react';
 import { Button } from '../components/ui';
 import { useToast } from '../components/ui';
 import { useAuthStore } from '../store/authStore';
@@ -276,14 +276,13 @@ export default function RecipeDetailPage() {
               type="button"
               onClick={isSaved ? handleUnsave : handleSave}
               disabled={savingOrDeleting}
-              className={[
-                'flex items-center gap-1.5 px-3 h-[36px] rounded-full text-body-sm font-medium font-sans transition-colors disabled:opacity-50',
-                isSaved
-                  ? 'bg-green-500 text-white active:bg-green-700'
-                  : 'bg-neutral-100 text-neutral-800 active:bg-neutral-200',
-              ].join(' ')}
+              className="w-10 h-10 flex items-center justify-center rounded-md active:bg-neutral-100 transition-colors disabled:opacity-50"
+              aria-label={isSaved ? 'Remove from saved' : 'Save recipe'}
             >
-              {isSaved ? 'Saved' : 'Save'}
+              {isSaved
+                ? <BookmarkSimple size={22} weight="fill" className="text-green-500" />
+                : <BookmarkSimple size={22} weight="regular" className="text-neutral-400" />
+              }
             </button>
           )}
         </div>
