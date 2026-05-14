@@ -43,7 +43,7 @@ export default function ListPage() {
   const isEmpty = !loading && myLists.length === 0 && sharedLists.length === 0;
 
   return (
-    <div className="flex flex-col h-full pt-safe relative">
+    <div className="flex flex-col h-full relative">
       {/* Header */}
       <div className="flex items-center h-[80px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
         <div className="flex-1 min-w-0">

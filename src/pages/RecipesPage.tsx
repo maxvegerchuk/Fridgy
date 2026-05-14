@@ -220,7 +220,7 @@ export default function RecipesPage() {
   const closeSheet = () => { setPendingAdd(null); setSheetStep('ingredients'); };
 
   return (
-    <div className="flex flex-col h-full pt-safe relative">
+    <div className="flex flex-col h-full relative">
       {/* Header */}
       <div className="px-4 pb-2 border-b border-neutral-100 flex flex-col gap-2 bg-white flex-shrink-0">
         <div className="flex items-center h-[80px]">
