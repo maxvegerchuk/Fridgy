@@ -220,7 +220,7 @@ export default function RecipesPage() {
   const closeSheet = () => { setPendingAdd(null); setSheetStep('ingredients'); };
 
   return (
-    <div className="flex flex-col h-full relative">
+    <div className="flex flex-col h-full">
       {/* Header */}
       <div className="px-4 pb-2 border-b border-neutral-100 flex flex-col gap-2 bg-white flex-shrink-0" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="flex items-center h-[80px]">
@@ -228,6 +228,16 @@ export default function RecipesPage() {
             <h1 className="text-h2 font-heading text-neutral-900">Recipes</h1>
             <p className="text-body text-neutral-600 font-sans">Cook what you have</p>
           </div>
+          {segment === 'mine' && (
+            <button
+              type="button"
+              onClick={() => navigate('/recipe/new')}
+              className="w-10 h-10 flex items-center justify-center rounded-md text-neutral-600 active:scale-95 active:bg-neutral-100 transition-all flex-shrink-0"
+              aria-label="Create recipe"
+            >
+              <Plus size={24} weight="bold" />
+            </button>
+          )}
         </div>
         <SegmentControl
           options={[
@@ -334,18 +344,6 @@ export default function RecipesPage() {
           </>
         )}
       </div>
-
-      {/* FAB */}
-      {segment === 'mine' && (
-        <button
-          type="button"
-          onClick={() => navigate('/recipe/new')}
-          className="absolute bottom-6 right-4 w-14 h-14 bg-green-500 text-white rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform"
-          aria-label="Create recipe"
-        >
-          <Plus size={24} weight="bold" />
-        </button>
-      )}
 
       {/* Add ingredients sheet */}
       <BottomSheet

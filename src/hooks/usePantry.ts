@@ -179,10 +179,13 @@ export function usePantry() {
   const deleteItem = useCallback(async (id: string): Promise<void> => {
     setItems(prev => prev.filter(i => i.id !== id));
     const { error } = await supabase.from('pantry_items').delete().eq('id', id);
-    if (error) {
-      console.error('[usePantry] deleteItem failed:', error);
-      // No rollback needed — item is gone from pantry either way
-    }
+    if (error) console.error('[usePantry] deleteItem failed:', error);
+  }, []);
+
+  const updateItem = useCallback(async (id: string, quantity: number | undefined, unit: string | undefined): Promise<void> => {
+    setItems(prev => prev.map(i => i.id === id ? { ...i, quantity, unit } : i));
+    const { error } = await supabase.from('pantry_items').update({ quantity: quantity ?? null, unit: unit ?? null }).eq('id', id);
+    if (error) console.error('[usePantry] updateItem failed:', error);
   }, []);
 
   const addToShoppingList = useCallback(async (
@@ -221,5 +224,5 @@ export function usePantry() {
     return null;
   }, [user]);
 
-  return { pantry, items, loading, addItem, deleteItem, addToShoppingList, refetch };
+  return { pantry, items, loading, addItem, deleteItem, updateItem, addToShoppingList, refetch };
 }
