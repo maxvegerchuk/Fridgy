@@ -89,7 +89,7 @@ export default function PantryPage() {
               key={v}
               type="button"
               onClick={() => setView(v)}
-              className={`h-8 px-4 rounded-full text-body-sm font-medium font-sans transition-colors ${
+              className={`h-[36px] px-4 rounded-full text-body-sm font-medium font-sans transition-all active:scale-95 whitespace-nowrap ${
                 view === v
                   ? 'bg-green-500 text-white'
                   : 'bg-neutral-100 text-neutral-600 active:bg-neutral-200'
