@@ -35,11 +35,24 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={{ toast }}>
       {children}
-      <div className="fixed top-0 left-0 right-0 z-50 flex flex-col gap-2 px-4 pt-safe pointer-events-none" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 16px)' }}>
+      {/* Error / info — top */}
+      <div className="fixed top-0 left-0 right-0 z-50 flex flex-col gap-2 px-4 pointer-events-none" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 16px)' }}>
         {toasts.filter(t => t.variant !== 'success').map(t => (
           <div
             key={t.id}
             className={['rounded-lg px-4 py-3 text-body-sm font-medium font-sans shadow-md pointer-events-auto', variantCls[t.variant]].join(' ')}
+          >
+            {t.message}
+          </div>
+        ))}
+      </div>
+
+      {/* Success — bottom, above tab bar */}
+      <div className="fixed left-0 right-0 z-50 flex flex-col gap-2 px-4 pointer-events-none" style={{ bottom: 'calc(56px + env(safe-area-inset-bottom) + 12px)' }}>
+        {toasts.filter(t => t.variant === 'success').map(t => (
+          <div
+            key={t.id}
+            className={['rounded-lg px-4 py-3 text-body-sm font-medium font-sans shadow-md pointer-events-auto', variantCls.success].join(' ')}
           >
             {t.message}
           </div>
