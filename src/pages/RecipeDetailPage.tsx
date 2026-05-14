@@ -327,7 +327,7 @@ export default function RecipeDetailPage() {
                         key={ing.id}
                         className={`flex items-center gap-3 ${ing.optional ? 'opacity-60' : ''}`}
                       >
-                        <div className={`w-16 h-16 rounded-md flex-shrink-0 ${inPantry ? 'bg-green-50' : 'bg-neutral-50'}`} aria-hidden="true" />
+                        <div className={`w-16 h-16 rounded-md flex-shrink-0 ${inPantry ? 'bg-green-50 border border-green-100' : 'bg-white border border-neutral-100'}`} aria-hidden="true" />
                         <div className="flex-1 min-w-0">
                           <p className="text-body-sm font-semibold text-neutral-900 font-sans truncate">
                             {ing.name}{ing.optional ? ' (optional)' : ''}
