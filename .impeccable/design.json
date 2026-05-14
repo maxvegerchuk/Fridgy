@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-14T00:00:00.000Z",
+  "title": "Design System: Fridgy",
+  "extensions": {
+    "colorMeta": {
+      "primary":         { "role": "primary",   "displayName": "Field Green",    "canonical": "oklch(62% 0.14 135)", "tonalRamp": ["oklch(18% 0.05 135)", "oklch(28% 0.08 135)", "oklch(38% 0.11 135)", "oklch(48% 0.13 135)", "oklch(62% 0.14 135)", "oklch(74% 0.11 135)", "oklch(85% 0.07 135)", "oklch(95% 0.03 135)"] },
+      "primary-light":   { "role": "primary",   "displayName": "Pale Shoot",     "canonical": "oklch(95% 0.03 135)", "tonalRamp": ["oklch(18% 0.05 135)", "oklch(28% 0.08 135)", "oklch(38% 0.11 135)", "oklch(48% 0.13 135)", "oklch(62% 0.14 135)", "oklch(74% 0.11 135)", "oklch(85% 0.07 135)", "oklch(95% 0.03 135)"] },
+      "primary-mid":     { "role": "primary",   "displayName": "Young Leaf",     "canonical": "oklch(87% 0.06 135)", "tonalRamp": ["oklch(18% 0.05 135)", "oklch(28% 0.08 135)", "oklch(38% 0.11 135)", "oklch(48% 0.13 135)", "oklch(62% 0.14 135)", "oklch(74% 0.11 135)", "oklch(87% 0.06 135)", "oklch(95% 0.03 135)"] },
+      "primary-deep":    { "role": "primary",   "displayName": "Canopy",         "canonical": "oklch(47% 0.12 135)", "tonalRamp": ["oklch(18% 0.05 135)", "oklch(28% 0.08 135)", "oklch(38% 0.11 135)", "oklch(47% 0.12 135)", "oklch(62% 0.14 135)", "oklch(74% 0.11 135)", "oklch(85% 0.07 135)", "oklch(95% 0.03 135)"] },
+      "status-warning":  { "role": "semantic",  "displayName": "Amber Warning",  "canonical": "oklch(82% 0.13 86)",  "tonalRamp": ["oklch(30% 0.08 86)", "oklch(42% 0.10 86)", "oklch(55% 0.12 86)", "oklch(67% 0.13 86)", "oklch(82% 0.13 86)", "oklch(90% 0.09 86)", "oklch(95% 0.05 86)", "oklch(98% 0.02 86)"] },
+      "status-danger":   { "role": "semantic",  "displayName": "Alert Red",      "canonical": "oklch(55% 0.22 25)",  "tonalRamp": ["oklch(22% 0.10 25)", "oklch(32% 0.14 25)", "oklch(42% 0.18 25)", "oklch(55% 0.22 25)", "oklch(68% 0.18 25)", "oklch(80% 0.12 25)", "oklch(90% 0.06 25)", "oklch(97% 0.02 25)"] },
+      "canvas":          { "role": "neutral",   "displayName": "Paper",          "canonical": "oklch(97% 0.008 134)", "tonalRamp": ["oklch(18% 0.025 134)", "oklch(24% 0.015 134)", "oklch(42% 0.012 134)", "oklch(66% 0.010 134)", "oklch(80% 0.010 134)", "oklch(87% 0.010 134)", "oklch(94% 0.010 134)", "oklch(97% 0.008 134)"] },
+      "text-deep":       { "role": "neutral",   "displayName": "Deep Ink",       "canonical": "oklch(18% 0.025 134)", "tonalRamp": ["oklch(18% 0.025 134)", "oklch(24% 0.015 134)", "oklch(42% 0.012 134)", "oklch(66% 0.010 134)", "oklch(80% 0.010 134)", "oklch(87% 0.010 134)", "oklch(94% 0.010 134)", "oklch(97% 0.008 134)"] }
+    },
+    "typographyMeta": {
+      "display":    { "displayName": "Display",    "purpose": "Splash screens and marketing surfaces only. Not used in the main app shell." },
+      "headline":   { "displayName": "Headline",   "purpose": "Page-level titles on auth screens. Rare in the main app." },
+      "title":      { "displayName": "Title",      "purpose": "Dominant heading for pantry, recipe, and list page headers. DM Sans." },
+      "body-large": { "displayName": "Body Large", "purpose": "Emphasized body content and button labels. Inter semibold." },
+      "body":       { "displayName": "Body",       "purpose": "Default form input text and descriptions. Always 16px in interactive fields." },
+      "body-small": { "displayName": "Body Small", "purpose": "The workhorse: list item names, ingredient names, most list content." },
+      "label":      { "displayName": "Label",      "purpose": "Form field labels and metadata. Inter semibold." },
+      "badge":      { "displayName": "Badge",      "purpose": "Status chips, category labels, tab bar labels." }
+    },
+    "shadows": [
+      { "name": "ambient-low", "value": "0 1px 2px rgba(0,0,0,0.05)", "purpose": "Segment control active segment. Barely perceptible lift." },
+      { "name": "ambient",     "value": "0 2px 8px rgba(0,0,0,0.06)", "purpose": "Cards and chips with mild elevation." },
+      { "name": "mid",         "value": "0 4px 16px rgba(0,0,0,0.08)", "purpose": "FABs and standalone floating elements." },
+      { "name": "lift",        "value": "0 8px 32px rgba(0,0,0,0.10)", "purpose": "Bottom sheets. The highest elevation in the system." }
+    ],
+    "motion": [
+      { "name": "press", "value": "scale(0.95)", "purpose": "Active/press state on all interactive elements. Applied via transition-transform." },
+      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Default easing for state transitions." }
+    ],
+    "breakpoints": [
+      { "name": "mobile-only", "value": "Capacitor iOS native app. No responsive breakpoints. Layout is always single-column, full-viewport." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main action trigger. Used for form submission, confirmation, and primary CTAs.",
+      "html": "<button class=\"ds-btn-primary\">Add to Pantry</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; height: 44px; padding: 0 16px; background: #5CA547; color: #FFFFFF; border: none; border-radius: 12px; font-family: Inter, system-ui, sans-serif; font-size: 16px; font-weight: 500; cursor: pointer; transition: transform 0.15s cubic-bezier(0.4,0,0.2,1); } .ds-btn-primary:active { background: #3D7A30; transform: scale(0.95); } .ds-btn-primary:disabled { background: #D8DDD3; color: #9BA395; cursor: not-allowed; transform: none; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Secondary action. White fill with border. Used alongside primary for cancel/confirm pairs.",
+      "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; height: 44px; padding: 0 16px; background: #FFFFFF; color: #2E3529; border: 1px solid #D8DDD3; border-radius: 12px; font-family: Inter, system-ui, sans-serif; font-size: 16px; font-weight: 500; cursor: pointer; transition: transform 0.15s cubic-bezier(0.4,0,0.2,1); } .ds-btn-secondary:active { background: #F8FAF4; transform: scale(0.95); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Standard form field. 16px font size is locked to prevent iOS auto-zoom.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-label\" for=\"ds-input\">Item Name</label><input class=\"ds-input\" id=\"ds-input\" type=\"text\" placeholder=\"e.g. Olive oil\" /></div>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 6px; } .ds-label { font-family: Inter, system-ui, sans-serif; font-size: 14px; font-weight: 600; color: #2E3529; line-height: 1.4; } .ds-input { width: 100%; height: 44px; padding: 0 16px; background: #FFFFFF; color: #2E3529; border: 1px solid #D8DDD3; border-radius: 12px; font-family: Inter, system-ui, sans-serif; font-size: 16px; font-weight: 400; outline: none; box-sizing: border-box; } .ds-input::placeholder { color: #9BA395; } .ds-input:focus { border-color: transparent; box-shadow: 0 0 0 2px #5CA547; }"
+    },
+    {
+      "name": "Filter Chip",
+      "kind": "chip",
+      "refersTo": "button-sm",
+      "description": "Content filter tab. Full-pill shape distinguishes it from buttons. Used in Pantry and Recipes.",
+      "html": "<div class=\"ds-chip-row\"><button class=\"ds-chip ds-chip--active\">All</button><button class=\"ds-chip\">Categories</button></div>",
+      "css": ".ds-chip-row { display: flex; gap: 8px; } .ds-chip { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; background: #EEF1EA; color: #5C6358; border: none; border-radius: 9999px; font-family: Inter, system-ui, sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: transform 0.15s cubic-bezier(0.4,0,0.2,1); } .ds-chip:active { transform: scale(0.95); } .ds-chip--active { background: #5CA547; color: #FFFFFF; }"
+    },
+    {
+      "name": "Segment Control",
+      "kind": "chip",
+      "description": "Top-level page switcher. Used for Mine/Explore toggle on Recipes page.",
+      "html": "<div class=\"ds-segment\"><button class=\"ds-segment__item ds-segment__item--active\">Mine</button><button class=\"ds-segment__item\">Explore</button></div>",
+      "css": ".ds-segment { display: flex; padding: 4px; background: #EEF1EA; border-radius: 12px; } .ds-segment__item { flex: 1; padding: 8px 16px; background: transparent; color: #5C6358; border: none; border-radius: 10px; font-family: Inter, system-ui, sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: transform 0.15s cubic-bezier(0.4,0,0.2,1); } .ds-segment__item:active { transform: scale(0.95); } .ds-segment__item--active { background: #FFFFFF; color: #2E3529; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }"
+    },
+    {
+      "name": "Status Badge",
+      "kind": "chip",
+      "refersTo": "badge-green",
+      "description": "Inline status indicator for member roles, recipe availability, ingredient states. Always pill-shaped.",
+      "html": "<div class=\"ds-badge-row\"><span class=\"ds-badge ds-badge--green\">Owner</span><span class=\"ds-badge ds-badge--warning\">Missing 2</span><span class=\"ds-badge ds-badge--danger\">No stock</span></div>",
+      "css": ".ds-badge-row { display: flex; gap: 8px; flex-wrap: wrap; } .ds-badge { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 9999px; font-family: Inter, system-ui, sans-serif; font-size: 13px; font-weight: 700; line-height: 1; } .ds-badge--green { background: #C5E3BC; color: #3D7A30; } .ds-badge--warning { background: #FEF9E7; color: #D4A017; } .ds-badge--danger { background: #FEF0EF; color: #E03B36; } .ds-badge--neutral { background: #EEF1EA; color: #5C6358; }"
+    },
+    {
+      "name": "Bottom Sheet",
+      "kind": "custom",
+      "description": "The primary modal surface. Slides up from the bottom for transient actions: add item, edit quantity, add member.",
+      "html": "<div class=\"ds-sheet\"><div class=\"ds-sheet__handle\"></div><div class=\"ds-sheet__title\">Add Item</div><div class=\"ds-sheet__body\"><p style=\"color:#9BA395;font-family:Inter,sans-serif;font-size:15px;\">Sheet content goes here.</p></div></div>",
+      "css": ".ds-sheet { background: #FFFFFF; border-radius: 20px 20px 0 0; box-shadow: 0 8px 32px rgba(0,0,0,0.10); max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; } .ds-sheet__handle { width: 40px; height: 4px; background: #D8DDD3; border-radius: 9999px; margin: 12px auto 0; flex-shrink: 0; } .ds-sheet__title { padding: 12px 16px; border-bottom: 1px solid #EEF1EA; font-family: DM Sans, system-ui, sans-serif; font-size: 18px; font-weight: 700; color: #1A2E1A; flex-shrink: 0; } .ds-sheet__body { padding: 16px; overflow-y: auto; flex: 1; }"
+    },
+    {
+      "name": "Tab Bar",
+      "kind": "nav",
+      "description": "Bottom navigation. Four tabs: List, Pantry, Recipes, Profile. Extends below safe area inset.",
+      "html": "<nav class=\"ds-tabbar\"><button class=\"ds-tab ds-tab--active\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M222.14,58.87A8,8,0,0,0,216,56H54.68L49.79,29.14A16,16,0,0,0,34.05,16H16a8,8,0,0,0,0,16H34.05a.17.17,0,0,1,.17.14L64.88,183.86A24,24,0,1,0,91.7,200H164.3a24,24,0,1,0,40-14.69L179.72,64H208a8,8,0,0,0,7.91-9.13Z\"/></svg><span class=\"ds-tab__label\">List</span></button><button class=\"ds-tab\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M168,96a40,40,0,1,1-40-40A40,40,0,0,1,168,96Zm56,0A96,96,0,1,1,128,0,96.11,96.11,0,0,1,224,96Zm-16,0a80,80,0,1,0-80,80A80.09,80.09,0,0,0,208,96Z\"/></svg><span class=\"ds-tab__label\">Pantry</span></button><button class=\"ds-tab\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M208,24H72A16,16,0,0,0,56,40V64H48A16,16,0,0,0,32,80V216a16,16,0,0,0,24.87,13.25L96,206.65l39.12,22.6A16,16,0,0,0,160,216V184h48a16,16,0,0,0,16-16V40A16,16,0,0,0,208,24Z\"/></svg><span class=\"ds-tab__label\">Recipes</span></button><button class=\"ds-tab\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8Z\"/></svg><span class=\"ds-tab__label\">Profile</span></button></nav>",
+      "css": ".ds-tabbar { display: flex; border-top: 1px solid #EEF1EA; background: #FFFFFF; } .ds-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 56px; background: none; border: none; color: #9BA395; cursor: pointer; transition: transform 0.15s cubic-bezier(0.4,0,0.2,1); } .ds-tab:active { transform: scale(0.95); } .ds-tab--active { color: #5CA547; } .ds-tab__label { font-family: Inter, system-ui, sans-serif; font-size: 13px; font-weight: 700; line-height: 1; }"
+    },
+    {
+      "name": "Page Header",
+      "kind": "custom",
+      "description": "Signature component. Every app page uses this fixed header structure. The outer wrapper extends behind the iOS status bar.",
+      "html": "<div class=\"ds-header-outer\"><div class=\"ds-header-inner\"><button class=\"ds-header-back\" aria-label=\"Back\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 256 256\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"24\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"160 208 80 128 160 48\"></polyline></svg></button><h1 class=\"ds-header-title\">Pantry</h1><button class=\"ds-header-action\" aria-label=\"Members\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.43a8,8,0,0,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.51A8,8,0,0,1,250.14,206.7Z\"/></svg></button></div></div>",
+      "css": ".ds-header-outer { flex-shrink: 0; background: #FFFFFF; border-bottom: 1px solid #EEF1EA; padding-top: env(safe-area-inset-top, 0px); } .ds-header-inner { display: flex; align-items: center; height: 80px; padding: 0 16px; } .ds-header-back { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: none; border: none; color: #2E3529; cursor: pointer; margin-left: -4px; transition: transform 0.15s; } .ds-header-back:active { transform: scale(0.95); background: #EEF1EA; } .ds-header-title { flex: 1; margin: 0 12px; font-family: DM Sans, system-ui, sans-serif; font-size: 18px; font-weight: 700; color: #1A2E1A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-header-action { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: none; border: none; color: #5C6358; cursor: pointer; transition: transform 0.15s; } .ds-header-action:active { transform: scale(0.95); background: #EEF1EA; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Farmers Market Receipt",
+    "overview": "Fridgy is a domestic tool, used in kitchens and grocery aisles by people who cook for their households. The interface should feel the way a good handwritten receipt looks: clean ruled structure, ink that doesn't bleed, just enough warmth from the paper to feel organic rather than clinical. It is not a tech product. It is not a commerce platform. It is the thing that helps you know what you have.\n\nThe dominant color in the neutral palette is not gray: it's a cultivated, pressed-leaf green, subtly tinting every surface from the app canvas (#F8FAF4) to the deepest text (#1A2E1A). The tint is quiet but pervasive, and it makes the interface feel alive in a way no gray-based system can. The single saturated accent, a clear earthy green (#5CA547), earns its presence precisely because everything around it holds back.\n\nDensity is low. Information appears when it's needed, not to impress. The app is used one-handed in a bright supermarket, or standing at the counter before dinner. Speed of comprehension is the metric, not feature visibility.",
+    "keyCharacteristics": [
+      "Pressed-leaf green tints every neutral; no pure grays anywhere",
+      "Single green accent; all other color is status-semantic (warning yellow, danger red)",
+      "DM Sans for all headings, Inter for all body: the split is absolute",
+      "Flat surfaces by default; shadows reserved for floating layers only",
+      "Rounded-md (12px) as the universal shape; rounder only for pills and bottom sheets",
+      "Phosphor icons in regular weight at rest, fill on active"
+    ],
+    "rules": [
+      { "name": "The Pressed Leaf Rule", "body": "No pure grays, ever. Every neutral is tinted toward #1A2E1A (hue ~134). If a color reads as gray under any ambient light, it's wrong.", "section": "colors" },
+      { "name": "The One Voice Rule", "body": "#5CA547 (Field Green) is the only saturated color that appears outside of semantic status contexts. It occupies at most 10% of any given screen.", "section": "colors" },
+      { "name": "The Hard Split Rule", "body": "DM Sans is for headings (structural identity). Inter is for data (content). Mixing them within a single text hierarchy level is prohibited.", "section": "typography" },
+      { "name": "The 16px Floor Rule", "body": "All input and form text is forced to 16px to prevent iOS auto-zoom. Never override this for interactive fields.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "A list item has no shadow. A card in a scrollable feed has no shadow. A page header has no shadow. Reach for a shadow only when the element genuinely floats.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use Field Green (#5CA547) exclusively for primary actions, active states, and positive status.",
+      "Do tint every neutral toward green. #1A2E1A is the dark anchor; use #F8FAF4 (not white) as the app canvas.",
+      "Do use DM Sans for all structural headings and Inter for all body/data text.",
+      "Do keep surfaces flat at rest. Apply shadows only to floating layers.",
+      "Do use Phosphor icons in regular weight by default, fill weight only when active or selected.",
+      "Do lock all input font-size to 16px to prevent iOS auto-zoom.",
+      "Do use rounded-md (12px) for all interactive controls. Use rounded-full only for filter chips and badges.",
+      "Do make all tap targets a minimum 40x40px."
+    ],
+    "donts": [
+      "Don't use generic SaaS patterns: purple or blue accent colors, gradient fills, hero metric dashboards.",
+      "Don't use meal-kit or commerce energy: loud photography overlays, promotional urgency, heavy CTA stacking.",
+      "Don't use fitness app patterns: calorie bars, streak indicators, clinical white-and-green with judgment metrics.",
+      "Don't add a side-stripe colored border to any list item, card, or callout.",
+      "Don't use gradient text (background-clip: text + gradient). Emphasis is weight and size only.",
+      "Don't use pure #000000 or #FFFFFF. The darkest text is #1A2E1A.",
+      "Don't add DM Sans to body copy paragraphs or data fields.",
+      "Don't animate layout properties. Transitions are transform and opacity only."
+    ]
+  }
+}
