@@ -179,7 +179,7 @@ export default function RecipeDetailPage() {
   if (loading) {
     return (
       <div className="flex flex-col h-full pt-safe">
-        <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
+        <div className="flex items-center h-[80px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
           <button
             type="button"
             onClick={() => navigate(-1)}
@@ -198,7 +198,7 @@ export default function RecipeDetailPage() {
   if (!recipe) {
     return (
       <div className="flex flex-col h-full pt-safe">
-        <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
+        <div className="flex items-center h-[80px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
           <button
             type="button"
             onClick={() => navigate(-1)}
@@ -224,7 +224,7 @@ export default function RecipeDetailPage() {
   return (
     <div className="flex flex-col h-full pt-safe">
       {/* Header */}
-      <div className="flex items-center h-[56px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
+      <div className="flex items-center h-[80px] px-4 border-b border-neutral-100 flex-shrink-0 bg-white">
         <button
           type="button"
           onClick={() => navigate(-1)}
@@ -287,7 +287,7 @@ export default function RecipeDetailPage() {
       <div className="flex-1 overflow-y-auto">
         {/* Cover photo */}
         {recipe.image_url && (
-          <div className="relative w-full h-[200px] flex-shrink-0">
+          <div className="relative w-full h-[300px] flex-shrink-0">
             <img src={recipe.image_url} alt={recipe.title} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
           </div>
